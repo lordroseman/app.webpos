@@ -112,7 +112,7 @@ export default {
         {
           title: 'Dashboard',
           icon: 'mdi-view-dashboard',
-          to: '/dashboard',
+          to: '/',
           exact: true,
           permission: 'Dashboard:View',
         },

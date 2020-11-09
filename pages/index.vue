@@ -8,6 +8,8 @@
 
 <script>
 export default {
-  components: {},
+  head: {
+    title: 'Dashboard',
+  },
 }
 </script>
