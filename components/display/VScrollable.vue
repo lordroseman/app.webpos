@@ -1,0 +1,89 @@
+<template>
+  <div :class="scrollbarTheme" class="scrollable" :style="style">
+    <slot />
+  </div>
+</template>
+
+<script>
+export default {
+  props: {
+    height: {
+      type: [Number, String],
+      default: 'auto',
+    },
+    theme: {
+      type: String,
+      default: null,
+    },
+    persistent: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  computed: {
+    scrollbarTheme() {
+      if (!this.theme) {
+        return this.$vuetify.theme.dark ? 'dark' : 'light'
+      } else {
+        return this.theme
+      }
+    },
+    style() {
+      return {
+        height: this.height,
+        'overflow-x': 'hidden',
+        'overflow-y': this.persistent ? 'auto' : 'hidden',
+      }
+    },
+  },
+}
+</script>
+
+<style>
+.scrollable {
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.scrollable:hover {
+  overflow-y: auto;
+}
+
+.light::-webkit-scrollbar {
+  width: 10px;
+}
+
+.light::-webkit-scrollbar-track {
+  background: #e6e6e645;
+}
+
+.light::-webkit-scrollbar-thumb {
+  background: #b0b0b0;
+  border: solid 3px #e6e6e6;
+  border-radius: 7px;
+}
+
+.light::-webkit-scrollbar-thumb:hover {
+  background: #686464;
+  border: solid 3px #e6e6e645;
+}
+
+.dark::-webkit-scrollbar {
+  width: 10px;
+}
+
+.dark::-webkit-scrollbar-track {
+  background: #202020;
+  border-left: 1px solid #2c2c2c;
+}
+
+.dark::-webkit-scrollbar-thumb {
+  background: #3e3e3e;
+  border: solid 3px #202020;
+  border-radius: 7px;
+}
+
+.dark::-webkit-scrollbar-thumb:hover {
+  background: white;
+}
+</style>
