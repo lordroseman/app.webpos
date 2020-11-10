@@ -182,10 +182,6 @@ export default {
     permission: 'Item:View',
     access_level: 2,
   },
-  components: {
-    AddItems: () => import('~/components/item/AddItems'),
-    ItemLedger: () => import('~/components/item/ItemLedger'),
-  },
   data() {
     return {
       headers: [

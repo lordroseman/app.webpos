@@ -79,7 +79,15 @@
             <v-icon>mdi-food</v-icon>
           </v-list-item-icon>
           <v-list-item-content>
-            <v-list-item-title class="green--text"> Item </v-list-item-title>
+            <v-list-item-title> Item </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item to="/s/customer">
+          <v-list-item-icon>
+            <v-icon>mdi-account-group</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title> Customer </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item to="/s/inv_adj">

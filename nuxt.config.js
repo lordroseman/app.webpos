@@ -82,8 +82,9 @@ export default {
   },
   proxy: {
     '/laravel': {
-      target: process.env.API_URL,
+      target: process.env.PHP_API_URL,
       pathRewrite: { '^/laravel': '/' },
+      changeOrigin: true,
     },
   },
 
