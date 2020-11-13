@@ -46,7 +46,8 @@
               {{ tlabel.label.title }}
             </v-chip>
             <span class="text--secondary text-caption mt-1 ml-auto"
-              >{{ tlabel.user.name }} • {{ tlabel.date_time }}</span
+              >{{ tlabel.user ? tlabel.user.name : '' }} •
+              {{ tlabel.date_time }}</span
             >
           </div>
           <div class="text-caption text--secondary font-italic">

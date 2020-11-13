@@ -415,41 +415,51 @@ export default {
         this.$echo
           .private(this.channel)
           .on('UpdateTransaction', (resp) => {
-            const data = resp.transaction
-            for (const prop in data) {
-              this.form[prop] = data[prop]
+            if (resp.user.id !== this.$auth.user.id) {
+              const data = resp.transaction
+              for (const prop in data) {
+                this.form[prop] = data[prop]
+              }
+              this.form.confirmChanges()
+              this.snackbarText = 'Transaction has been updated.'
+              this.snackbar = true
             }
-            this.form.confirmChanges()
-            this.snackbarText = 'Transaction has been updated.'
-            this.snackbar = true
           })
           .on('DeleteTransaction', (resp) => {
-            //  const data = resp.transaction
-            this.hasBeenDeleted = true
-            this.snackbarText = 'Transaction has been deleted.'
-            this.snackbar = true
+            if (resp.user.id !== this.$auth.user.id) {
+              //  const data = resp.transaction
+              this.hasBeenDeleted = true
+              this.snackbarText = 'Transaction has been deleted.'
+              this.snackbar = true
+            }
           })
           .on('NewLabel', (resp) => {
-            this.labels.unshift(resp.label)
-            this.snackbarText = 'Transaction Label has been updated.'
-            this.snackbar = true
+            if (resp.user.id !== this.$auth.user.id) {
+              this.labels.unshift(resp.label)
+              this.snackbarText = 'Transaction Label has been updated.'
+              this.snackbar = true
+            }
           })
           .on('NewPayment', (resp) => {
-            this.payments.push(resp.payment)
-            this.snackbarText = 'Payment has been updated.'
-            this.snackbar = true
+            if (resp.user.id !== this.$auth.user.id) {
+              this.payments.push(resp.payment)
+              this.snackbarText = 'Payment has been updated.'
+              this.snackbar = true
+            }
           })
           .on('DeletePayment', (resp) => {
-            const { payment } = resp
+            if (resp.user.id !== this.$auth.user.id) {
+              const { payment } = resp
 
-            const ind = this.payments.findIndex((i) => i.id === payment.id)
+              const ind = this.payments.findIndex((i) => i.id === payment.id)
 
-            if (ind > -1) {
-              this.payments.splice(ind, 1)
+              if (ind > -1) {
+                this.payments.splice(ind, 1)
+              }
+
+              this.snackbarText = 'Payment has been deleted.'
+              this.snackbar = true
             }
-
-            this.snackbarText = 'Payment has been deleted.'
-            this.snackbar = true
           })
       }
     },
