@@ -1,10 +1,11 @@
 <template>
   <v-container>
     <v-img
-      src="/ribshack logo.png"
-      lazy-src="/ribshack logo.png"
-      width="300"
+      src="/logo.png"
+      lazy-src="/logo.png"
+      width="400"
       class="mx-auto mb-3"
+      elevation="8"
     >
       <template v-slot:placeholder>
         <v-row class="fill-height ma-0" align="center" justify="center">
@@ -15,7 +16,7 @@
         </v-row>
       </template>
     </v-img>
-    <v-card outlined class="mx-auto my-auto" width="500px">
+    <v-card outlined class="mx-auto my-auto" width="500px" elevation="8">
       <v-row>
         <v-col border="left">
           <v-card-text>
@@ -64,6 +65,11 @@
         </v-col>
       </v-row>
     </v-card>
+    <div class="mt-4 text-center">
+      <span class="mx-auto white--text"
+        >&copy; {{ new Date().getFullYear() }} DSSC
+      </span>
+    </div>
   </v-container>
 </template>
 

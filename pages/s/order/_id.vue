@@ -29,17 +29,23 @@
           style="width: 100%"
         >
           <template v-slot:header>
-            <v-toolbar class="mb-1" flat>
+            <v-toolbar class="mb-1" flat color="transparent">
               <v-text-field
                 v-model="search"
                 clearable
                 flat
                 solo-inverted
                 hide-details
-                prepend-inner-icon="mdi-magnify"
-                label="Search"
                 hide-default-footer
-              />
+                color="white"
+              >
+                <template #label
+                  ><span class="white--text">Search</span>
+                </template>
+                <template #prepend-inner
+                  ><v-icon color="white">mdi-magnify</v-icon>
+                </template>
+              </v-text-field>
               <template v-if="$vuetify.breakpoint.mdAndUp">
                 <v-spacer />
                 <v-btn-toggle v-model="sortDesc" mandatory>
@@ -268,12 +274,14 @@ export default {
     if (this.categoriesLoadStatus() !== 2) {
       this.loadCategories()
     }
-
+    // eslint-disable-next-line no-console
+    console.log('mounted')
     this.setData()
   },
   methods: {
     setData() {
       if (isEmpty(this.data)) {
+        EventBus.$emit('update-title', '')
         return
       }
       const data = this.data
@@ -408,6 +416,7 @@ export default {
           src: `https://maps.googleapis.com/maps/api/js?key=${apiKey}`,
           hid: 'googlemaps',
           defer: true,
+          skip: true,
         },
       ],
       title: 'Order',

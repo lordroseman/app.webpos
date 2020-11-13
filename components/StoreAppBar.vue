@@ -1,5 +1,12 @@
 <template>
-  <v-app-bar app clipped-right clipped-left :elevate-on-scroll="true" dark>
+  <v-app-bar
+    app
+    clipped-right
+    clipped-left
+    :elevate-on-scroll="true"
+    dark
+    color="red darken-3"
+  >
     <v-app-bar-nav-icon class="hidden-lg-and-up" @click="toggle" />
 
     <div>
@@ -21,26 +28,21 @@
         class="mt-7"
         placeholder="Please select Store"
         :item-value="(item) => item"
+        light
       />
     </v-toolbar-title>
     <v-spacer />
     <v-toolbar-title>{{ title }}</v-toolbar-title>
 
     <v-spacer />
-    <v-btn text to="/s"> Dashboard </v-btn>
+    <v-btn text exact to="/s"> Dashboard </v-btn>
     <v-menu left bottom offset-y>
       <template v-slot:activator="{ on }">
-        <v-btn
-          text
-          :class="$route.meta.parent == 'transactions' ? 'v-btn--active' : ''"
-          v-on="on"
-        >
-          Transactions
-        </v-btn>
+        <v-btn text :class="transClass" v-on="on"> Transactions </v-btn>
       </template>
 
       <v-list dense>
-        <v-list-item to="/s/order">
+        <v-list-item exact to="/s/order">
           <v-list-item-icon>
             <v-icon color="green"> mdi-cart-plus </v-icon>
           </v-list-item-icon>
@@ -50,7 +52,7 @@
             </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item to="/s/transaction">
+        <v-list-item exact to="/s/transaction">
           <v-list-item-icon>
             <v-icon>mdi-cart</v-icon>
           </v-list-item-icon>
@@ -64,17 +66,11 @@
     <!--   Masterfile Menu -->
     <v-menu left bottom offset-y>
       <template v-slot:activator="{ on }">
-        <v-btn
-          text
-          :class="$route.meta.parent == 'masterfile' ? 'v-btn--active' : ''"
-          v-on="on"
-        >
-          Masterfile
-        </v-btn>
+        <v-btn text :class="mfClass" v-on="on"> Masterfile </v-btn>
       </template>
 
       <v-list dense>
-        <v-list-item to="/s/item">
+        <v-list-item to="/s/item" exact nuxt>
           <v-list-item-icon>
             <v-icon>mdi-food</v-icon>
           </v-list-item-icon>
@@ -82,7 +78,7 @@
             <v-list-item-title> Item </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item to="/s/customer">
+        <v-list-item to="/s/customer" exact nuxt>
           <v-list-item-icon>
             <v-icon>mdi-account-group</v-icon>
           </v-list-item-icon>
@@ -90,7 +86,7 @@
             <v-list-item-title> Customer </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item to="/s/inv_adj">
+        <v-list-item to="/s/inv_adj" exact nuxt>
           <v-list-item-icon>
             <v-icon>mdi-ballot-recount</v-icon>
           </v-list-item-icon>
@@ -155,6 +151,13 @@ export default {
       active_store: null,
       title: '',
       cartCount: 0,
+      mf_links: ['s-item', 's-customer', 's-inv_adj'],
+      trans_links: [
+        's-transaction',
+        's-transaction-id',
+        's-order',
+        's-order-id',
+      ],
     }
   },
   computed: {
@@ -169,6 +172,14 @@ export default {
         return this.user.stores
       }
       return []
+    },
+    mfClass() {
+      const route = this.$route.name
+      return this.mf_links.includes(route) ? 'v-btn--active' : ''
+    },
+    transClass() {
+      const route = this.$route.name
+      return this.trans_links.includes(route) ? 'v-btn--active' : ''
     },
   },
   watch: {

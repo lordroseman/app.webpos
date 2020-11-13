@@ -35,7 +35,7 @@
                 </template>
                 <template v-slot:default class="p-0">
                   <v-btn fab dark x-small color="blue" @click="edit(item)">
-                    <v-icon>mdi-pencil</v-icon>
+                    <v-icon>mdi-account-details</v-icon>
                   </v-btn>
                 </template>
               </v-speed-dial>
@@ -48,15 +48,23 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   layout: 'StoreLayout',
   meta: {
     permission: 'Customer:View',
     access_level: 2,
   },
-  async asyncData({ $api }) {
-    const cust = $api.Customer.custom('/store')
-              .where(store)
+  async asyncData({ $axios, store }) {
+    const activeStore = store.state.app.store
+    if (activeStore) {
+      const cust = await $axios.$get(
+        `/laravel/api/store/${activeStore.id}/customers`
+      )
+      return {
+        customers: cust,
+      }
+    }
   },
   data() {
     return {
@@ -83,7 +91,33 @@ export default {
       loading: false,
     }
   },
+  computed: {
+    ...mapState({
+      store: (state) => state.app.store,
+    }),
+  },
+  watch: {
+    store() {
+      this.refresh()
+    },
+  },
+  mounted() {
+    if (this.customers.length === 0) {
+      this.refresh()
+    }
+  },
   methods: {
+    async refresh() {
+      if (this.store) {
+        this.loading = true
+        const customers = await this.$axios.$get(
+          '/laravel/api/store/' + this.store.id + '/customers'
+        )
+
+        this.customers = customers
+        this.loading = false
+      }
+    },
     edit(customer) {},
   },
   head: {

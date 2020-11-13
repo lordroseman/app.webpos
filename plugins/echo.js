@@ -1,7 +1,9 @@
 export default function ({ $echo, $auth }) {
   // Echo is available here
+  const strategy = $auth.strategy
 
-  const token = $auth.strategy.token.get()
-
-  $echo.connector.pusher.config.auth.headers.Authorization = token
+  if (strategy.options.name === 'laravelSanctum') {
+    const token = $auth.$storage.getCookies()['XSRF-TOKEN']
+    $echo.connector.pusher.config.auth.headers['X-XSRF-TOKEN'] = token
+  }
 }

@@ -70,7 +70,7 @@
                 item-value="id"
                 width="50%"
                 :error-messages="errors.getAll('store_id')"
-                :readonly="!editable"
+                :readonly="isStoreComboDisabled"
               />
             </v-col>
 
@@ -355,6 +355,7 @@ export default {
       response_message: (state) => state.inv_adj.message,
       response_errors: (state) => state.inv_adj.errors,
       response_data: (state) => state.inv_adj.response_data,
+      activeStore: (state) => state.app.store,
     }),
     mode() {
       return isNull(this.form.id) ? 'add' : 'edit'
@@ -415,7 +416,17 @@ export default {
       }
     },
     channel() {
-      return `adjustment.${this.form.id}`
+      if (this.form.id) {
+        return `adjustment.${this.form.id}`
+      } else {
+        return null
+      }
+    },
+    isStoreComboDisabled() {
+      if (this.activeStore) {
+        return true
+      }
+      return !this.editable
     },
   },
   watch: {
@@ -452,7 +463,9 @@ export default {
     this.listen()
   },
   beforeDestroy() {
-    this.$echo.leave(this.channel)
+    if (this.channel) {
+      this.$echo.leave(this.channel)
+    }
   },
   methods: {
     loadItems(store) {
@@ -603,6 +616,10 @@ export default {
       this.ids = new this.GenerateID()
       this.details = []
       this.$v.$reset()
+
+      if (this.activeStore) {
+        this.form.store_id = this.activeStore.id
+      }
     },
     setForm() {
       if (!isEmpty(this.data)) {
@@ -630,6 +647,8 @@ export default {
           .finally(() => {
             this.detailsLoading = false
           })
+      } else if (this.activeStore) {
+        this.form.store_id = this.activeStore.id
       }
     },
     approve() {
@@ -685,6 +704,10 @@ export default {
         })
     },
     listen() {
+      if (!this.channel) {
+        return
+      }
+
       this.$echo
         .private(this.channel)
         .on('UpdateInventoryAdjustment', (resp) => {

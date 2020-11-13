@@ -61,21 +61,6 @@ export default {
     '@nuxtjs/auth-next',
   ],
 
-  /**
-   *
-   *  echo
-   */
-  echo: {
-    broadcaster: 'pusher',
-    plugins: ['~/plugins/echo.js'],
-    authEndpoint: 'laravel/broadcasting/auth',
-    key: process.env.PUSHER_KEY,
-    secret: process.env.PUSHER_SECRET,
-    cluster: process.env.PUSHER_CLUSTER,
-    disableStats: true,
-    connectOnLogin: true,
-    proxy: true,
-  },
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
   axios: {
     proxy: true,
@@ -105,6 +90,24 @@ export default {
     },
     watchLoggedIn: true,
     plugins: [{ src: '~/plugins/axios.js' }],
+  },
+
+  /**
+   *
+   *  echo
+   */
+  echo: {
+    broadcaster: 'pusher',
+    plugins: ['~/plugins/echo.js'],
+    authEndpoint: '/laravel/broadcasting/auth',
+    key: process.env.PUSHER_KEY,
+    secret: process.env.PUSHER_SECRET,
+    cluster: process.env.PUSHER_CLUSTER,
+    disableStats: true,
+    connectOnLogin: true,
+    disconnectOnLogout: true,
+    proxy: true,
+    authModule: false,
   },
 
   /**

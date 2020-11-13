@@ -9,7 +9,7 @@
           class="white--text ml-2"
           text
           small
-          :to="`/order/${form.id}`"
+          :to="`/s/order/${form.id}`"
         >
           EDIT
           <v-icon right dark> mdi-circle-edit-outline </v-icon>

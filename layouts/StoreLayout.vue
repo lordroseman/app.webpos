@@ -1,19 +1,24 @@
 <template>
-  <v-app>
-    <v-scrollable :height="'calc(100vh - 36px)'">
-      <appbar />
+  <div>
+    <div class="bg"></div>
+    <v-app>
+      <v-scrollable :height="'calc(100vh - 36px)'">
+        <appbar />
 
-      <!-- Provides the application the proper gutter -->
-      <v-main>
-        <div v-if="hasActiveStore" class="mask" />
-        <router-view />
-      </v-main>
-    </v-scrollable>
-    <v-footer app dense>
-      <v-spacer />
-      <div>&copy; {{ new Date().getFullYear() }} DSSC</div>
-    </v-footer>
-  </v-app>
+        <!-- Provides the application the proper gutter -->
+        <v-main>
+          <div v-if="hasActiveStore" class="mask" />
+          <keep-alive>
+            <router-view />
+          </keep-alive>
+        </v-main>
+      </v-scrollable>
+      <v-footer app dense>
+        <v-spacer />
+        <div>&copy; {{ new Date().getFullYear() }} DSSC</div>
+      </v-footer>
+    </v-app>
+  </div>
 </template>
 
 <script>

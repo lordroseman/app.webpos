@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer v-model="drawer" app clipped :mini-variant="mini">
+  <v-navigation-drawer v-model="drawer" app clipped :mini-variant="mini" dark>
     <v-list-item class="px-2">
       <v-list-item-avatar>
         <v-btn icon @click.stop="mini = !mini">

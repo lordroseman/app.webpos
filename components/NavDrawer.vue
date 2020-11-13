@@ -138,6 +138,21 @@ export default {
           permission: 'Customer:View',
         },
         {
+          title: 'Reports',
+          icon: 'mdi-chart-bar',
+          exact: true,
+          permission: 'Reports:View',
+          children: [
+            {
+              title: 'Inventory Report',
+              icon: 'mdi-chart-tree',
+              to: '/reports/inventory',
+              exact: true,
+              permission: 'Store:View',
+            },
+          ],
+        },
+        {
           title: 'Masterfile',
           icon: 'mdi-widgets',
           children: [

@@ -1,6 +1,5 @@
 <template>
   <div>
-    <div class="bg"></div>
     <v-app light>
       <v-main>
         <nuxt />
@@ -11,7 +10,7 @@
 
 <script>
 export default {
-  name: 'LoginLayout',
+  name: 'ErrorLayout',
 }
 </script>
 
