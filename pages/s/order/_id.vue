@@ -91,7 +91,11 @@
                       <div>
                         <v-img
                           lazy-src="'/preload.jpg'"
-                          :src="item.img || '/preload.jpg'"
+                          :src="
+                            item.img
+                              ? `data:${item.image_mime};base64,${item.image_base64}`
+                              : '/preload.jpg'
+                          "
                           height="125"
                           contain
                           class="grey darken-4"

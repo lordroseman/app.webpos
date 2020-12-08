@@ -275,7 +275,9 @@ export default {
     },
   },
   mounted() {
-    this.loadItems()
+    setTimeout(() => {
+      this.loadItems()
+    }, 300)
   },
   methods: {
     refresh() {
