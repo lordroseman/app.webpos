@@ -2,7 +2,7 @@
   <v-container fluid class="px-0 px-md-5">
     <v-card class="mx-auto">
       <v-card-title>
-        TXN# {{ id }}
+        TXN# {{ txn_number }}
         <v-btn
           v-if="editable"
           color="blue-grey"
@@ -334,6 +334,7 @@ export default {
       history: [],
       labels: [],
       showAddPayment: false,
+      txn_number: '#NEW#',
     }
   },
 
@@ -341,9 +342,6 @@ export default {
     ...mapState({
       active_store: (state) => state.app.store,
     }),
-    id() {
-      return this.padStart(this.form.id, 5, 0)
-    },
     totalPayment() {
       let total = 0
       for (const payment of this.payments) {
@@ -403,6 +401,7 @@ export default {
         this.payments = data.payments
         this.labels = data.labels
         this.history = data.history
+        this.txn_number = data.txn_number
       } else {
         // window.location.reload()
       }

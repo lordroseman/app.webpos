@@ -2,7 +2,7 @@
   <v-container fluid class="px-0 px-md-5">
     <v-card class="mx-auto">
       <v-card-title>
-        TXN# {{ form.txn_number }}
+        TXN# {{ txn_number }}
         <v-spacer />
 
         <v-btn rounded>
@@ -338,6 +338,7 @@ export default {
       snackbarText: '',
       snackbar: null,
       hasBeenDeleted: false,
+      txn_number: '#NEW#',
     }
   },
 
@@ -428,6 +429,7 @@ export default {
       this.payments = data.payments
       this.labels = data.labels
       this.history = data.history
+      this.txn_number = data.txn_number
     },
     setDriver(driver) {
       this.form.driver = driver

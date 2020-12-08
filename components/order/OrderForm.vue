@@ -492,8 +492,8 @@ export default {
       this.$emit('close')
     },
     setLatLng(data) {
-      this.form.lat = data.lat
-      this.form.long = data.long
+      this.form.customer_geo_location_lat = data.lat
+      this.form.customer_geo_location_long = data.lng
     },
     getCustomer: debounce((name, vm) => {
       const customers = vm.$api.Customer.custom('/customer/search')

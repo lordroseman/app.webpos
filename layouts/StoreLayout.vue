@@ -8,9 +8,8 @@
         <!-- Provides the application the proper gutter -->
         <v-main>
           <div v-if="hasActiveStore" class="mask" />
-          <keep-alive>
-            <router-view />
-          </keep-alive>
+
+          <router-view />
         </v-main>
       </v-scrollable>
       <v-footer app dense>
