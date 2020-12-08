@@ -63,19 +63,27 @@
         </div>
       </div>
     </template>
+    <v-dialog v-model="saving" persistent width="400">
+      <v-card color="primary" dark>
+        <v-card-text class="pt-4">
+          Saving transaction, please stand by
+          <v-progress-linear
+            indeterminatee
+            color="white"
+            class="mb-0"
+          ></v-progress-linear>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-navigation-drawer>
 </template>
 
 <script>
 import { mapState, mapGetters } from 'vuex'
 import { isEmpty } from 'lodash'
-import OrderForm from '~/components/order/OrderForm.vue'
 import EventBus from '~/components/core/event-bus.js'
 
 export default {
-  components: {
-    OrderForm,
-  },
   props: {
     orderedItems: {
       type: Array,
@@ -96,6 +104,7 @@ export default {
     return {
       drawer: true,
       dialog: false,
+      saving: false,
     }
   },
   computed: {
@@ -168,6 +177,7 @@ export default {
             text: vue.response_errors.message,
             footer: '<a href>Why do I have this issue?</a>',
           })
+          vue.saving = false
         } else if (val === 2) {
           vue.$swal.fire({
             position: 'top-end',
@@ -182,6 +192,9 @@ export default {
           } else {
             vue.$emit('applyChanges')
           }
+          vue.saving = false
+        } else if (val === 1) {
+          vue.saving = true
         }
       }
     )

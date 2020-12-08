@@ -39,6 +39,10 @@ export default {
       type: String,
       default: 'address-map',
     },
+    disableMarker: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   data() {
@@ -75,14 +79,16 @@ export default {
 
     this.createMarker(this.defaultLocation)
 
-    this.map.addListener('click', (e) => {
-      this.placeMarkerAndPanTo(e.latLng, this.map)
-      this.latLng = {
-        lat: Number(e.latLng.lat().toFixed(8)),
-        lng: Number(e.latLng.lng().toFixed(8)),
-      }
-      this.$emit('click', this.latLng)
-    })
+    if (!this.disableMarker) {
+      this.map.addListener('click', (e) => {
+        this.placeMarkerAndPanTo(e.latLng, this.map)
+        this.latLng = {
+          lat: Number(e.latLng.lat().toFixed(8)),
+          lng: Number(e.latLng.lng().toFixed(8)),
+        }
+        this.$emit('click', this.latLng)
+      })
+    }
 
     this.resetMap()
   },
@@ -122,17 +128,19 @@ export default {
         // eslint-disable-next-line no-undef
         animation: google.maps.Animation.DROP,
       })
-      marker.addListener('click', () => {
-        if (marker.getAnimation() !== null) {
-          marker.setAnimation(null)
-        } else {
-          setTimeout(() => {
-            // eslint-disable-next-line no-undef
-            marker.setAnimation(google.maps.Animation.BOUNCE)
-          }, 3000)
-        }
-      })
 
+      if (!this.disableMarker) {
+        marker.addListener('click', () => {
+          if (marker.getAnimation() !== null) {
+            marker.setAnimation(null)
+          } else {
+            setTimeout(() => {
+              // eslint-disable-next-line no-undef
+              marker.setAnimation(google.maps.Animation.BOUNCE)
+            }, 3000)
+          }
+        })
+      }
       this.markers.push(marker)
     },
     /*

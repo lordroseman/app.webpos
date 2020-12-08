@@ -230,7 +230,7 @@
       </v-dialog>
       <v-dialog
         v-model="customer_dialog"
-        max-width="80%"
+        max-width="600px"
         transition="dialog-bottom-transition"
       >
         <customer-form
@@ -251,7 +251,7 @@
 <script>
 import { required } from 'vuelidate/lib/validators'
 import { mapState } from 'vuex'
-import { isEmpty, reject, debounce } from 'lodash'
+import { isEmpty, reject, debounce, findIndex } from 'lodash'
 import Errors from '~/components/core/Errors.js'
 import FormValidationMixins from '~/plugins/FormValidationMixins.vue'
 import AddressMap from '~/components/display/AddressMap.vue'
@@ -363,6 +363,30 @@ export default {
     scrollHeight() {
       return window.innerHeight * 0.9 - 58 - 52 + 'px'
     },
+    customerAddress() {
+      let address = null
+      if (!this.form.customer) {
+        address = null
+      } else {
+        const custAddress = this.form.customer.address
+
+        if (custAddress && custAddress.length > 0) {
+          // get primary address
+          const ind = findIndex(custAddress, (i) => {
+            return i.primary === 1
+          })
+          if (ind === -1) {
+            address = custAddress[0]
+          } else {
+            address = custAddress[ind]
+          }
+        } else {
+          address = null
+        }
+      }
+
+      return address
+    },
   },
   watch: {
     show(val) {
@@ -388,12 +412,8 @@ export default {
 
       this.isLoading = true
 
-      const param = {
-        'filter[name]': val,
-      }
-
       // Lazily load input items
-      this.getCustomer(param, this)
+      this.getCustomer(val, this)
     },
     'form.customer'(customer) {
       if (!customer) {
@@ -402,12 +422,24 @@ export default {
 
       this.form.customer_id = customer.id
       this.form.customer_name = customer.name
-      this.form.customer_delivery_address = customer.delivery_address
       this.form.customer_contact_number = customer.contact_number
-      this.form.customer_geo_location_lat = customer.geo_location_lat
-      this.form.customer_geo_location_long = customer.geo_location_long
-      this.form.city_id = customer.city_id
-      this.form.barangay_id = customer.barangay_id
+    },
+    customerAddress(address) {
+      if (address) {
+        this.form.customer_delivery_address = address.address
+
+        this.form.customer_geo_location_lat = address.geo_location_lat
+        this.form.customer_geo_location_long = address.geo_location_long
+        this.form.city_id = address.city_id
+        this.form.barangay_id = address.barangay_id
+      } else {
+        this.form.customer_delivery_address = null
+        this.form.customer_contact_number = null
+        this.form.customer_geo_location_lat = null
+        this.form.customer_geo_location_long = null
+        this.form.city_id = null
+        this.form.barangay_id = null
+      }
     },
     selected_city(val) {
       if (val && typeof val === 'object') {
@@ -427,6 +459,16 @@ export default {
 
     if (this.barangayLoadStatus !== 2) {
       this.$store.dispatch('barangay/loadBarangays')
+    }
+
+    if (this.form.customer) {
+      this.customers = [
+        {
+          ...this.form.customer,
+          name: this.form.customer.full_name,
+          text: this.form.customer.email + ' ' + this.form.customer.full_name,
+        },
+      ]
     }
   },
   methods: {
@@ -453,11 +495,18 @@ export default {
       this.form.lat = data.lat
       this.form.long = data.long
     },
-    getCustomer: debounce((param, vm) => {
-      vm.$axios
-        .get('/laravel/api/customer/search', param)
+    getCustomer: debounce((name, vm) => {
+      const customers = vm.$api.Customer.custom('/customer/search')
+
+      if (name) {
+        customers.where('full_name', name)
+      }
+
+      customers
+        .include('address')
+        .get()
         .then((res) => {
-          vm.customers = res.data.map((obj) => ({
+          vm.customers = res.map((obj) => ({
             ...obj,
             name: `${obj.fname} ${obj.lname}`,
             text: `${obj.email} ${obj.fname} ${obj.lname}`,

@@ -4,7 +4,7 @@
     :width="width"
     contain
     :src="src"
-    :lazy-src="require('@/static/preload.jpg')"
+    :lazy-src="require('@/static/preload.png')"
   />
 </template>
 

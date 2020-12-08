@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container fluid class="px-0 px-md-5">
     <v-card class="mx-auto">
       <v-card-title>
         TXN# {{ id }}
@@ -165,7 +165,7 @@
           <v-divider vertical />
         </v-col>
       </v-row>
-
+      <v-divider />
       <v-tabs fixed-tabs>
         <v-tab href="#details"> Transaction Details </v-tab>
         <v-tab href="#payments"> Payment History </v-tab>

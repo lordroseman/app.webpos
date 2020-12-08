@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container fluid class="px-0 px-md-5">
     <v-card class="mx-auto" width="80%">
       <v-card-title
         >User :: {{ form.id ? padStart(form.id, 5, 0) : 'NEW' }}</v-card-title

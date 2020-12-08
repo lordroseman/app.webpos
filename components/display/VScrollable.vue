@@ -46,7 +46,7 @@ export default {
 }
 
 .scrollable:hover {
-  overflow-y: auto;
+  overflow-y: auto !important;
 }
 
 .light::-webkit-scrollbar {

@@ -1,6 +1,7 @@
 export const state = () => ({
   store: null,
-  user: null,
+  drawer: true,
+  miniVariant: false,
   navHeader: '',
   labels: [
     {
@@ -80,6 +81,12 @@ export const mutations = {
   setNavHeader(state, header) {
     state.navHeader = header
   },
+  setDrawer(state, drawer) {
+    state.drawer = drawer
+  },
+  setMiniVariant(state, mini) {
+    state.miniVariant = mini
+  },
 }
 
 export const actions = {
@@ -92,5 +99,11 @@ export const actions = {
   },
   setNavHeader({ commit }, header) {
     commit('setNavHeader', header)
+  },
+  setDrawer({ commit }, drawer) {
+    commit('setDrawer', drawer)
+  },
+  setMiniVariant({ commit }, mini) {
+    commit('setMiniVariant', mini)
   },
 }

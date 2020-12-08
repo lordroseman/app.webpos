@@ -45,18 +45,16 @@ import { mapState } from 'vuex'
 import EventBus from '~/components/core/event-bus.js'
 
 export default {
-  props: {
-    drawer: Boolean,
-  },
   data() {
     return {
-      miniVariant: false,
       isDark: false,
     }
   },
   computed: {
     ...mapState({
       navHeader: (state) => state.app.navHeader,
+      drawer: (state) => state.app.drawer,
+      miniVariant: (state) => state.app.miniVariant,
     }),
   },
   watch: {
@@ -71,17 +69,11 @@ export default {
   methods: {
     toggle() {
       EventBus.$emit('app-toggle')
-
-      if (!this.drawer) {
-        this.miniVariant = false
-        this.drawer = true
+      if (this.drawer) {
+        this.$store.dispatch('app/setMiniVariant', !this.miniVariant)
       } else {
-        this.miniVariant = !this.miniVariant
+        this.$store.dispatch('app/setDrawer', true)
       }
-      this.$emit('toggle', {
-        drawer: this.drawer,
-        miniVariant: this.miniVariant,
-      })
     },
     async logout() {
       await this.$auth.logout()

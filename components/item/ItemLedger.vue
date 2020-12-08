@@ -43,6 +43,9 @@
             :server-items-length="total"
             :loading="loading"
           >
+            <template v-if="$vuetify.breakpoint.smAndDown" #body>
+              <div></div>
+            </template>
             <template #[`item.reference`]="{ item }">
               {{ item.reference_doc }} #{{ item.reference_id }}
             </template>

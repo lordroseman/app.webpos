@@ -1,5 +1,7 @@
 <template>
-  <v-container></v-container>
+  <v-container fluid class="px-0 px-md-5">
+    <v-card class="mx-auto"> test</v-card>
+  </v-container>
 </template>
 
 <script>
@@ -9,7 +11,12 @@ export default {
     permission: 'Reports:View',
     access_level: 1,
   },
-  data() {},
+  data() {
+    return {}
+  },
+  beforeMount() {
+    this.$store.dispatch('app/setNavHeader', 'Inventory Report')
+  },
   head: {
     title: 'Inventory Report',
   },

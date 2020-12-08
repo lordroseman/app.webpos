@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container fluid class="px-0 px-md-5">
     <v-card class="mx-auto">
       <v-card-title>
         Transactions

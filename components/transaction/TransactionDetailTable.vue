@@ -2,33 +2,59 @@
   <div>
     <v-divider />
     <div v-for="(detail, i) in details" :key="i">
-      <v-card flat class="d-flex flex-row px-8 py-3 border-bottom-1s" tile>
-        <div style="height: 100px; width: 130px" class="mr-1 br-1">
-          <v-img
-            :height="100"
-            :width="130"
-            :src="require('@/static/preload.jpg')"
-          />
-        </div>
-        <div class="mr-auto ml-3">
-          <div class="title">
-            {{ detail.item_name }}
+      <template v-if="i < limit">
+        <v-card
+          flat
+          class="d-flex flex-row pl-0 pr-3 py-3 border-bottom-1s"
+          tile
+        >
+          <div
+            style="height: 100px; width: 130px"
+            class="mr-1 br-1 d-none d-md-block"
+          >
+            <v-img
+              :height="100"
+              :width="130"
+              contain
+              :src="require('@/static/preload.png')"
+            />
           </div>
-          <div class="subtitle">
-            {{ detail.item_desc }}
+          <div class="mr-auto ml-3">
+            <div class="title">
+              {{ detail.item_name }}
+            </div>
+            <div class="subtitle">
+              {{ detail.item_desc }}
+            </div>
+            <div>
+              <span class="text--disabled">Qty:</span>
+              x{{ detail.quantity }} {{ detail.item_unit }} @
+              <span class="text--disabled">Price:</span>
+              {{ toCurrency(detail.item_price) }}
+            </div>
           </div>
-          <div>
-            <span class="text--disabled">Qty:</span>
-            x{{ detail.quantity }} {{ detail.item_unit }} @
-            <span class="text--disabled">Price:</span>
-            {{ toCurrency(detail.item_price) }}
+          <div class="my-auto">
+            {{ toCurrency(detail.line_total) }}
           </div>
-        </div>
-        <div class="my-auto">
-          {{ toCurrency(detail.line_total) }}
-        </div>
-      </v-card>
-      <v-divider />
+        </v-card>
+        <v-divider />
+      </template>
+    </div>
+    <div class="py-3 ml-6 d-flex">
+      <span class="text--disabled caption" style="width: 100px">
+        {{ details.length }} items
+      </span>
+      <div class="mx-auto">
+        <v-btn
+          v-if="details.length > limit"
+          text
+          x-small
+          block
+          @click="$router.push('/transaction/' + details[0].transaction_id)"
+        >
+          View more items
+        </v-btn>
+      </div>
     </div>
   </div>
 </template>
@@ -39,6 +65,10 @@ export default {
     details: {
       type: Array,
       default: () => [],
+    },
+    limit: {
+      type: Number,
+      default: 1000,
     },
   },
   data() {

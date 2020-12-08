@@ -1,8 +1,8 @@
 <template>
-  <v-container fluid>
+  <v-container fluid class="px-0 px-md-5">
     <v-card class="mx-auto">
       <v-card-title>
-        <v-dialog v-model="dialog" max-width="80%">
+        <v-dialog v-model="dialog" max-width="600px">
           <template v-slot:activator="{ on }">
             <v-btn
               v-if="$can('Customer:Add')"
@@ -12,7 +12,8 @@
               rounded
               v-on="on"
             >
-              <v-icon>mdi-plus</v-icon>New Customer
+              <v-icon>mdi-plus</v-icon>
+              <span class="d-none d-md-block">New Customer</span>
             </v-btn>
           </template>
           <customer-form
@@ -21,6 +22,10 @@
             @close="closeForm"
           />
         </v-dialog>
+        <v-btn class="ml-2 mb-2" rounded @click="refresh">
+          <v-icon> mdi-refresh </v-icon>
+          <span class="d-none d-md-block">Refresh</span>
+        </v-btn>
         <v-spacer />
         <v-spacer />
         <v-text-field
@@ -33,6 +38,7 @@
       </v-card-title>
       <v-skeleton-loader
         ref="skeleton"
+        e
         type="table-tbody"
         class="mx-auto"
         :loading="loading"
@@ -57,6 +63,15 @@
                   </v-btn>
                 </template>
                 <template v-slot:default class="p-0">
+                  <v-btn
+                    fab
+                    dark
+                    x-small
+                    color="purple"
+                    @click="$router.push('/customer/' + item.id)"
+                  >
+                    <v-icon>mdi-account-details</v-icon>
+                  </v-btn>
                   <v-btn fab dark x-small color="blue" @click="edit(item)">
                     <v-icon>mdi-pencil</v-icon>
                   </v-btn>
@@ -137,6 +152,9 @@ export default {
     this.loadCustomers()
   },
   methods: {
+    refresh() {
+      this.loadCustomers()
+    },
     loadCustomers() {
       this.$store.dispatch('customer/loadCustomers')
     },
@@ -190,16 +208,8 @@ export default {
       this.selected_customer = {}
     },
   },
-  head({ $config }) {
-    const apiKey = $config.googleMapsJsApiKey
+  head() {
     return {
-      script: [
-        {
-          src: 'https://maps.googleapis.com/maps/api/js?key=' + apiKey,
-          async: true,
-          defer: true,
-        },
-      ],
       title: 'Customer',
     }
   },

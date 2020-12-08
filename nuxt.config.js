@@ -12,6 +12,15 @@ export default {
       { hid: 'description', name: 'description', content: '' },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon-32x32.png' }],
+    script: [
+      {
+        src:
+          'https://maps.googleapis.com/maps/api/js?key=' +
+          process.env.GOOGLE_MAPS_JS_API_KEY,
+        async: true,
+        defer: true,
+      },
+    ],
   },
 
   /*
@@ -64,6 +73,7 @@ export default {
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
   axios: {
     proxy: true,
+    credentials: true,
   },
   proxy: {
     '/laravel': {

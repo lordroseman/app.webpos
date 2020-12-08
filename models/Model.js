@@ -41,4 +41,10 @@ export default class Model extends BaseModel {
     }
     return this
   }
+
+  formData() {
+    return {
+      indices: true,
+    }
+  }
 }

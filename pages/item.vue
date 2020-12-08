@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container fluid class="px-0 px-md-5">
     <v-card class="mx-auto">
       <v-card-title>
         <v-dialog v-model="dialog" max-width="800px" persistent>
@@ -126,7 +126,12 @@
       </v-skeleton-loader>
     </v-card>
 
-    <v-dialog v-model="showLedger" max-width="800px" scrollable>
+    <v-dialog
+      v-model="showLedger"
+      max-width="800px"
+      :fullscreen="$vuetify.breakpoint.smAndDown"
+      scrollable
+    >
       <item-ledger :active-item="item_ledger" :show.sync="showLedger" />
     </v-dialog>
   </v-container>

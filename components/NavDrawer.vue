@@ -1,13 +1,12 @@
 <template>
   <v-navigation-drawer
-    v-model="drawer"
+    v-model="drawer2"
     app
     color="black"
     :expand-on-hover="miniVariant"
-    :mini-variant="miniVariant"
+    :mini-variant.sync="miniVariant"
     dark
     elevation-10
-    permanent
     class="overflow-y-hidden"
   >
     <template v-slot:img>
@@ -44,7 +43,7 @@
       </v-list-item>
 
       <v-divider dark class="mb-3" />
-      <v-scrollable :height="scrollableHeight" theme="dark">
+      <v-scrollable :height="scrollableHeight" :persistent="false" theme="dark">
         <v-list-item-group>
           <template v-for="route in routes">
             <template v-if="route.hasOwnProperty('children')">
@@ -101,13 +100,12 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
-  props: {
-    miniVariant: Boolean,
-    drawer: Boolean,
-  },
   data() {
     return {
+      drawer2: true,
       routes: [
         {
           title: 'Dashboard',
@@ -218,14 +216,24 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      navHeader: (state) => state.app.navHeader,
+      drawer: (state) => state.app.drawer,
+      miniVariant: (state) => state.app.miniVariant,
+    }),
     scrollableHeight() {
       return 'calc(100vh - 186px)'
     },
-    item() {
-      return this.items.length
-    },
     user() {
       return this.$auth.user
+    },
+  },
+  watch: {
+    drawer2(drawer) {
+      this.$store.dispatch('app/setDrawer', drawer)
+    },
+    drawer(drawer) {
+      this.drawer2 = drawer
     },
   },
   mounted() {},

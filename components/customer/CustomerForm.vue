@@ -7,7 +7,7 @@
     <v-card-text>
       <v-container>
         <v-row>
-          <v-col cols="12" sm="6">
+          <v-col cols="12" sm="12">
             <v-row>
               <v-col cols="12" sm="6">
                 <v-text-field
@@ -50,7 +50,7 @@
                   :error-messages="errors.getAll('email')"
                 />
               </v-col>
-              <v-col cols="12">
+              <!-- <v-col cols="12">
                 <v-textarea
                   v-model="form.delivery_address"
                   label="Delivery Address"
@@ -93,10 +93,10 @@
                     </v-list-item>
                   </template>
                 </v-combobox>
-              </v-col>
+              </v-col> -->
             </v-row>
           </v-col>
-          <v-col cols="12" sm="6" class="d-flex">
+          <!-- <v-col cols="12" sm="6" class="d-flex">
             <v-divider vertical />
             <address-map
               class="ml-5 my-auto"
@@ -104,7 +104,7 @@
               :lng="form.geo_location_long"
               @click="setLatLng"
             />
-          </v-col>
+          </v-col> -->
         </v-row>
       </v-container>
 
@@ -129,12 +129,11 @@
 
 <script>
 import { required } from 'vuelidate/lib/validators'
-import { mapGetters, mapState } from 'vuex'
-import { isEmpty, find } from 'lodash'
+import { mapGetters } from 'vuex'
+import { isEmpty } from 'lodash'
 import Errors from '~/components/core/Errors.js'
 import FormValidationMixins from '~/plugins/FormValidationMixins.vue'
 import Form from '~/components/core/Form.js'
-import Barangay from '~/models/Barangay'
 
 export default {
   mixins: [FormValidationMixins],
@@ -153,12 +152,7 @@ export default {
         lname: '',
         fb_name: '',
         contact_number: null,
-        delivery_address: null,
         email: '',
-        geo_location_lat: null,
-        geo_location_long: null,
-        city_id: null,
-        barangay: null,
       }),
       errors: new Errors(),
       attributes: {
@@ -166,13 +160,8 @@ export default {
         lname: 'Last Name',
         fb_name: 'Facebook Name',
         contact_number: 'Contact Number',
-        delivery_address: 'Delivery Address',
-        city_id: 'City',
-        barangay_id: 'Barangay',
       },
       toolbarColor: '',
-      barangay_options: [],
-      search_barangay: null,
     }
   },
   validations: {
@@ -186,16 +175,7 @@ export default {
       contact_number: {
         required,
       },
-      delivery_address: {
-        required,
-      },
       email: {
-        required,
-      },
-      city_id: {
-        required,
-      },
-      barangay: {
         required,
       },
     },
@@ -214,10 +194,6 @@ export default {
 
       return title
     },
-    ...mapState({
-      cities: (state) => state.city.cities,
-      citiesLoadStatus: (state) => state.city.citiesLoadStatus,
-    }),
     ...mapGetters({
       customerSendingStatus: 'customer/getCustomerSendingStatus',
       response_errors: 'customer/getErrors',
@@ -241,11 +217,6 @@ export default {
       if (val) {
         this.$v.$reset()
         this.errors.clear()
-      }
-    },
-    'form.city_id'(val) {
-      if (val) {
-        this.getBarangay(val)
       }
     },
   },
@@ -277,10 +248,6 @@ export default {
         }
       }
     )
-
-    if (this.citiesLoadStatus !== 2) {
-      this.$store.dispatch('city/loadCities')
-    }
   },
 
   methods: {
@@ -311,23 +278,6 @@ export default {
       this.$v.$reset()
       this.errors.clear()
       this.$emit('close')
-    },
-    setLatLng(position) {
-      this.form.geo_location_lat = position.lat
-      this.form.geo_location_long = position.lng
-    },
-    getBarangay(city) {
-      Barangay.custom('barangay/search')
-        .where('city_id', city)
-        .get()
-        .then((resp) => {
-          this.barangay_options = resp
-          if (!isEmpty(this.data)) {
-            this.form.barangay = find(this.barangay_options, {
-              id: this.data.barangay_id,
-            })
-          }
-        })
     },
   },
 }

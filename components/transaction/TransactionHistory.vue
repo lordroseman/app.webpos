@@ -27,7 +27,8 @@
             label
           >
             {{ item.event }} </v-chip
-          >this record <u>[{{ item.auditable_type }}]</u>.
+          >this record
+          <u>[{{ (item.auditable_type).replace(/App\\Models\\/g, ''),}}]</u>.
         </template>
         <template v-slot:expanded-item="{ headers, item }">
           <td :colspan="headers.length" class="py-2">

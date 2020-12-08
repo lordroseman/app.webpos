@@ -1,9 +1,14 @@
 <template>
-  <v-container fluid>
+  <v-container fluid class="px-0 px-md-5">
     <v-card class="mx-auto">
       <v-card-title>
-        TXN# {{ id }}
+        TXN# {{ form.txn_number }}
         <v-spacer />
+
+        <v-btn rounded>
+          <v-icon>mdi-printer</v-icon>
+          Print
+        </v-btn>
 
         <v-chip
           v-if="form.status == 1"
@@ -78,9 +83,9 @@
                       <v-icon>mdi-calendar</v-icon>
                     </v-list-item-avatar>
                     <v-list-item-content>
-                      <v-list-item-title
-                        >Deliver by: {{ form.delivery_date }}</v-list-item-title
-                      >
+                      <v-list-item-title>
+                        Deliver by: {{ form.delivery_date }}
+                      </v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item two-line>
@@ -161,7 +166,7 @@
           <v-divider vertical />
         </v-col>
       </v-row>
-
+      <v-divider />
       <v-tabs fixed-tabs>
         <v-tab href="#details"> Transaction Details </v-tab>
         <v-tab href="#payments"> Payment History </v-tab>
@@ -170,6 +175,7 @@
           <transaction-detail-table :details="details" />
         </v-tab-item>
         <v-tab-item value="payments">
+          <v-divider />
           <div class="d-flex flex-column">
             <v-btn
               v-if="allowAddPayment"
