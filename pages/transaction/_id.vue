@@ -304,7 +304,19 @@ export default {
     access_level: 1,
   },
   async asyncData({ $api, params }) {
-    const resp = await $api.Transaction.find(params.id)
+    const resp = await $api.Transaction.custom('transaction/search')
+      .where('id', params.id)
+      .include(
+        'details.item',
+        'payment_option',
+        'user',
+        'customer',
+        'payments',
+        'barangay',
+        'city',
+        'labels.label'
+      )
+      .first()
 
     return { data: resp }
   },

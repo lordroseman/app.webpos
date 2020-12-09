@@ -16,7 +16,8 @@
               :height="100"
               :width="130"
               contain
-              :src="require('@/static/preload.png')"
+              lazy-src="/preload.png"
+              :src="getImg(detail.item) || '/preload.png'"
             />
           </div>
           <div class="mr-auto ml-3">
@@ -84,6 +85,16 @@ export default {
       ],
       search: null,
     }
+  },
+  methods: {
+    getImg(item) {
+      if (!item.img) {
+        return null
+      }
+
+      const img = `data:${item.image_mime};base64,${item.image_base64}`
+      return img
+    },
   },
 }
 </script>

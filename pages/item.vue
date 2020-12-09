@@ -99,8 +99,8 @@
                   <v-img
                     width="100"
                     height="100"
-                    lazy-src="/preload.jpg"
-                    :src="getImg(item) || '/preload.jpg'"
+                    lazy-src="/preload.png"
+                    :src="getImg(item) || '/preload.png'"
                     eager
                   >
                     <template v-slot:placeholder>
