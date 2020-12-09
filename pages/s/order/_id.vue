@@ -28,6 +28,12 @@
           hide-default-footer
           style="width: 100%"
         >
+          <template #no-data>
+            <span class="white--text">No Item found</span>
+          </template>
+          <template #no-results>
+            <span class="white--text">No matching items found</span>
+          </template>
           <template v-slot:header>
             <v-toolbar class="mb-1" flat color="transparent">
               <v-text-field
@@ -206,7 +212,7 @@ export default {
       counter: 0,
       rules: {
         available(item) {
-          return item.inventory < 1
+          return item.pivot.inventory < 1
         },
       },
       form: new Form({
@@ -228,6 +234,7 @@ export default {
         notes: '',
       }),
       mode: 'new',
+      categories: [],
     }
   },
   computed: {
@@ -240,7 +247,7 @@ export default {
     ...mapGetters({
       items: 'item/getItems',
       itemsLoadStatus: 'item/getItemsLoadStatus',
-      categories: 'category/getCategories',
+      // categories: 'category/getCategories',
       categoriesLoadStatus: 'category/getCategoriesLoadStatus',
     }),
     loading() {
@@ -270,6 +277,18 @@ export default {
     orderedItems(val) {
       EventBus.$emit('updateCartCount', val.length)
     },
+    items(items) {
+      this.categories = []
+      for (const item of items) {
+        const category = item.category
+
+        // check index
+        const ind = findIndex(this.categories, (i) => i === category.id)
+        if (ind === -1) {
+          this.categories.push(category)
+        }
+      }
+    },
   },
   mounted() {
     if (this.itemsLoadStatus() !== 2) {
@@ -278,8 +297,7 @@ export default {
     if (this.categoriesLoadStatus() !== 2) {
       this.loadCategories()
     }
-    // eslint-disable-next-line no-console
-    console.log('mounted')
+
     this.setData()
   },
   methods: {
