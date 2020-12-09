@@ -12,10 +12,10 @@ export const state = () => ({
 })
 
 export const actions = {
-  loadCategories({ commit }) {
+  async loadCategories({ commit }) {
     commit('setCategoriesLoadStatus', 1)
 
-    this.$axios
+    await this.$axios
       .get('/laravel/api/category')
       .then(function (response) {
         commit('setCategories', response.data)
