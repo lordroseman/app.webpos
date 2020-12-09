@@ -1,3 +1,5 @@
+import path from 'path'
+import fs from 'fs'
 import colors from 'vuetify/es5/util/colors'
 
 export default {
@@ -30,6 +32,10 @@ export default {
   server: {
     host: process.env.HOSTNAME,
     port: process.env.PORT,
+    https: {
+      key: fs.readFileSync(path.resolve(__dirname, 'ssl/server.key')),
+      cert: fs.readFileSync(path.resolve(__dirname, 'ssl/server.crt')),
+    },
   },
 
   // Global CSS (https://go.nuxtjs.dev/config-css)
