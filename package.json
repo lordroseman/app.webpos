@@ -21,6 +21,7 @@
     "date-fns": "^2.16.1",
     "nuxt": "^2.14.6",
     "nuxt-compress": "^4.1.0",
+    "nuxt-start": "^2.14.10",
     "pusher-js": "^7.0.0",
     "sweetalert2": "^9.17.1",
     "v-currency-field": "^3.0.11",
