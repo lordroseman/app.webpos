@@ -409,10 +409,11 @@ export default {
       }
     },
     cardElevation(hover, item) {
-      if (item.pivot.inventory < 1) {
-        return 1
+      if (item.pivot) {
+        if (item.pivot.inventory < 1) {
+          return 1
+        }
       }
-
       return hover ? 16 : 2
     },
     applyChanges() {
