@@ -33,8 +33,12 @@ export default {
     host: process.env.HOSTNAME,
     port: process.env.PORT,
     https: {
-      key: fs.readFileSync(path.resolve(__dirname, 'ssl/server.key')),
-      cert: fs.readFileSync(path.resolve(__dirname, 'ssl/server.crt')),
+      key: fs.readFileSync(
+        path.resolve(__dirname, 'ssl/sub.ribshack.info.key')
+      ),
+      cert: fs.readFileSync(
+        path.resolve(__dirname, 'ssl/sub.ribshack.info.crt')
+      ),
     },
   },
 
