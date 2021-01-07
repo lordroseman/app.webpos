@@ -139,7 +139,7 @@ export default {
       .include('details', 'labels')
       .get()
 
-    return { transactions: transactions.data }
+    return { transactions }
   },
   data() {
     return {
@@ -155,15 +155,27 @@ export default {
       store: (state) => state.app.store,
     }),
     upcoming() {
-      return this.transactions.filter((i) => i.status === 0)
+      try {
+        return this.transactions.filter((i) => i.status === 0)
+      } catch (e) {
+        return []
+      }
     },
     open() {
-      const open = this.transactions.filter((i) => i.status === 1)
+      try {
+        const open = this.transactions.filter((i) => i.status === 1)
 
-      return open
+        return open
+      } catch (e) {
+        return []
+      }
     },
     close() {
-      return this.transactions.filter((i) => i.status === 2)
+      try {
+        return this.transactions.filter((i) => i.status === 2)
+      } catch (e) {
+        return []
+      }
     },
     channel() {
       if (this.store) {

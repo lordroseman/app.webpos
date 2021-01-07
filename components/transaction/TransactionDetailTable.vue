@@ -10,7 +10,7 @@
         >
           <div
             style="height: 100px; width: 130px"
-            class="mr-1 br-1 d-none d-md-block"
+            class="mr-1 ml-3 br-1 d-none d-md-block"
           >
             <v-img
               :height="100"

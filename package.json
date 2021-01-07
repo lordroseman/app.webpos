@@ -26,6 +26,7 @@
     "sweetalert2": "^9.17.1",
     "v-currency-field": "^3.0.11",
     "vue-api-query": "^1.8.1",
+    "vue-pdf": "^4.2.0",
     "vue-sweetalert2": "^3.0.6",
     "vuelidate": "^0.7.6",
     "vuetify-image-input": "^19.1.0"

@@ -161,6 +161,9 @@ export default {
         }
       }
     },
+    params(val) {
+      this.form.printed = 0
+    },
   },
   created() {
     const vue = this

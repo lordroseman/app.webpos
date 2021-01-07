@@ -25,6 +25,7 @@
 
 export default {
   middleware: ['admin'],
+  name: 'DefaultLayout',
   beforeMount() {
     // this.miniVariant = localStorage.getItem('miniVariant') === 1
     // if (this.$vuetify.breakpoint.smAndDown) {

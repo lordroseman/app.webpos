@@ -3,6 +3,7 @@
     <v-card class="mx-auto">
       <v-card-title>
         TXN# {{ txn_number }}
+
         <v-btn
           v-if="editable"
           color="blue-grey"
@@ -15,6 +16,22 @@
           <v-icon right dark> mdi-circle-edit-outline </v-icon>
         </v-btn>
         <v-spacer />
+
+        <v-btn v-if="form.printed !== 1" rounded @click="print">
+          <v-icon>mdi-printer</v-icon>
+          Print
+        </v-btn>
+        <v-btn
+          v-else
+          rounded
+          color="green"
+          title="Reprint Transaction?"
+          dark
+          @click="print"
+        >
+          <v-icon>mdi-printer</v-icon>
+          Printed
+        </v-btn>
 
         <v-chip
           v-if="form.status == 1"
@@ -278,6 +295,20 @@
       @addLabel="(label) => labels.unshift(label)"
       @added="(payment) => payments.push(payment)"
     />
+    <v-dialog
+      v-model="showReport"
+      fullscreen
+      hide-overlay
+      transition="dialog-bottom-transition"
+    >
+      <report-viewer
+        :show-report.sync="showReport"
+        :src="pdfSrc"
+        @print="transactionPrinted"
+      >
+        <template #title> TRANSACTION REPORT </template>
+      </report-viewer>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -328,6 +359,8 @@ export default {
         city: {},
         barangay: {},
         payment_option: {},
+        printed: null,
+        date_printed: null,
       }),
       details: [],
       payments: [],
@@ -335,6 +368,8 @@ export default {
       labels: [],
       showAddPayment: false,
       txn_number: '#NEW#',
+      pdfSrc: '',
+      showReport: false,
     }
   },
 
@@ -460,6 +495,32 @@ export default {
               this.snackbar = true
             }
           })
+      }
+    },
+    print() {
+      this.pdfSrc = '/laravel/api/report/transaction/' + this.form.id
+      this.showReport = true
+    },
+    transactionPrinted() {
+      if (this.form.printed !== 1) {
+        const transaction = new this.$api.Transaction({
+          id: this.form.id,
+          transaction: {
+            printed: null,
+            date_printed: null,
+          },
+        })
+
+        transaction.transaction.printed = 1
+        transaction.transaction.date_printed = this.formatDate(
+          new Date(),
+          'yyyy-MM-dd'
+        )
+        transaction.save().then((resp) => {
+          this.form.printed = resp.transaction.printed
+          this.form.date_printed = resp.transaction.date_printed
+          this.form.confirmChanges()
+        })
       }
     },
   },

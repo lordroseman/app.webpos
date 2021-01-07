@@ -7,7 +7,7 @@ export default function ({ $axios, $auth }) {
       console.log(error)
       // redirect('/sorry')
     } else if (error.response.status === 401) {
-      $auth.logout()
+      // $auth.logout()
     }
   })
 }

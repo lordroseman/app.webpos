@@ -45,8 +45,8 @@
                 @click:append="show = !show"
                 @keypress.enter="login"
               />
-              <v-alert v-if="hasError" type="error" dense>
-                Invalid credentials
+              <v-alert v-if="serverOffline" type="error" dense>
+                Error: Gateway Timeout! Server is offline
               </v-alert>
             </v-form>
           </v-card-text>
@@ -91,6 +91,8 @@ export default {
       hasError: false,
       loading: false,
       errors: new Errors(),
+      generalError: '',
+      serverOffline: false,
     }
   },
   methods: {
@@ -121,8 +123,15 @@ export default {
           .catch((error, resp) => {
             if (error.response.status === 422) {
               this.errors.record(error.response.data)
-            } else {
-              alert(error.message)
+            } else if (error.response.status === 403) {
+              this.errors.record({
+                errors: {
+                  username: 'Invalid Credentials',
+                },
+                message: 'Invalid Credentials',
+              })
+            } else if (error.response.status === 504) {
+              this.serverOffline = true
             }
 
             this.loading = false

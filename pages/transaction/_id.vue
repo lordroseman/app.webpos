@@ -5,9 +5,21 @@
         TXN# {{ txn_number }}
         <v-spacer />
 
-        <v-btn rounded>
+        <v-btn v-if="form.printed !== 1" rounded @click="print">
           <v-icon>mdi-printer</v-icon>
           Print
+        </v-btn>
+
+        <v-btn
+          v-else
+          rounded
+          color="green"
+          title="Reprint Transaction?"
+          dark
+          @click="print"
+        >
+          <v-icon>mdi-printer</v-icon>
+          Printed
         </v-btn>
 
         <v-chip
@@ -290,6 +302,21 @@
         </v-btn>
       </template>
     </v-snackbar>
+    <v-dialog
+      v-model="showReport"
+      fullscreen
+      hide-overlay
+      transition="dialog-bottom-transition"
+    >
+      <report-viewer
+        :show-report.sync="showReport"
+        :src="pdfSrc"
+        :params="rptParam"
+        @print="transactionPrinted"
+      >
+        <template #title> TRANSACTION REPORT </template>
+      </report-viewer>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -313,12 +340,14 @@ export default {
         'customer',
         'payments',
         'barangay',
-        'city',
-        'labels.label'
+        'city'
       )
       .first()
 
-    return { data: resp }
+    const transaction = new $api.Transaction({ id: params.id })
+    const labels = await transaction.labels().get()
+
+    return { data: resp, labels }
   },
   data() {
     return {
@@ -341,6 +370,8 @@ export default {
         city: {},
         barangay: {},
         payment_option: {},
+        printed: null,
+        date_printed: null,
       }),
       details: [],
       payments: [],
@@ -351,9 +382,11 @@ export default {
       snackbar: null,
       hasBeenDeleted: false,
       txn_number: '#NEW#',
+      pdfSrc: '',
+      showReport: false,
+      rptParam: null,
     }
   },
-
   computed: {
     ...mapState({
       active_store: (state) => state.app.store,
@@ -439,7 +472,6 @@ export default {
       this.form.set(data)
       this.details = data.details
       this.payments = data.payments
-      this.labels = data.labels
       this.history = data.history
       this.txn_number = data.txn_number
     },
@@ -499,10 +531,43 @@ export default {
           })
       }
     },
+    print() {
+      this.pdfSrc = '/laravel/api/report'
+      this.rptParam = {
+        controls: {
+          id: this.form.id,
+        },
+        report: 'Transaction',
+        id: this.form.id,
+      }
+
+      this.showReport = true
+    },
+    transactionPrinted() {
+      if (this.form.printed !== 1) {
+        const transaction = new this.$api.Transaction({
+          id: this.form.id,
+          transaction: {
+            printed: null,
+            date_printed: null,
+          },
+        })
+
+        transaction.transaction.printed = 1
+        transaction.transaction.date_printed = this.formatDate(
+          new Date(),
+          'yyyy-MM-dd'
+        )
+        transaction.save().then((resp) => {
+          this.form.printed = resp.printed
+          this.form.date_printed = resp.date_printed
+          this.form.confirmChanges()
+        })
+      }
+    },
   },
   head: {
     title: 'Transaction',
   },
 }
 </script>
-q

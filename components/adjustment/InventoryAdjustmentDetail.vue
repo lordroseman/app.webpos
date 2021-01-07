@@ -5,6 +5,10 @@
         Inventory Adjustment :: {{ id }}
       </span>
       <v-spacer />
+      <v-btn v-if="form.status === 2" rounded @click="print">
+        <v-icon>mdi-printer</v-icon>
+        Print
+      </v-btn>
       <div v-if="viewers.length > 0">
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
@@ -267,6 +271,21 @@
         </v-btn>
       </template>
     </v-snackbar>
+
+    <v-dialog
+      v-model="showReport"
+      fullscreen
+      hide-overlay
+      transition="dialog-bottom-transition"
+    >
+      <report-viewer
+        :show-report.sync="showReport"
+        :params="rptParam"
+        :src="pdfSrc"
+      >
+        <template #title> INVENTORY ADJUSTMENT REPORT </template>
+      </report-viewer>
+    </v-dialog>
   </v-card>
 </template>
 
@@ -333,6 +352,9 @@ export default {
       snackbarText: '',
       viewers: [],
       deleted: false,
+      showReport: false,
+      pdfSrc: '',
+      rptParam: null,
     }
   },
   validations: {
@@ -623,7 +645,9 @@ export default {
     },
     setForm() {
       if (!isEmpty(this.data)) {
-        this.form.set(this.data)
+        const data = this.data
+        data.date = this.formatDate(this.data.date, 'yyyy-MM-dd')
+        this.form.set(data)
         this.detailsLoading = true
         this.$axios
           .get('/laravel/api/inventory_adjustment/' + this.data.id)
@@ -776,6 +800,18 @@ export default {
         .leaving((user) => {
           this.viewers = reject(this.viewers, (i) => i.id === user.id)
         })
+    },
+    print() {
+      this.pdfSrc = '/laravel/api/report'
+      this.rptParam = {
+        controls: {
+          id: this.form.id,
+        },
+        report: 'InventoryAdjustment',
+        id: this.form.id,
+      }
+
+      this.showReport = true
     },
   },
 }
