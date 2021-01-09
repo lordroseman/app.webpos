@@ -70,7 +70,7 @@
             </v-alert>
           </v-card-text>
           <pdf
-            v-if="show"
+            v-if="show || statusTxt === ''"
             ref="pdf"
             :src="pdfSrc"
             :page="page"
