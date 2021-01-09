@@ -57,7 +57,7 @@
               </div>
             </v-card-text>
           </template>
-          <v-card-text v-else-if="statusTxt !== 'OK'">
+          <v-card-text v-else-if="statusTxt !== 'OK' && statusTxt !== ''">
             <v-alert type="error" prominen>
               <div>
                 {{ statusTxt }}

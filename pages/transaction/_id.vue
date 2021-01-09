@@ -535,7 +535,7 @@ export default {
       this.pdfSrc = '/laravel/api/report'
       this.rptParam = {
         controls: {
-          id: this.form.id,
+          transaction_id: this.form.id,
         },
         report: 'Transaction',
         id: this.form.id,

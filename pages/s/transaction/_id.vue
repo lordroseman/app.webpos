@@ -304,6 +304,7 @@
       <report-viewer
         :show-report.sync="showReport"
         :src="pdfSrc"
+        :params="rptParam"
         @print="transactionPrinted"
       >
         <template #title> TRANSACTION REPORT </template>
@@ -370,6 +371,7 @@ export default {
       txn_number: '#NEW#',
       pdfSrc: '',
       showReport: false,
+      rptParam: null,
     }
   },
 
@@ -498,7 +500,15 @@ export default {
       }
     },
     print() {
-      this.pdfSrc = '/laravel/api/report/transaction/' + this.form.id
+      this.pdfSrc = '/laravel/api/report'
+      this.rptParam = {
+        controls: {
+          transaction_id: this.form.id,
+        },
+        report: 'Transaction',
+        id: this.form.id,
+      }
+
       this.showReport = true
     },
     transactionPrinted() {
