@@ -25,3 +25,43 @@ ul {
   left: 0;
   background: url('/bg1.jpg') no-repeat center center;
 }
+
+
+.v-dialog--scrollable .theme--light .v-card__text::-webkit-scrollbar {
+  width: 10px;
+}
+
+.v-dialog--scrollable .theme--light .v-card__text::-webkit-scrollbar-track {
+  background: #e6e6e645;
+}
+
+.v-dialog--scrollable .theme--light .v-card__text::-webkit-scrollbar-thumb {
+  background: #b0b0b0;
+  border: solid 3px #e6e6e6;
+  border-radius: 7px;
+}
+
+.v-dialog--scrollable .theme--light .v-card__text::-webkit-scrollbar-thumb:hover {
+  background: #686464;
+  border: solid 3px #e6e6e645;
+}
+
+.v-dialog--scrollable .theme--dark .v-card__text::-webkit-scrollbar {
+  width: 10px;
+}
+
+.v-dialog--scrollable .theme--dark .v-card__text::-webkit-scrollbar-track {
+  background: #202020;
+  border-left: 1px solid #2c2c2c;
+}
+
+.v-dialog--scrollable .theme--dark .v-card__text::-webkit-scrollbar-thumb {
+  background: #3e3e3e;
+  border: solid 3px #202020;
+  border-radius: 7px;
+}
+
+.v-dialog--scrollable .theme--dark .v-card__text::-webkit-scrollbar-thumb:hover {
+  background: white;
+}
+

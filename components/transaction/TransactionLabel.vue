@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="px-0">
     <v-combobox
       v-model="selected_label"
       :items="labels"
@@ -45,10 +45,12 @@
             >
               {{ tlabel.label.title }}
             </v-chip>
-            <span class="text--secondary text-caption mt-1 ml-auto"
-              >{{ tlabel.user ? tlabel.user.name : '' }} •
-              {{ tlabel.date_time }}</span
-            >
+            <div class="text--secondary text-caption mt-1 ml-auto">
+              {{ tlabel.user ? tlabel.user.name : '' }}
+            </div>
+            <div class="text--secondary text-caption ml-auto">
+              {{ tlabel.date_time }}
+            </div>
           </div>
           <div class="text-caption text--secondary font-italic">
             {{ tlabel.remarks }}

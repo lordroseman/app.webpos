@@ -22,7 +22,7 @@
             {{ item.item_unit.title || 'n/a' }}
           </div>
         </v-col>
-        <v-col cols="12" sm="6">
+        <v-col v-if="item.pivot" cols="12" sm="6">
           <div>
             <span class="text--medium">Selling Price:</span>
             {{ item.pivot ? toCurrency(item.pivot.selling_price) : 'n/a' }}

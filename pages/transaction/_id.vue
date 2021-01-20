@@ -41,7 +41,7 @@
       </v-card-title>
 
       <v-row>
-        <v-col cols="12" md="4" order-md="last" class="pr-10">
+        <v-col cols="12" md="3" order-md="last" class="pr-10 px-0">
           <transaction-label
             :paid="balance <= 0"
             :transaction="form.originalData"
@@ -51,7 +51,7 @@
             @setDriver="setDriver"
           />
         </v-col>
-        <v-col cols="12" md="8" class="d-flex">
+        <v-col cols="12" md="9" class="d-flex">
           <div>
             <v-row>
               <v-col cols="12" sm="6">
@@ -110,12 +110,10 @@
                           ? form.driver.fname + ' ' + form.driver.lname
                           : 'No Driver'
                       }}</v-list-item-title>
-                      <v-list-item-subtitle
-                        >{{ form.driver ? form.driver.vehicle_id : 'n/a' }} •
-                        {{
-                          form.driver ? form.driver.driver_license : 'n/a'
-                        }}</v-list-item-subtitle
-                      >
+                      <v-list-item-subtitle>
+                        {{ form.driver ? form.driver.vehicle_id : 'n/a' }} •
+                        {{ form.driver ? form.driver.driver_license : 'n/a' }}
+                      </v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item two-line>

@@ -1,7 +1,7 @@
 <template>
   <v-card flat color="#525659" class="pb-3">
     <v-toolbar dark color="primary" dense>
-      <v-btn icon dark @click="close">
+      <v-btn v-if="isDialog" icon dark @click="close">
         <v-icon>mdi-close</v-icon>
       </v-btn>
       <v-toolbar-title>
@@ -33,7 +33,7 @@
       </v-btn>
     </v-toolbar>
 
-    <div class="d-flex-inline">
+    <div class="d-flex-inline" style="height: calc(100% - 48); overflow: auto">
       <div :style="`width: ${width}%`" class="mx-auto pb-3">
         <div
           v-if="loadedRatio > 0 && loadedRatio < 1"
@@ -47,6 +47,7 @@
           flat
           class="mt-3"
           :loading="statusTxt == 'loading'"
+          :height="800"
         >
           <template v-if="statusTxt == 'loading'">
             <v-card-text>
@@ -57,8 +58,19 @@
               </div>
             </v-card-text>
           </template>
+          <template v-if="statusTxt == 'empty'">
+            <v-card-text>
+              <v-alert type="info" prominent>
+                <div>
+                  {{ statusTxt }}
+                </div>
+                <v-divider class="my-3 error" />
+                <div>Report is empty, please generate report.</div>
+              </v-alert>
+            </v-card-text>
+          </template>
           <v-card-text v-else-if="statusTxt !== 'OK' && statusTxt !== ''">
-            <v-alert type="error" prominen>
+            <v-alert type="error" prominent>
               <div>
                 {{ statusTxt }}
               </div>
@@ -82,25 +94,28 @@
           ></pdf>
         </v-card>
       </div>
-    </div>
-    <div
-      class="d-flex justify-end"
-      style="position: fixed; bottom: 100px; right: 20px"
-    >
-      <div>
-        <div class="mb-2">
-          <v-btn fab x-small @click="toggleFullScreen">
-            <v-icon v-if="fullscreen" title="Fit to page"
-              >mdi-fullscreen-exit</v-icon
-            >
-            <v-icon v-else title="Fit to width">mdi-fullscreen</v-icon>
-          </v-btn>
-        </div>
-        <div class="mb-2">
-          <v-btn fab x-small @click="zoom(10)">+</v-btn>
-        </div>
-        <div class="mb-2">
-          <v-btn fab x-small @click="zoom(-10)">-</v-btn>
+
+      <div style="position: relative">
+        <div
+          class="d-flex justify-end"
+          style="position: sticky; bottom: 100px; right: 20px"
+        >
+          <div>
+            <div class="mb-2">
+              <v-btn fab x-small @click="toggleFullScreen">
+                <v-icon v-if="fullscreen" title="Fit to page"
+                  >mdi-fullscreen-exit</v-icon
+                >
+                <v-icon v-else title="Fit to width">mdi-fullscreen</v-icon>
+              </v-btn>
+            </div>
+            <div class="mb-2">
+              <v-btn fab x-small @click="zoom(10)">+</v-btn>
+            </div>
+            <div class="mb-2">
+              <v-btn fab x-small @click="zoom(-10)">-</v-btn>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -126,6 +141,10 @@ export default {
       type: Object,
       default: () => {},
     },
+    isDialog: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
@@ -138,7 +157,7 @@ export default {
       objectUrl: null,
       fullscreen: false,
       width: 50,
-      statusTxt: 'loading',
+      statusTxt: 'empty',
     }
   },
   watch: {
@@ -159,9 +178,18 @@ export default {
         this.show = true
       }
     },
+    params: {
+      handler() {
+        this.destroyPdf()
+        this.loadPDF()
+      },
+      deep: true,
+    },
   },
   mounted() {
-    this.loadPDF()
+    if (this.isDialog) {
+      this.loadPDF()
+    }
   },
   methods: {
     close() {
@@ -194,13 +222,14 @@ export default {
             console.log(
               `this.numPages: ${this.numPages} pdf.numPages: ${xpdf.numPages} `
             )
-            // eslint-disable-next-line no-console
-            console.log(this)
           })
+
+          this.$emit('loaded')
         })
         .catch((error) => {
           // eslint-disable-next-line no-console
           console.log('error', error)
+          this.$emit('error', error)
         })
     },
     error(err) {

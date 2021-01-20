@@ -1,11 +1,10 @@
-/* eslint-disable no-console */
 <template>
   <v-card>
     <v-card-title>
       <span class="headline">Item Ledger :: {{ activeItem.sku }}</span>
       <v-spacer />
     </v-card-title>
-    <v-card-text style="height: 800px" class="px-0 overflow-y-hidden">
+    <v-card-text style="height: 800px" class="px-0">
       <div class="px-3">
         <item-card :item="activeItem" />
       </div>
@@ -27,60 +26,59 @@
         />
       </div>
       <v-divider />
-      <v-scrollable :height="'515px'">
-        <v-skeleton-loader
-          ref="skeleton"
-          type="table-tbody"
-          class="mx-auto"
-          :loading="skelLoading"
-        >
-          <v-data-table
-            :headers="colHeaders"
-            :items="ledger"
-            :search="search"
-            show-expand
-            single-expand
-            :options.sync="options"
-            :server-items-length="total"
-            :loading="loading"
-            @item-expanded="expandItem"
-          >
-            <template v-if="$vuetify.breakpoint.smAndDown" #body>
-              <div></div>
-            </template>
-            <template #[`item.reference`]="{ item }">
-              {{ item.reference_doc }} #{{ item.reference_id }}
-            </template>
-            <template #[`item.qty_in`]="{ item }">
-              {{ toNumberFormat(item.qty_in) }}
-            </template>
-            <template #[`item.qty_out`]="{ item }">
-              {{ toNumberFormat(item.qty_out) }}
-            </template>
 
-            <template v-slot:expanded-item="{ headers, item }">
-              <td :colspan="headers.length" class="py-1">
-                <v-skeleton-loader :loading="expandLoading" type="article" flat>
-                  <template v-if="expandedItem">
-                    <template v-if="item.reference_doc === 'Transaction'">
-                      <transaction-quick-view :transaction="expandedItem" />
-                    </template>
-                    <template v-else>
-                      <adjustment-quick-view :adjustment="expandedItem" />
-                    </template>
+      <v-skeleton-loader
+        ref="skeleton"
+        type="table-tbody"
+        class="mx-auto"
+        :loading="skelLoading"
+      >
+        <v-data-table
+          :headers="colHeaders"
+          :items="ledger"
+          :search="search"
+          show-expand
+          single-expand
+          :options.sync="options"
+          :server-items-length="total"
+          :loading="loading"
+          @item-expanded="expandItem"
+        >
+          <template v-if="$vuetify.breakpoint.smAndDown" #body>
+            <div></div>
+          </template>
+          <template #[`item.reference`]="{ item }">
+            {{ item.reference_doc }} #{{ item.reference_id }}
+          </template>
+          <template #[`item.qty_in`]="{ item }">
+            {{ toNumberFormat(item.qty_in) }}
+          </template>
+          <template #[`item.qty_out`]="{ item }">
+            {{ toNumberFormat(item.qty_out) }}
+          </template>
+
+          <template v-slot:expanded-item="{ headers, item }">
+            <td :colspan="headers.length" class="py-1">
+              <v-skeleton-loader :loading="expandLoading" type="article" flat>
+                <template v-if="expandedItem">
+                  <template v-if="item.reference_doc === 'Transaction'">
+                    <transaction-quick-view :transaction="expandedItem" />
                   </template>
-                </v-skeleton-loader>
-              </td>
-            </template>
-            <template v-if="hasFilters" #top>
-              <v-btn text x-small class="ml-2" @click="filters = {}">
-                <v-icon x-small> mdi-close-circle </v-icon>
-                Clear current search query, filters, and sort
-              </v-btn>
-            </template>
-          </v-data-table>
-        </v-skeleton-loader>
-      </v-scrollable>
+                  <template v-else>
+                    <adjustment-quick-view :adjustment="expandedItem" />
+                  </template>
+                </template>
+              </v-skeleton-loader>
+            </td>
+          </template>
+          <template v-if="hasFilters" #top>
+            <v-btn text x-small class="ml-2" @click="filters = {}">
+              <v-icon x-small> mdi-close-circle </v-icon>
+              Clear current search query, filters, and sort
+            </v-btn>
+          </template>
+        </v-data-table>
+      </v-skeleton-loader>
       <item-ledger-filter :show.sync="showFilter" :filters.sync="filters" />
     </v-card-text>
     <v-card-actions class="pt-0">
@@ -167,6 +165,7 @@ export default {
   },
   mounted() {
     // this.loadLedger(this)
+    this.ledger = []
     this.skelLoading = false
     this.loading = false
   },
