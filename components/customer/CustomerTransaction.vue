@@ -19,10 +19,7 @@
           color="grey lighten-3"
         >
           <div class="d-flex">
-            <v-list-item
-              two-line
-              @click="$router.push('/transaction/' + transaction.id)"
-            >
+            <v-list-item two-line @click="goToTransaction(transaction.id)">
               <v-list-item-content>
                 <v-list-item-title class="d-flex">
                   <b class="mr-auto"> Trans # {{ transaction.txn_number }} </b>
@@ -129,6 +126,13 @@ export default {
           this.loading = false
           this.skelLoading = false
         })
+    },
+    goToTransaction(id) {
+      const access = this.$auth.user.access_level
+      if (access === 1) {
+        this.$router.push('/transaction/' + id)
+      }
+      this.$router.push('/s/transaction/' + id)
     },
   },
 }

@@ -8,6 +8,7 @@ export const state = () => ({
   transactionDeletingStatus: 0,
 
   errors: {},
+  response: null,
   message: '',
   status: {
     1: { label: 'Open', color: 'success' },
@@ -38,6 +39,7 @@ export const actions = {
     this.$axios
       .post('/laravel/api/transaction', data)
       .then((response) => {
+        commit('setResponse', response.data)
         commit('setMessage', 'Transaction was added successfully')
         commit('setTransactionSendingStatus', 2)
         commit('pushTransaction', response.data)
@@ -58,6 +60,7 @@ export const actions = {
     this.$axios
       .put('/laravel/api/transaction/' + payload.id, payload.data)
       .then((response) => {
+        commit('setResponse', response.data)
         commit('setMessage', 'Transaction was updated successfully')
         commit('setTransactionSendingStatus', 2)
         commit('updateTransaction', response.data.transaction)
@@ -131,6 +134,13 @@ export const mutations = {
    */
   setErrors(state, errors) {
     state.errors = errors
+  },
+
+  /**
+   *  set Errors
+   */
+  setResponse(state, response) {
+    state.response = response
   },
 
   /**

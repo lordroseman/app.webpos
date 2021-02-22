@@ -1,178 +1,145 @@
 <template>
   <div>
-    <order-list
-      :ordered-items.sync="orderedItems"
-      :form.sync="form"
-      :mode="mode"
-      @removeItem="removeItem"
-      @undoItem="undoItem"
-      @applyChanges="applyChanges"
-    />
+    <order-list :form.sync="form" :mode="mode" @applyChanges="applyChanges" />
 
-    <category-list
-      :categories="categories"
-      @selectCategory="selected_category = $event"
-    />
-
-    <v-container>
-      <v-skeleton-loader
-        :loading="loading"
-        :type="loadingType"
-        class="d-flex flex-row justify-space-between flex-wrap"
+    <v-tabs
+      v-model="current_tab"
+      light
+      grow
+      background-color="white"
+      hide-slider
+      :color="color.primary"
+      class="fixed-tabs-bar"
+      :show-arrows="false"
+    >
+      <v-tab
+        v-for="category in categories"
+        :key="category.id"
+        :href="`#${category.id}`"
+        @click="
+          $vuetify.goTo(`#cat_${category.id}`, {
+            container: '#scrolling',
+          })
+        "
       >
-        <v-data-iterator
-          :items="filteredItems"
-          :search="search"
-          :sort-by="sortBy.toLowerCase()"
-          :sort-desc="sortDesc"
-          hide-default-footer
-          style="width: 100%"
-        >
-          <template #no-data>
-            <span class="white--text">No Item found</span>
-          </template>
-          <template #no-results>
-            <span class="white--text">No matching items found</span>
-          </template>
-          <template v-slot:header>
-            <v-toolbar class="mb-1" flat color="transparent">
-              <v-text-field
-                v-model="search"
-                clearable
-                flat
-                solo-inverted
-                hide-details
-                hide-default-footer
-                color="white"
-              >
-                <template #label
-                  ><span class="white--text">Search</span>
-                </template>
-                <template #prepend-inner
-                  ><v-icon color="white">mdi-magnify</v-icon>
-                </template>
-              </v-text-field>
-              <template v-if="$vuetify.breakpoint.mdAndUp">
-                <v-spacer />
-                <v-btn-toggle v-model="sortDesc" mandatory>
-                  <v-btn large depressed :value="false">
-                    <v-icon>mdi-arrow-up</v-icon>
-                  </v-btn>
-                  <v-btn large depressed :value="true">
-                    <v-icon>mdi-arrow-down</v-icon>
-                  </v-btn>
-                </v-btn-toggle>
-              </template>
-              <v-btn icon>
-                <v-icon>mdi-clipboard-text-multiple</v-icon>
-              </v-btn>
-            </v-toolbar>
-          </template>
+        {{ category.title }}
+      </v-tab>
+    </v-tabs>
+    <v-divider />
 
-          <template v-slot:default="props">
+    <v-container fluid>
+      <v-scrollable id="scrolling" :height="`calc(100vh - 128px)`">
+        <v-card v-if="loading" flat tile>
+          <v-card-text>
+            <v-skeleton-loader type="heading"></v-skeleton-loader>
             <v-row>
-              <v-col
-                v-for="item in props.items"
-                :key="`${item.name}_${item.id}`"
-                cols="12"
-                sm="6"
-                lg="4"
-                xl="3"
-              >
-                <v-hover
-                  v-slot:default="{ hover }"
-                  open-delay="100"
-                  style="cursor: pointer"
-                >
-                  <v-card
-                    :elevation="cardElevation(hover, item)"
-                    height="250"
-                    class="d-flex flex-column"
-                    @click="addItem(item)"
-                  >
-                    <v-card-text
-                      style="height: 180px"
-                      class="d-flex align-space-between flex-column no-select"
-                    >
-                      <div>
-                        <v-img
-                          lazy-src="'/preload.jpg'"
-                          :src="
-                            item.img
-                              ? `data:${item.image_mime};base64,${item.image_base64}`
-                              : '/preload.jpg'
-                          "
-                          height="125"
-                          contain
-                          class="grey darken-4"
-                        />
-                      </div>
-                      <div class="mt-auto pt-2">
-                        <h2 class="text-center font-weight-medium">
-                          {{ item.name }}
-                        </h2>
-                      </div>
-                    </v-card-text>
-                    <v-divider />
-                    <v-card-actions
-                      :ripple="false"
-                      class="no-select"
-                      @click.stop
-                    >
-                      <div class="d-flex" style="width: 100%">
-                        <div class="mt-2">
-                          <h3 class="subtitle text-center font-weight-medium">
-                            {{ toCurrency(item.pivot.selling_price) }}
-                          </h3>
-                        </div>
-                        <div class="ml-auto" style="width: 50%">
-                          <v-text-field
-                            :ref="`${item.id}_qty`"
-                            v-model="item.quantity"
-                            label="Quantity"
-                            outlined
-                            :value="
-                              item.quantity
-                                ? item.quantity
-                                : (item.quantity = 1)
-                            "
-                            dense
-                            type="number"
-                            :max="item.pivot.inventory"
-                            min="0"
-                            :hint="`Avail qty: ${toNumberFormat(
-                              item.pivot.inventory
-                            )}`"
-                            :persistent-hint="true"
-                            :ripple="false"
-                            :rules="[
-                              () =>
-                                item.pivot.inventory > 0 ||
-                                'Item not available ',
-                            ]"
-                            :suffix="item.item_unit.abbrev"
-                            @click.stop
-                            @keypress.enter="addItem(item)"
-                          />
-                        </div>
-                      </div>
-                    </v-card-actions>
-                  </v-card>
-                </v-hover>
+              <v-col v-for="n in 3" :key="n" cols="12" lg="4" md="6">
+                <v-row>
+                  <v-col cols="12" sm="8">
+                    <v-skeleton-loader type="article"></v-skeleton-loader>
+                  </v-col>
+                  <v-col cols="12" sm="4">
+                    <v-skeleton-loader
+                      type="image"
+                      height="100"
+                    ></v-skeleton-loader>
+                  </v-col>
+                </v-row>
               </v-col>
             </v-row>
+          </v-card-text>
+        </v-card>
+
+        <v-sheet
+          v-else
+          v-scroll:#scrolling="onScroll"
+          :color="$vuetify.theme.isDark ? 'grey darken-3' : 'grey lighten-3'"
+          class="pb-1"
+        >
+          <template v-for="category in categories">
+            <v-card
+              :key="`cat_${category.id}`"
+              :ref="`cat_${category.id}`"
+              flat
+              tile
+              class="mb-3"
+            >
+              <v-card-title
+                :id="`cat_${category.id}`"
+                v-intersect="onIntersect"
+                :data-cat-id="category.id"
+              >
+                {{ category.title }}
+              </v-card-title>
+              <v-card-text class="px-0">
+                <v-row>
+                  <v-col
+                    v-for="item in category.items"
+                    :key="`item_${item.id}`"
+                    cols="12"
+                    xl="4"
+                    lg="6"
+                  >
+                    <v-card
+                      class="no-select"
+                      :disabled="item.pivot.inventory - getCartQty(item) < 1"
+                      :flat="item.pivot.inventory - getCartQty(item) < 1"
+                      @click="addToCart(item)"
+                    >
+                      <v-card-text>
+                        <div class="d-flex">
+                          <div>
+                            <div class="title">{{ item.name }}</div>
+                            <div class="subtitle">{{ item.description }}</div>
+                            <div
+                              class="text-h6"
+                              :style="`color:${color.primary}`"
+                            >
+                              {{ toCurrency(item.pivot.selling_price) }}
+                            </div>
+                            <div :style="`color:${color.dark}`">
+                              Avail Qty:
+                              {{
+                                toNumberFormat(
+                                  item.pivot.inventory - getCartQty(item)
+                                )
+                              }}
+                            </div>
+                          </div>
+                          <div class="ml-auto">
+                            <v-badge
+                              :content="getCartQty(item)"
+                              :value="getCartQty(item)"
+                              color="red"
+                              overlap
+                            >
+                              <v-img
+                                contain
+                                :lazy-src="getImage(item)"
+                                max-height="100"
+                                max-width="100"
+                                :src="getImage(item)"
+                              ></v-img>
+                            </v-badge>
+                          </div>
+                        </div>
+                      </v-card-text>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
           </template>
-        </v-data-iterator>
-      </v-skeleton-loader>
+        </v-sheet>
+      </v-scrollable>
     </v-container>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapState } from 'vuex'
 import { findIndex, reject, isEmpty } from 'lodash'
 import EventBus from '~/components/core/event-bus.js'
-import CategoryList from '~/components/order/CategoryList'
 import OrderList from '~/components/order/OrderList'
 import Form from '~/components/core/Form.js'
 
@@ -186,7 +153,6 @@ export default {
     access_level: 2,
   },
   components: {
-    CategoryList,
     OrderList,
   },
   async asyncData({ $api, params }) {
@@ -204,17 +170,7 @@ export default {
       drawer: true,
       mini: false,
       search: '',
-      filter: {},
-      sortDesc: false,
-      sortBy: 'name',
-      selected_category: null,
-      orderedItems: [],
       counter: 0,
-      rules: {
-        available(item) {
-          return item.pivot.inventory < 1
-        },
-      },
       form: new Form({
         id: null,
         customer: null,
@@ -234,70 +190,52 @@ export default {
         notes: '',
       }),
       mode: 'new',
-      categories: [],
+      current_tab: null,
+      backdoor: 0,
+      currentSection: [],
+      currentScrollPos: 0,
+      scrollDirection: -1,
+      items: [],
+      loading: true,
     }
   },
   computed: {
-    filteredKeys() {
-      return this.keys.filter((key) => key !== 'Name')
-    },
     ...mapState({
       active_store: (state) => state.app.store,
+      color: (state) => state.app.color,
+      cart: (state) => state.cart.cart,
     }),
-    ...mapGetters({
-      items: 'item/getItems',
-      itemsLoadStatus: 'item/getItemsLoadStatus',
-      // categories: 'category/getCategories',
-      categoriesLoadStatus: 'category/getCategoriesLoadStatus',
-    }),
-    loading() {
-      return this.itemsLoadStatus() === 1
-    },
-    filteredItems() {
-      if (this.selected_category == null) {
-        return this.items
-      }
+    categories() {
+      const categories = []
+      if (this.items) {
+        for (const item of this.items) {
+          const category = JSON.parse(JSON.stringify(item.category))
+          // check index
+          const ind = findIndex(categories, (i) => i.id === category.id)
 
-      return this.items.filter((item) => {
-        return item.category_id === this.selected_category.id
-      })
-    },
-    loadingType() {
-      if (this.$vuetify.breakpoint.lgAndUp) {
-        return 'card@12'
-      } else {
-        return 'card@8'
+          if (ind === -1) {
+            category.items = [item]
+            categories.push(category)
+          } else {
+            categories[ind].items.push(item)
+          }
+        }
       }
+      // eslint-disable-next-line no-unused-expressions
+      this.backdoor
+      return categories
     },
   },
   watch: {
     active_store(store, old) {
       this.refresh()
     },
-    orderedItems(val) {
-      EventBus.$emit('updateCartCount', val.length)
-    },
-    items(items) {
-      this.categories = []
-      for (const item of items) {
-        const category = item.category
-
-        // check index
-        const ind = findIndex(this.categories, (i) => i === category.id)
-        if (ind === -1) {
-          this.categories.push(category)
-        }
-      }
+    currentSection(sections) {
+      this.current_tab = sections[0]
     },
   },
   mounted() {
-    if (this.itemsLoadStatus() !== 2) {
-      this.loadItems()
-    }
-    if (this.categoriesLoadStatus() !== 2) {
-      this.loadCategories()
-    }
-
+    this.loadItems()
     this.setData()
   },
   methods: {
@@ -310,35 +248,40 @@ export default {
       EventBus.$emit('update-title', 'TXN#' + data.txn_number)
 
       this.form.set(data)
-      this.orderedItems = data.details.map((obj) => ({
+      const details = data.details.map((obj) => ({
         ...obj,
         _state: '',
         _original: obj,
       }))
+
+      setTimeout(() => {
+        this.$store.dispatch('cart/setCart', details)
+      }, 300)
+
       this.mode = 'edit'
     },
     refresh() {
       this.loadItems()
     },
-    loadItems() {
+    async loadItems() {
       if (this.active_store) {
-        this.$store.dispatch('item/loadStoreItems', this.active_store.id)
+        const _store = new this.$api.Store({ id: this.active_store.id })
+
+        const _items = _store.items()
+        let items = []
+        this.loading = true
+        await _items.get().then((response) => {
+          items = response
+        })
+
+        this.items = await items
+        this.loading = false
       }
     },
-    loadCategories() {
-      this.$store.dispatch('category/loadCategories')
-    },
-    addItem(item) {
-      if (item.pivot.inventory < 1) {
-        this.$refs[`${item.id}_qty`][0].focus()
-        this.$refs[`${item.id}_qty`][0].blur()
+    addToCart(item, qty = 1) {
+      if (!item) {
         return
       }
-
-      // check if item exists
-      const ind = findIndex(this.orderedItems, (i) => {
-        return item.id === i.item_id
-      })
 
       const detail = {}
 
@@ -348,52 +291,68 @@ export default {
       detail.item_desc = item.description
       detail.item_cost = item.pivot.cost
       detail.item_price = item.pivot.selling_price
-      detail.item_unit = item.item_unit.title
-      detail.quantity = Number(item.quantity || 1)
+      detail.discount_type = null
+      detail.discount_value = null
+      detail.discount_amount = 0
+      detail.item_unit = item.item_unit.abbrev
+      detail.quantity = qty
+      detail.action = 1
+      detail.instructions = ''
 
-      if (detail.quantity > item.pivot.inventory) {
-        detail.quantity = item.pivot.inventory
+      detail.line_total = Number(detail.quantity) * Number(detail.item_price)
+      detail._state = 'new'
+
+      this.$store.dispatch('cart/addToCart', detail)
+
+      let inv = item.pivot.inventory - qty
+      // find item
+
+      if (qty > inv) {
+        item.quantity = inv
       }
-
-      let inv = item.pivot.inventory - item.quantity
-
       if (inv < 0) {
         inv = 0
       }
+      // const itemPayload = {
+      //   id: item.id,
+      //   pivot: { inventory: inv },
+      // }
 
-      this.$store.dispatch('item/updateItem', {
-        id: item.id,
-        pivot: { inventory: inv },
+      // this.updateItem(itemPayload)
+    },
+    updateItem(data) {
+      const ind = findIndex(this.items, (r) => {
+        return r.id === data.id
       })
 
-      if (ind > -1) {
-        this.orderedItems[ind].quantity += parseFloat(detail.quantity)
-        this.orderedItems[ind].line_total =
-          Number(this.orderedItems[ind].quantity) * Number(detail.item_price)
-        if (['', undefined].includes(this.orderedItems[ind]._state)) {
-          this.orderedItems[ind]._state = 'edited'
+      const item = this.items[ind]
+
+      for (const prop in data) {
+        if (prop === 'pivot') {
+          for (const pivotProp in data[prop]) {
+            item[prop][pivotProp] = data[prop][pivotProp]
+          }
+        } else {
+          item[prop] = data[prop]
         }
-      } else {
-        detail.line_total = Number(detail.quantity) * Number(detail.item_price)
-        detail._state = 'new'
-        this.orderedItems.push(detail)
       }
+      this.backdoor++
     },
     removeItem(item) {
       // check if item exists
-      const ind = findIndex(this.orderedItems, (i) => {
+      const ind = findIndex(this.cart, (i) => {
         return item.item_id === i.item_id
       })
 
       if (ind > -1) {
-        const detail = this.orderedItems[ind]
+        const detail = this.cart[ind]
 
         if (detail._state === 'new') {
-          this.orderedItems = reject(this.orderedItems, (i) => {
+          this.cart = reject(this.cart, (i) => {
             return i.item_id === item.item_id
           })
         } else {
-          this.orderedItems[ind]._state = 'deleted'
+          this.cart[ind]._state = 'deleted'
         }
       }
     },
@@ -419,17 +378,54 @@ export default {
     applyChanges() {
       this.form.confirmChanges()
 
-      this.orderedItems = reject(this.orderedItems, (i) => {
+      this.cart = reject(this.cart, (i) => {
         return i._state === 'deleted'
       })
 
-      for (const row of this.orderedItems) {
+      for (const row of this.cart) {
         row._state = ''
         const copy = Object.assign({}, row)
         delete copy._original
 
         row._original = copy
       }
+    },
+    async onIntersect(entries, observer) {
+      const id = entries[0].target.dataset.catId
+      if (entries[0].isIntersecting) {
+        if (this.scrollDirection === -1) {
+          await this.currentSection.push(id)
+        } else {
+          await this.currentSection.unshift(id)
+        }
+      } else {
+        this.currentSection = await this.currentSection.filter((i) => i !== id)
+      }
+    },
+    onScroll(e) {
+      if (e.target.scrollTop > this.currentScrollPos) {
+        this.scrollDirection = -1
+      } else {
+        this.scrollDirection = 1
+      }
+      this.currentScrollPos = e.target.scrollTop
+    },
+    getCartQty(item) {
+      const ind = this.cart.findIndex((i) => i.item_id === item.id)
+
+      if (ind > -1) {
+        return this.cart[ind]._state !== 'deleted'
+          ? this.cart[ind].quantity
+          : null
+      } else {
+        return null
+      }
+    },
+    backItem(item, qty = 1) {
+      // const ind = findIndex(this.items, (r) => {
+      //   return r.id === item.item_id
+      // })
+      // this.items[ind].pivot.inventory = this.items[ind].pivot.inventory + qty
     },
   },
   head() {
@@ -460,5 +456,12 @@ export default {
 
 .d-flex .v-skeleton-loader__card {
   width: 200px !important;
+}
+
+.fixed-tabs-bar .v-tabs__bar {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 4rem;
+  z-index: 2;
 }
 </style>

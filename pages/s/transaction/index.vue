@@ -308,6 +308,7 @@ export default {
         .then((result) => {
           if (result.value) {
             this.$swal.fire('Deleted!', 'Item  has been deleted.', 'success')
+            this.removeTransaction(transaction)
           }
         })
     },
@@ -333,6 +334,11 @@ export default {
 
           this.transactions.splice(ind, 1)
         })
+    },
+    removeTransaction(data) {
+      const ind = this.transactions.findIndex((i) => i.id === data.id)
+
+      this.transactions.splice(ind, 1)
     },
   },
   head: {

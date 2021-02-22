@@ -3,6 +3,12 @@ export const state = () => ({
   drawer: true,
   miniVariant: false,
   navHeader: '',
+  color: {
+    primary: '#C32B33',
+    secondary: '#F8E85B',
+    dark: '#161514',
+    pink: '#E4949C',
+  },
   labels: [
     {
       id: 1,

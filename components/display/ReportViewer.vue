@@ -1,6 +1,6 @@
 <template>
   <v-card flat color="#525659" class="pb-3">
-    <v-toolbar dark color="primary" dense>
+    <v-toolbar dark :color="color.primary" dense>
       <v-btn v-if="isDialog" icon dark @click="close">
         <v-icon>mdi-close</v-icon>
       </v-btn>
@@ -69,7 +69,11 @@
               </v-alert>
             </v-card-text>
           </template>
-          <v-card-text v-else-if="statusTxt !== 'OK' && statusTxt !== ''">
+          <v-card-text
+            v-else-if="
+              statusTxt !== 'OK' && statusTxt !== '' && statusTxt !== 'loading'
+            "
+          >
             <v-alert type="error" prominent>
               <div>
                 {{ statusTxt }}
@@ -124,6 +128,7 @@
 
 <script>
 import pdf from 'vue-pdf'
+import { mapState } from 'vuex'
 export default {
   components: {
     pdf,
@@ -159,6 +164,11 @@ export default {
       width: 50,
       statusTxt: 'empty',
     }
+  },
+  computed: {
+    ...mapState({
+      color: (state) => state.app.color,
+    }),
   },
   watch: {
     showReport(value) {

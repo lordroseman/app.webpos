@@ -1,21 +1,13 @@
 <template>
   <div>
-    <div class="bg"></div>
     <v-app>
-      <v-scrollable :height="'calc(100vh - 36px)'">
-        <appbar />
+      <appbar />
 
-        <!-- Provides the application the proper gutter -->
-        <v-main>
-          <div v-if="hasActiveStore" class="mask" />
-
-          <router-view />
-        </v-main>
-      </v-scrollable>
-      <v-footer app dense>
-        <v-spacer />
-        <div>&copy; {{ new Date().getFullYear() }} DSSC</div>
-      </v-footer>
+      <!-- Provides the application the proper gutter -->
+      <v-main>
+        <div v-if="hasActiveStore" class="mask" />
+        <router-view />
+      </v-main>
     </v-app>
   </div>
 </template>
@@ -37,6 +29,11 @@ export default {
     }),
     hasActiveStore() {
       return isNull(this.active_store)
+    },
+    showFooter() {
+      const page = ['s-order-id']
+
+      return page.findIndex((i) => i === this.$route.name) === -1
     },
   },
 }

@@ -52,7 +52,7 @@
           </v-card-text>
           <v-card-actions>
             <v-btn
-              color="success"
+              color="pink darken-1"
               :loading="loading"
               dark
               block
@@ -79,6 +79,7 @@ import FormValidationMixins from '~/plugins/FormValidationMixins.vue'
 import Errors from '~/components/core/Errors.js'
 
 export default {
+  layout: 'auth',
   name: 'LoginPage',
   mixins: [FormValidationMixins],
   data() {
@@ -155,7 +156,6 @@ export default {
   head: {
     title: 'Login',
   },
-  layout: 'login',
   validations: {
     form: {
       username: {

@@ -1,12 +1,21 @@
 /* eslint-disable vue/no-v-html */
 <template>
   <v-card>
-    <v-card-title>
-      <span id="header" class="headline">Order Details</span>
-    </v-card-title>
+    <v-toolbar dark :color="color.primary">
+      <v-toolbar-title> Order Details </v-toolbar-title>
+      <v-spacer />
+      <v-btn icon dark @click="close">
+        <v-icon color="white">mdi-close</v-icon>
+      </v-btn>
+    </v-toolbar>
     <v-card-text class="overflow-y-hidden px-0">
       <v-scrollable :height="scrollHeight">
-        <v-container id="order_detail_modal" ref="modal-container" class="px-5">
+        <v-container
+          id="order_detail_modal"
+          ref="modal-container"
+          fluid
+          class="px-5"
+        >
           <v-row>
             <v-col cols="12" sm="6">
               <span class="subtitle">CUSTOMER DETAILS</span>
@@ -332,6 +341,7 @@ export default {
       citiesLoadStatus: (state) => state.city.citiesLoadStatus,
       barangays: (state) => state.barangay.barangays,
       barangaysLoadStatus: (state) => state.barangay.barangaysLoadStatus,
+      color: (state) => state.app.color,
     }),
     showUndoImg() {
       return isEmpty(this.form.img) && !isEmpty(this.form.originalData.img)
@@ -469,6 +479,10 @@ export default {
           text: this.form.customer.email + ' ' + this.form.customer.full_name,
         },
       ]
+      this.form.customer.name = this.form.customer.full_name
+      this.form.customer.text =
+        this.form.customer.email + ' ' + this.form.customer.full_name
+      // this.search = this.form.customer.full_name
     }
   },
   methods: {

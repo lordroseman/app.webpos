@@ -27,7 +27,7 @@
             {{ otherError }}
           </h2>
         </div>
-        <NuxtLink to="/">Go TO Dashboard</NuxtLink>
+        <NuxtLink to="/">Go TO Home</NuxtLink>
       </div>
     </div>
   </div>

@@ -16,7 +16,6 @@
               <v-icon left>mdi-checkbox-multiple-marked-circle-outline </v-icon>
               <span class="d-none d-md-block">Transactions</span>
             </v-tab>
-
             <v-tab-item value="addresses">
               <v-divider />
               <customer-address

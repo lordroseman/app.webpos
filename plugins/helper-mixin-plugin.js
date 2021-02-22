@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import { format, parseISO } from 'date-fns'
-import { padStart, findIndex } from 'lodash'
+import { padStart, findIndex, isEmpty } from 'lodash'
 
 if (!Vue.__helper__mixin__) {
   Vue.__helper__mixin__ = true
@@ -24,8 +24,15 @@ if (!Vue.__helper__mixin__) {
           return new Intl.NumberFormat('en-PH', {
             style: 'decimal',
             maximumFractionDigits: 2,
-            minimumFractionDigits: 2,
+            minimumFractionDigits: 0,
           }).format(value)
+        }
+      },
+      toFixed(val) {
+        if (val) {
+          return Number(val.toFixed(2))
+        } else {
+          return 0
         }
       },
       parseDate(date) {
@@ -83,6 +90,16 @@ if (!Vue.__helper__mixin__) {
         min = Math.ceil(min)
         max = Math.floor(max)
         return Math.floor(Math.random() * (max - min + 1)) + min
+      },
+      getImage(item) {
+        if (item.img) {
+          return 'data: ' + item.image_mime + ';base64, ' + item.image_base64
+        } else {
+          return '/preload.png'
+        }
+      },
+      isEmpty(val) {
+        return isEmpty(val)
       },
     },
   })

@@ -9,12 +9,12 @@
           tile
         >
           <div
-            style="height: 100px; width: 130px"
+            style="height: 100px; width: 100px"
             class="mr-1 ml-3 br-1 d-none d-md-block"
           >
             <v-img
               :height="100"
-              :width="130"
+              :width="100"
               contain
               lazy-src="/preload.png"
               :src="getImg(detail.item) || '/preload.png'"
@@ -24,14 +24,77 @@
             <div class="title">
               {{ detail.item_name }}
             </div>
-            <div class="subtitle">
+            <div>
               {{ detail.item_desc }}
             </div>
             <div>
               <span class="text--disabled">Qty:</span>
               x{{ detail.quantity }} {{ detail.item_unit }} @
-              <span class="text--disabled">Price:</span>
-              {{ toCurrency(detail.item_price) }}
+              <template v-if="isEmpty(detail.discount_value)">
+                <span class="text--disabled">Price:</span>
+                {{ toCurrency(detail.item_price) }}
+              </template>
+              <template v-else>
+                <span class="text--disabled">Price:</span>
+                <v-menu
+                  :close-on-content-click="false"
+                  :nudge-width="200"
+                  offset-x
+                  open-on-hover
+                >
+                  <template #activator="{ attrs, on }">
+                    <span v-bind="attrs" v-on="on">
+                      <span class="text-decoration-line-through">
+                        {{ toCurrency(detail.item_price) }}
+                      </span>
+                      <span>
+                        {{
+                          toCurrency(detail.item_price - detail.discount_amount)
+                        }}
+                      </span>
+                    </span>
+                  </template>
+                  <v-card>
+                    <v-card-title>
+                      Discounted Price
+                      {{
+                        toCurrency(detail.item_price - detail.discount_amount)
+                      }}
+                    </v-card-title>
+                    <v-divider />
+                    <v-card-text class="text--primary">
+                      <div class="d-flex">
+                        <span>Original Price :</span>
+                        <span class="ml-auto">
+                          {{ toCurrency(detail.item_price) }}
+                        </span>
+                      </div>
+                      <div class="d-flex">
+                        <span>Discount Type:</span>
+                        <span class="ml-auto">{{ detail.discount_type }} </span>
+                      </div>
+                      <div class="d-flex">
+                        <span>Discount Value:</span>
+                        <span class="ml-auto"
+                          >{{ toCurrency(detail.discount_value) }}
+                        </span>
+                      </div>
+                      <div class="d-flex">
+                        <span>Discount Amount:</span>
+                        <span class="ml-auto"
+                          >{{ toCurrency(detail.discount_amount) }}
+                        </span>
+                      </div>
+                    </v-card-text>
+                  </v-card>
+                </v-menu>
+              </template>
+            </div>
+            <div class="caption">
+              If product is not available, {{ actions[detail.action] }}
+            </div>
+            <div v-if="detail.instructions" class="caption">
+              {{ detail.instructions }}
             </div>
           </div>
           <div class="my-auto">
@@ -51,7 +114,7 @@
           text
           x-small
           block
-          @click="$router.push('/transaction/' + details[0].transaction_id)"
+          @click="goToTransaction(details)"
         >
           View more items
         </v-btn>
@@ -84,6 +147,12 @@ export default {
         { text: 'Total', value: 'line_total', align: 'end' },
       ],
       search: null,
+      actions: [
+        '',
+        'Remove it from my order',
+        'Cancel entire order',
+        'Call me',
+      ],
     }
   },
   methods: {
@@ -94,6 +163,13 @@ export default {
 
       const img = `data:${item.image_mime};base64,${item.image_base64}`
       return img
+    },
+    goToTransaction(details) {
+      const access = this.$auth.user.access_level
+      if (access === 1) {
+        this.$router.push('/transaction/' + details[0].transaction_id)
+      }
+      this.$router.push('/s/transaction/' + details[0].transaction_id)
     },
   },
 }

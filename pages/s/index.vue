@@ -131,15 +131,15 @@ export default {
     OrderCard,
   },
   async asyncData({ $api, store }) {
-    const activeStore = store.state.app.store
-
-    const transactions = await $api.Transaction.custom('transaction/search')
-      .where('store', activeStore ? activeStore.id : -1)
-      // .where('today', 'today')
-      .include('details', 'labels')
-      .get()
-
-    return { transactions }
+    // const activeStore = store.state.app.store
+    // // eslint-disable-next-line no-console
+    // console.log(activeStore)
+    // const transactions = await $api.Transaction.custom('transaction/search')
+    //   .where('store', activeStore ? activeStore.id : -1)
+    //   // .where('today', 'today')
+    //   .include('details', 'labels')
+    //   .get()
+    // return { transactions }
   },
   data() {
     return {
@@ -155,6 +155,8 @@ export default {
       store: (state) => state.app.store,
     }),
     upcoming() {
+      // eslint-disable-next-line no-unused-expressions
+      this.backdoor
       try {
         return this.transactions.filter((i) => i.status === 0)
       } catch (e) {
@@ -162,6 +164,8 @@ export default {
       }
     },
     open() {
+      // eslint-disable-next-line no-unused-expressions
+      this.backdoor
       try {
         const open = this.transactions.filter((i) => i.status === 1)
 
@@ -171,6 +175,8 @@ export default {
       }
     },
     close() {
+      // eslint-disable-next-line no-unused-expressions
+      this.backdoor
       try {
         return this.transactions.filter((i) => i.status === 2)
       } catch (e) {
@@ -200,18 +206,22 @@ export default {
   },
   mounted() {
     this.listen()
+    this.refresh()
   },
   methods: {
     async refresh() {
-      const transactions = await this.$api.Transaction.custom(
-        'transaction/search'
-      )
-        .where('store', this.store ? this.store.id : -1)
-        // .where('today', 'today')
-        .include('details', 'labels')
-        .get()
+      if (this.store) {
+        const transactions = await this.$api.Transaction.custom(
+          'transaction/search'
+        )
+          .where('store', this.store.id)
+          .where('today', 'today')
+          .include('details', 'labels')
+          .get()
 
-      this.transactions = transactions.data
+        this.transactions = transactions
+        this.backdoor++
+      }
     },
     listen() {
       if (!this.store) {

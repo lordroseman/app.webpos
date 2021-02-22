@@ -26,7 +26,6 @@
             item-text="name"
             append-outer-icon="mdi-plus"
             width="50%"
-            hide-selected
             :search-input.sync="search_item"
             @click:append-outer="addItem"
           />
@@ -93,6 +92,7 @@ export default {
       itemsLoading: false,
       selected_item: null,
       search_item: null,
+      backdoor: 0,
     }
   },
   validations: {
@@ -138,7 +138,8 @@ export default {
     },
     item_options() {
       const availItems = []
-
+      // eslint-disable-next-line no-unused-expressions
+      this.backdoor
       for (const row of this.item_list) {
         const ind = findIndex(this.items, (i) => {
           return i.id === row.id
@@ -301,10 +302,11 @@ export default {
       if (this.selected_item == null) {
         return
       }
-
+      this.backdoor++
       const item = {
         item_id: this.selected_item.id,
         name: this.selected_item.name,
+        id: this.selected_item.id,
         pivot: {
           selling_price: 0,
           cost: 0,
