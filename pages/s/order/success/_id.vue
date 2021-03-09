@@ -217,7 +217,7 @@ MODE OF PAYMENT : ${this.transaction.payment_option.name}
 ${details}
 ---------------------
 TOTAL AMOUNT: ${this.toCurrency(this.transaction.total_amount)}
-NOTES: ${this.transaction.notes}
+NOTES: ${this.transaction.notes || 'N/A'}
       `
 
       textarea.value = text

@@ -1,80 +1,138 @@
 <template>
   <v-card>
-    <v-card-title>
-      <span class="headline">{{ formTitle }}</span>
-    </v-card-title>
+    <v-img
+      height="250"
+      :src="imgUrl"
+      :aspect-ratio="16 / 9"
+      gradient="to top right, rgba(100,115,201,.33), rgba(25,32,72,.7)"
+    >
+      <div class="d-flex flex-column" style="height: 250px">
+        <div>
+          <v-app-bar flat color="transparent">
+            <v-toolbar-title class="title white--text pl-0"> </v-toolbar-title>
+
+            <v-spacer></v-spacer>
+
+            <v-btn class="text-none" rounded depressed @click="onButtonClick">
+              <v-icon left> mdi-camera </v-icon>
+              Upload Photo
+            </v-btn>
+            <v-btn
+              class="text-none ml-2"
+              rounded
+              color="primary"
+              depressed
+              @click="save"
+            >
+              <v-icon left> mdi-content-save </v-icon>
+              Save
+            </v-btn>
+            <input
+              ref="uploader"
+              class="d-none"
+              type="file"
+              accept="image/*"
+              @change="onFileChanged"
+            />
+          </v-app-bar>
+        </div>
+        <div class="mt-auto">
+          <v-tabs v-model="tab" fixed-tabs background-color="transparent" dark>
+            <v-tab href="#info"> Store Information </v-tab>
+            <v-tab href="#items"> Store Items </v-tab>
+          </v-tabs>
+        </div>
+      </div>
+    </v-img>
+
     <v-card-text>
-      <v-text-field
-        v-model="form.name"
-        label="Name"
-        :error-messages="errors.getAll('name') || errors.getAll('store.name')"
-        required
-        autocomplete="off"
-        :readonly="!editable"
-      />
-      <v-divider />
-
-      <v-row v-if="editable" class="my-0">
-        <v-col cols="12" sm="6" class="py-0">
-          <v-spacer />
-          <v-combobox
-            v-model="selected_item"
-            :items="item_options"
-            label="Select Item"
-            required
-            autocomplete="off"
-            item-text="name"
-            append-outer-icon="mdi-plus"
-            width="50%"
-            :search-input.sync="search_item"
-            @click:append-outer="addItem"
+      <v-tabs-items v-model="tab">
+        <v-tab-item value="info">
+          <v-row>
+            <v-col cols="12" sm="6">
+              <v-text-field
+                v-model="form.name"
+                label="Name"
+                :error-messages="
+                  errors.getAll('name') || errors.getAll('store.name')
+                "
+                required
+                autocomplete="off"
+                :readonly="!editable" />
+              <v-textarea
+                v-model="form.address"
+                label="Address"
+                :error-messages="
+                  errors.getAll('address') || errors.getAll('store.address')
+                "
+                auto-grow
+                rows="1"
+              ></v-textarea
+            ></v-col>
+            <v-col cols="12" sm="6">
+              <address-map
+                id="store_address"
+                :lat="form.geo_location_lat"
+                :lng="form.geo_location_long"
+                :height="350"
+                @click="setLatLng"
+              ></address-map>
+            </v-col>
+          </v-row>
+        </v-tab-item>
+        <v-tab-item value="items">
+          <v-row v-if="editable" class="my-0">
+            <v-col cols="12" sm="6" class="py-0">
+              <v-spacer />
+              <v-combobox
+                v-model="selected_item"
+                :items="item_options"
+                label="Select Item"
+                required
+                autocomplete="off"
+                item-text="name"
+                append-outer-icon="mdi-plus"
+                width="50%"
+                :search-input.sync="search_item"
+                @click:append-outer="addItem"
+              />
+            </v-col>
+          </v-row>
+          <store-item
+            :store="form.id"
+            :store-items.sync="items"
+            :editable="editable"
+            :loading="itemsLoading"
+            @undoChanges="undoChanges"
           />
-        </v-col>
-      </v-row>
-
-      <store-item
-        :store="form.id"
-        :store-items.sync="items"
-        :editable="editable"
-        :loading="itemsLoading"
-        @undoChanges="undoChanges"
-      />
-
-      <v-dialog v-model="sending" hide-overlay persistent width="300">
-        <v-card color="primary" dark>
-          <v-card-text>
-            Saving...
-            <v-progress-linear indeterminate color="white" class="mb-0" />
-          </v-card-text>
-        </v-card>
-      </v-dialog>
+        </v-tab-item>
+      </v-tabs-items>
     </v-card-text>
-
-    <v-card-actions>
-      <v-spacer />
-      <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
-      <v-btn v-if="editable" color="blue darken-1" text @click="save">
-        Save
-      </v-btn>
-    </v-card-actions>
+    <v-dialog v-model="sending" hide-overlay persistent width="300">
+      <v-card color="primary" dark>
+        <v-card-text>
+          Saving...
+          <v-progress-linear indeterminate color="white" class="mb-0" />
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-card>
 </template>
 
 <script>
 import { required } from 'vuelidate/lib/validators'
-import { mapGetters, mapState } from 'vuex'
+import { mapState } from 'vuex'
 import { findIndex, reject, isEmpty, isNull } from 'lodash'
 import FormValidationMixins from '~/plugins/FormValidationMixins.vue'
 import Errors from '~/components/core/Errors'
 import Form from '~/components/core/Form'
-import Store from '~/models/Store'
 
 export default {
   mixins: [FormValidationMixins],
   props: {
-    data: {
-      type: Object,
-      default: null,
+    id: {
+      type: String,
+      default: 'new',
     },
     show: {
       type: Boolean,
@@ -83,9 +141,19 @@ export default {
   },
   data() {
     return {
+      tab: {
+        active: 'info',
+        data: [
+          { id: 'info', title: 'Store Information' },
+          { id: 'items', title: 'Store Items' },
+        ],
+      },
       form: new Form({
         id: null,
         name: '',
+        address: '',
+        geo_location_lat: null,
+        geo_location_long: null,
       }),
       items: [],
       errors: new Errors(),
@@ -93,6 +161,11 @@ export default {
       selected_item: null,
       search_item: null,
       backdoor: 0,
+      selectedFile: null,
+      imgUrl: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
+      defaultImg: 'https://cdn.vuetifyjs.com/images/cards/cooking.png',
+      imgChanged: false,
+      storeSendingStatus: 0,
     }
   },
   validations: {
@@ -103,13 +176,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters({
-      storeSendingStatus: 'store/getStoreSendingStatus',
-    }),
     ...mapState({
-      response_errors: (state) => state.store.errors,
-      response_message: (state) => state.store.message,
-      response_data: (state) => state.store.response,
       item_list: (state) => state.item.items,
       itemsLoadStatus: (state) => state.item.itemsLoadStatus,
     }),
@@ -119,7 +186,6 @@ export default {
     formTitle() {
       return this.form.id ? 'Edit Store' : 'New Store'
     },
-
     sending() {
       return false
     },
@@ -171,9 +237,6 @@ export default {
     },
   },
   watch: {
-    data(val) {
-      this.setForm()
-    },
     selected_item(val) {
       if (val) {
         this.addItem()
@@ -188,7 +251,6 @@ export default {
   },
 
   created() {
-    this.setForm()
     const vue = this
     this.$store.watch(
       this.$store.getters['store/getStoreSendingStatus'],
@@ -197,28 +259,14 @@ export default {
 
         if (val === 3) {
           vue.errors.record(vue.response_errors)
-          vue.$swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: vue.response_errors.message,
-            footer: '<a href>Why do I have this issue?</a>',
-          })
         } else if (val === 2) {
-          vue.$swal.fire({
-            position: 'top-end',
-            icon: 'success',
-            title: vue.response_message,
-            showConfirmButton: false,
-            timer: 1500,
-          })
-
-          vue.applychanges()
           // vue.close();
         }
       }
     )
   },
   mounted() {
+    this.setForm()
     this.loadItems()
   },
   methods: {
@@ -228,15 +276,20 @@ export default {
       }
     },
     setForm() {
-      if (!isEmpty(this.data)) {
-        this.form.set(this.data)
+      if (this.id !== 'new') {
         this.itemsLoading = true
-        Store.find(this.data.id)
+        this.$api.Store.find(this.id)
           .then((resp) => {
             this.form.set({
               id: resp.id,
               name: resp.name,
+              address: resp.address,
+              geo_location_lat: resp.geo_location_lat,
+              geo_location_long: resp.geo_location_long,
+              img: null,
             })
+
+            this.imgUrl = resp.image || this.defaultImg
             this.items = []
             for (const item of resp.items) {
               item._original = JSON.parse(JSON.stringify(item))
@@ -247,16 +300,24 @@ export default {
           .finally(() => {
             this.itemsLoading = false
           })
+          .catch((error) => {
+            this.clear()
+            this.showErrorMessage(error)
+          })
       }
     },
-    close() {
+    setLatLng(data) {
+      this.form.geo_location_lat = data.lat
+      this.form.geo_location_long = data.lng
+    },
+    clear() {
       this.form.clear()
       this.$v.$reset()
       this.items = []
-      this.$emit('close')
+      this.imgUrl = this.defaultImg
     },
     save() {
-      if (this.storeSendingStatus() === 1) {
+      if (this.storeSendingStatus === 1) {
         return
       }
 
@@ -268,22 +329,105 @@ export default {
 
       if (!this.$v.$invalid) {
         if (isNull(this.form.id)) {
-          this.$store.dispatch('store/addStore', this.params)
+          this.postNewStore()
         } else {
-          this.$store.dispatch('store/editStore', {
-            id: this.form.id,
-            data: this.params,
-          })
+          this.editStore()
         }
       }
     },
-    applychanges() {
+    postNewStore() {
+      const formdata = new FormData()
+
+      if (this.imgChanged) {
+        formdata.append('image', this.selectedFile)
+      }
+
+      for (const key in this.params) {
+        formdata.append(key, JSON.stringify(this.params[key]))
+      }
+
+      this.$axios
+        .post('/laravel/api/store', formdata, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+        .then((response) => {
+          this.applychanges(response.data)
+          this.$swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: 'Store successfuly added!',
+            showConfirmButton: false,
+            timer: 1500,
+          })
+        })
+        .catch((error) => {
+          this.showErrorMessage(error)
+          return error
+        })
+    },
+    editStore() {
+      // eslint-disable-next-line no-console
+      console.log('edit')
+      const formdata = new FormData()
+
+      if (this.imgChanged) {
+        formdata.append('image', this.selectedFile)
+      }
+
+      for (const key in this.params) {
+        formdata.append(key, JSON.stringify(this.params[key]))
+      }
+
+      this.$axios
+        .post('/laravel/api/store/' + this.form.id, formdata, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+        .then((response) => {
+          this.applychanges(response.data)
+          this.$swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: 'Store successfuly saved!',
+            showConfirmButton: false,
+            timer: 1500,
+          })
+        })
+        .catch((error) => {
+          this.showErrorMessage(error)
+          return error
+        })
+    },
+    showErrorMessage(error) {
+      let message = 'Unknown error occured!'
+      if ('message' in error) {
+        message = error.message
+      }
+
+      this.$swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: message,
+        footer: '<a href>Why do I have this issue?</a>',
+      })
+
+      // eslint-disable-next-line no-console
+      console.log(error)
+    },
+    applychanges(response) {
+      this.imgChanged = false
+      this.selectedFile = null
+      // eslint-disable-next-line no-console
+      console.log(response)
       if (this.form.hasChanges()) {
-        this.form.id = this.response_data.store.id
+        this.form.id = response.store.id
         this.form.confirmChanges()
       }
 
-      if ('items' in this.response_data) {
+      if ('items' in response) {
         for (const item of this.items) {
           if (item._state === 'new') {
             item._state = ''
@@ -325,6 +469,15 @@ export default {
       this.items[ind].pivot.selling_price = item._original.pivot.selling_price
       this.items[ind].pivot.cost = item._original.pivot.cost
       this.items[ind]._state = ''
+    },
+    onButtonClick() {
+      this.$refs.uploader.click()
+    },
+    onFileChanged(e) {
+      this.selectedFile = e.target.files[0]
+      this.imgUrl = URL.createObjectURL(this.selectedFile)
+      this.imgChanged = true
+      // do something
     },
   },
 }

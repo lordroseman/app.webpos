@@ -13,7 +13,7 @@
         <v-btn
           v-else
           rounded
-          color="green"
+          color="teal"
           title="Reprint Transaction?"
           dark
           @click="print"

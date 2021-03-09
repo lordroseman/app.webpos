@@ -25,7 +25,7 @@
           <v-btn
             v-else
             rounded
-            color="green"
+            color="teal"
             title="Reprint Transaction?"
             dark
             @click="print"
@@ -100,10 +100,10 @@
                         <v-icon>mdi-calendar</v-icon>
                       </v-list-item-avatar>
                       <v-list-item-content>
-                        <v-list-item-title
-                          >Deliver by:
-                          {{ form.delivery_date }}</v-list-item-title
-                        >
+                        <v-list-item-title>
+                          Deliver by:
+                          {{ form.delivery_date }}
+                        </v-list-item-title>
                       </v-list-item-content>
                     </v-list-item>
                     <v-list-item two-line>
@@ -116,12 +116,10 @@
                             ? form.driver.fname + ' ' + form.driver.lname
                             : 'No Driver'
                         }}</v-list-item-title>
-                        <v-list-item-subtitle
-                          >{{ form.driver ? form.driver.vehicle_id : 'n/a' }} •
-                          {{
-                            form.driver ? form.driver.driver_license : 'n/a'
-                          }}</v-list-item-subtitle
-                        >
+                        <v-list-item-subtitle>
+                          {{ form.driver ? form.driver.vehicle_id : 'n/a' }} •
+                          {{ form.driver ? form.driver.driver_license : 'n/a' }}
+                        </v-list-item-subtitle>
                       </v-list-item-content>
                     </v-list-item>
                     <v-list-item two-line>

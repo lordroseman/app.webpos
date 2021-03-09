@@ -2,25 +2,17 @@
   <v-container fluid class="px-0 px-md-5">
     <v-card class="mx-auto">
       <v-card-title>
-        <v-dialog v-model="dialog" max-width="800px" persistent>
-          <template v-slot:activator="{ on }">
-            <v-btn
-              v-if="$can('Store:Add')"
-              color="success"
-              dark
-              class="mb-2"
-              rounded
-              v-on="on"
-            >
-              <v-icon>mdi-plus</v-icon>New Store
-            </v-btn>
-          </template>
-          <store-form
-            :data.sync="selected_store"
-            :show="dialog"
-            @close="closeForm"
-          />
-        </v-dialog>
+        <v-btn
+          v-if="$can('Store:Add')"
+          color="success"
+          dark
+          class="mb-2"
+          rounded
+          @click="$router.push('/store/new')"
+        >
+          <v-icon>mdi-plus</v-icon>New Store
+        </v-btn>
+
         <v-spacer />
         <v-spacer />
         <v-text-field
@@ -86,10 +78,11 @@ import { mapGetters, mapState } from 'vuex'
 export default {
   meta: {
     label: 'Store',
-    permission: 'Customer:View',
+    permission: 'Store:View',
   },
   data() {
     return {
+      tab: null,
       headers: [
         {
           text: 'Name',
@@ -135,8 +128,7 @@ export default {
       this.$store.dispatch('store/loadStores')
     },
     edit(store) {
-      this.selected_store = store
-      this.dialog = true
+      this.$router.push('/store/' + store.id)
     },
     remove(store) {
       this.$swal
@@ -174,10 +166,6 @@ export default {
             this.$swal.fire('Deleted!', 'Store has been deleted.', 'success')
           }
         })
-    },
-    closeForm() {
-      this.dialog = false
-      this.selected_store = {}
     },
   },
   head: {

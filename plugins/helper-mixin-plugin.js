@@ -101,6 +101,15 @@ if (!Vue.__helper__mixin__) {
       isEmpty(val) {
         return isEmpty(val)
       },
+      imageToDataUrl(imgSrc) {
+        const canvas = document.createElement('canvas')
+        const context = canvas.getContext('2d')
+        const image = new Image()
+        image.src = imgSrc
+        context.drawImage(image, 0, 0)
+
+        return canvas.toDataURL()
+      },
     },
   })
 }

@@ -124,7 +124,7 @@ export default {
       const marker = new google.maps.Marker({
         position,
         map,
-        draggable: true,
+        draggable: !this.disableMarker,
         // eslint-disable-next-line no-undef
         animation: google.maps.Animation.DROP,
       })
