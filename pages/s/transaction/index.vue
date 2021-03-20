@@ -48,7 +48,17 @@
               {{ status[item.status].label }}
             </v-chip>
           </template>
-
+          <template #[`item.printed`]="{ item }">
+            <v-tooltip v-if="item.printed === 1" right>
+              <template v-slot:activator="{ on }">
+                <v-chip small color="teal" text-color="white" v-on="on">
+                  Printed
+                </v-chip>
+              </template>
+              <span>{{ formatDate(item.date_printed) }}</span>
+            </v-tooltip>
+            <v-chip v-else small> Unprinted </v-chip>
+          </template>
           <template #[`item.actions`]="{ item }">
             <v-hover v-slot:default="{ hover }">
               <v-speed-dial
@@ -61,17 +71,6 @@
                     <v-icon v-if="hover"> mdi-close </v-icon>
                     <v-icon v-else> mdi-cog </v-icon>
                   </v-btn>
-                </template>
-                <template #[`item.printed`]="{ item }">
-                  <v-tooltip v-if="item.printed === 1" right>
-                    <template v-slot:activator="{ on }">
-                      <v-chip small color="teal" text-color="white" v-on="on">
-                        Printed
-                      </v-chip>
-                    </template>
-                    <span>{{ formatDate(item.date_printed) }}</span>
-                  </v-tooltip>
-                  <v-chip v-else small> Unprinted </v-chip>
                 </template>
                 <template v-slot:default class="p-0">
                   <v-btn fab dark x-small color="blue" @click="edit(item)">

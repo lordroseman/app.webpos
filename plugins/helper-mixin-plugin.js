@@ -51,8 +51,12 @@ if (!Vue.__helper__mixin__) {
         if (!date) {
           return null
         }
+
         if (typeof date === 'string') {
           date = parseISO(date)
+        } else if (date.constructor.name === 'Date') {
+        } else {
+          return 'error'
         }
 
         if (!formatStr) {

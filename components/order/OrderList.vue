@@ -2,12 +2,54 @@
   <v-navigation-drawer v-model="drawer" app clipped right width="400">
     <div class="d-flex flex-column">
       <div class="px-3 py-3">
-        <v-dialog v-model="dialog" max-width="80%" persistent scrollable>
-          <template v-slot:activator="{ on }">
-            <v-btn color="blue" dark block large v-on="on">
-              {{ form.customer_name || 'Order Details' }}
+        <v-btn-toggle
+          style="width: 400px"
+          dark
+          active-class=""
+          color="white"
+          background-color="transparent"
+        >
+          <template v-if="!walkin">
+            <v-tooltip left>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  width="50"
+                  color="orange"
+                  v-bind="attrs"
+                  dark
+                  v-on="on"
+                  @click="toggleWalkin"
+                >
+                  <v-icon>mdi-walk</v-icon>
+                </v-btn>
+              </template>
+              <span>Walk In Customer</span>
+            </v-tooltip>
+
+            <v-btn width="325" color="blue" dark @click="dialog = true">
+              {{ form.customer_name || 'SELECT CUSTOMER' }}
             </v-btn>
           </template>
+          <template v-else>
+            <v-tooltip left>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  width="50"
+                  color="blue"
+                  v-bind="attrs"
+                  dark
+                  v-on="on"
+                  @click="toggleWalkin"
+                >
+                  <v-icon>mdi-account-switch</v-icon>
+                </v-btn>
+              </template>
+              <span>Select Customer</span>
+            </v-tooltip>
+            <v-btn width="325" color="orange" dark> WALK-IN CUSTOMER </v-btn>
+          </template>
+        </v-btn-toggle>
+        <v-dialog v-model="dialog" max-width="80%" block persistent scrollable>
           <order-form :show="dialog" :form.sync="form" @close="closeForm" />
         </v-dialog>
       </div>
@@ -136,6 +178,18 @@
         @close="updateCartDialog = false"
       ></update-cart-dialog-agent>
     </v-dialog>
+    <v-dialog
+      v-model="showPaymentDialog"
+      max-width="500"
+      :fullscreen="$vuetify.breakpoint.mobile"
+    >
+      <walkin-payment
+        :payments="payments"
+        :total-amount="form.total_amount"
+        :show-payment-dialog.sync="showPaymentDialog"
+        @savePayment="savePayment"
+      ></walkin-payment>
+    </v-dialog>
   </v-navigation-drawer>
 </template>
 
@@ -162,6 +216,9 @@ export default {
       saving: false,
       updateCartDialog: false,
       updateItem: null,
+      walkin: false,
+      payments: [],
+      showPaymentDialog: false,
     }
   },
   computed: {
@@ -176,6 +233,10 @@ export default {
         params.details = this.cart.filter((i) => {
           return i._state && i._state !== ''
         })
+      }
+
+      if (this.payments.length > 0) {
+        params.payments = this.payments
       }
 
       return params
@@ -193,7 +254,13 @@ export default {
       total: (state) => state.cart.cartTotal,
     }),
     hasCustomer() {
+      if (this.walkin) {
+        return true
+      }
       return this.form && !isEmpty(this.form.customer)
+    },
+    hasPayments() {
+      return this.payments.length > 0
     },
   },
   watch: {
@@ -224,7 +291,7 @@ export default {
         const val = vue.transactionSendingStatus()
 
         if (val === 3) {
-          vue.errors.record(vue.response_errors)
+          // vue.errors.record(vue.response_errors)
           vue.$swal.fire({
             icon: 'error',
             title: 'Oops...',
@@ -251,6 +318,10 @@ export default {
       this.drawer = !this.drawer
     })
   },
+  mounted() {
+    this.walkin = parseInt(localStorage.getItem('walkin')) === 1
+    this.$emit('toggleWalkin', this.walkin)
+  },
   methods: {
     ...mapActions({
       lessCart: 'cart/lessCart',
@@ -276,6 +347,16 @@ export default {
 
       if (this.transactionSendingStatus === 1) {
         return
+      }
+
+      if (this.walkin) {
+        // if walkin check if has payment
+        // include payment in request
+        if (!this.hasPayments) {
+          // show payment dialog
+          this.showPaymentDialog = true
+          return
+        }
       }
 
       if (!this.hasCustomer) {
@@ -308,6 +389,16 @@ export default {
 
       this.updateCartDialog = true
       this.updateItem = item
+    },
+    toggleWalkin() {
+      this.walkin = !this.walkin
+      localStorage.setItem('walkin', this.walkin ? 1 : 0)
+      this.$emit('toggleWalkin', this.walkin)
+    },
+    savePayment(payment) {
+      this.payments = [payment]
+      this.settle()
+      this.showPaymentDialog = false
     },
   },
 }

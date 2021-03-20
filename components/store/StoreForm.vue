@@ -13,7 +13,7 @@
 
             <v-spacer></v-spacer>
 
-            <v-btn class="text-none" rounded depressed @click="onButtonClick">
+            <v-btn class="text-none" rounded depressed @click="onClickUpload">
               <v-icon left> mdi-camera </v-icon>
               Upload Photo
             </v-btn>
@@ -196,7 +196,7 @@ export default {
         param.store = this.form.changedData()
       }
 
-      if (!isEmpty(this.pivotData)) {
+      if (this.itemHasChanges) {
         param.items = this.pivotData
       }
 
@@ -231,6 +231,16 @@ export default {
       }
 
       return data
+    },
+    itemHasChanges() {
+      let changes = false
+      for (const row of this.items) {
+        if (row._state !== '') {
+          changes = true
+        }
+      }
+
+      return changes
     },
     editable() {
       return this.$can('Store:' + this.mode)
@@ -303,6 +313,7 @@ export default {
           .catch((error) => {
             this.clear()
             this.showErrorMessage(error)
+            this.$router.push('/store')
           })
       }
     },
@@ -368,8 +379,6 @@ export default {
         })
     },
     editStore() {
-      // eslint-disable-next-line no-console
-      console.log('edit')
       const formdata = new FormData()
 
       if (this.imgChanged) {
@@ -413,15 +422,11 @@ export default {
         text: message,
         footer: '<a href>Why do I have this issue?</a>',
       })
-
-      // eslint-disable-next-line no-console
-      console.log(error)
     },
     applychanges(response) {
       this.imgChanged = false
       this.selectedFile = null
-      // eslint-disable-next-line no-console
-      console.log(response)
+
       if (this.form.hasChanges()) {
         this.form.id = response.store.id
         this.form.confirmChanges()
@@ -470,7 +475,7 @@ export default {
       this.items[ind].pivot.cost = item._original.pivot.cost
       this.items[ind]._state = ''
     },
-    onButtonClick() {
+    onClickUpload() {
       this.$refs.uploader.click()
     },
     onFileChanged(e) {

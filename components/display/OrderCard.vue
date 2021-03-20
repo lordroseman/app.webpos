@@ -11,11 +11,14 @@
         </div>
 
         <v-list-item-title class="headline mb-1">
-          {{ transaction.customer_name }}
+          {{
+            transaction.walkin ? 'WALK-IN CUSTOMER' : transaction.customer_name
+          }}
         </v-list-item-title>
         <v-list-item-subtitle>
           <template v-for="detail in transaction.details">
-            {{ detail.quantity }} {{ detail.item_unit }} {{ detail.item_name }};
+            {{ toNumberFormat(detail.quantity) }} {{ detail.item_unit }}
+            {{ detail.item_name }};
           </template>
         </v-list-item-subtitle>
       </v-list-item-content>

@@ -33,7 +33,7 @@
       </v-toolbar>
     </div>
 
-    <v-card-text>
+    <v-card-text class="pt-5">
       <div class="text-h6">Discount</div>
       <v-row>
         <v-col cols="12" sm="4">

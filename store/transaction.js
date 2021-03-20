@@ -45,7 +45,7 @@ export const actions = {
         commit('pushTransaction', response.data)
       })
       .catch((errors) => {
-        commit('setErrors', errors.response.data.transaction)
+        commit('setErrors', errors.response.data)
         commit('setTransactionSendingStatus', 3)
       })
   },

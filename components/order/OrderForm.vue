@@ -61,17 +61,17 @@
                       {{ item.name }}
                     </template>
                     <!-- eslint-disable -->
-                  <template #item="{item, parent}">
-                    <v-list-item-content>
-                      <v-list-item-title
-                        v-html="`${parent.genFilteredText(item.name)}`"
-                      />
-                      <v-list-item-subtitle
-                        v-html="`${parent.genFilteredText(item.email)}`"
-                      />
-                    </v-list-item-content>
-                  </template>
-                   <!-- eslint-enable -->
+                    <template #item="{ item, parent }">
+                      <v-list-item-content>
+                        <v-list-item-title
+                          v-html="`${parent.genFilteredText(item.name)}`"
+                        />
+                        <v-list-item-subtitle
+                          v-html="`${parent.genFilteredText(item.email)}`"
+                        />
+                      </v-list-item-content>
+                    </template>
+                    <!-- eslint-enable -->
                   </v-combobox>
                 </v-col>
                 <v-col cols="12" class="py-0">

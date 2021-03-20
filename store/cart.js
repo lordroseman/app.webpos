@@ -22,7 +22,12 @@ export const mutations = {
       }
     }
 
-    state.cartTotal = Number((state.cartTotal + item.item_price).toFixed(2))
+    const cartTotal = state.cartTotal * 100
+    const price = item.item_price * 100
+
+    const total = cartTotal + price
+
+    state.cartTotal = total / 100
     state.cartQty += qty
   },
   lessCart(state, item, qty = 1) {

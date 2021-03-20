@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters, mapState, mapMutations } from 'vuex'
 
 export default {
   meta: {
@@ -124,6 +124,9 @@ export default {
     this.loadStores()
   },
   methods: {
+    ...mapMutations({
+      deleteStore: 'store/deleteStore',
+    }),
     loadStores() {
       this.$store.dispatch('store/loadStores')
     },
@@ -143,27 +146,28 @@ export default {
           showLoaderOnConfirm: true,
           preConfirm: (e) => {
             return new Promise((resolve, reject) => {
-              this.$store.dispatch('store/deleteStore', store.id)
-              const vue = this
-              this.$store.watch(
-                this.$store.getters['store/getStoreDeletingStatus'],
-                function () {
-                  if (vue.storeDeletingStatus() === 2) {
-                    resolve(true)
-                  } else if (vue.storeDeletingStatus() === 3) {
-                    reject(this.errors)
-                    this.$swal.showValidationMessage(
-                      `Request failed: ${this.errors.message}`
-                    )
-                  }
-                }
-              )
+              const deleteStore = new this.$api.Store({ id: store.id })
+              deleteStore
+                .delete(store.id)
+                .then((response) => {
+                  resolve(true)
+                })
+                .catch((errors) => {
+                  this.$swal.showValidationMessage(
+                    `Request failed: Can not delete Store`
+                  )
+                  resolve(false)
+                })
             })
           },
         })
         .then((result) => {
           if (result.value) {
             this.$swal.fire('Deleted!', 'Store has been deleted.', 'success')
+            this.deleteStore(store.id)
+          } else {
+            // eslint-disable-next-line no-console
+            console.log('error ', result)
           }
         })
     },

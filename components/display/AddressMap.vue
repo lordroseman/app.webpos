@@ -71,26 +71,28 @@ export default {
     },
   },
   mounted() {
-    // eslint-disable-next-line no-undef
-    this.map = new google.maps.Map(document.getElementById(this.id), {
-      center: this.defaultLocation,
-      zoom: this.zoom,
-    })
-
-    this.createMarker(this.defaultLocation)
-
-    if (!this.disableMarker) {
-      this.map.addListener('click', (e) => {
-        this.placeMarkerAndPanTo(e.latLng, this.map)
-        this.latLng = {
-          lat: Number(e.latLng.lat().toFixed(8)),
-          lng: Number(e.latLng.lng().toFixed(8)),
-        }
-        this.$emit('click', this.latLng)
+    if (window.google) {
+      // eslint-disable-next-line no-undef
+      this.map = new google.maps.Map(document.getElementById(this.id), {
+        center: this.defaultLocation,
+        zoom: this.zoom,
       })
-    }
 
-    this.resetMap()
+      this.createMarker(this.defaultLocation)
+
+      if (!this.disableMarker) {
+        this.map.addListener('click', (e) => {
+          this.placeMarkerAndPanTo(e.latLng, this.map)
+          this.latLng = {
+            lat: Number(e.latLng.lat().toFixed(8)),
+            lng: Number(e.latLng.lng().toFixed(8)),
+          }
+          this.$emit('click', this.latLng)
+        })
+      }
+
+      this.resetMap()
+    }
   },
   methods: {
     resetMap() {

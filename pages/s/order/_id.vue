@@ -1,6 +1,11 @@
 <template>
   <div>
-    <order-list :form.sync="form" :mode="mode" @applyChanges="applyChanges" />
+    <order-list
+      :form.sync="form"
+      :mode="mode"
+      @applyChanges="applyChanges"
+      @toggleWalkin="toggleWalkin"
+    />
 
     <v-tabs
       v-model="current_tab"
@@ -84,6 +89,7 @@
                       class="no-select"
                       :disabled="item.pivot.inventory - getCartQty(item) < 1"
                       :flat="item.pivot.inventory - getCartQty(item) < 1"
+                      outlined
                       @click="addToCart(item)"
                     >
                       <v-card-text>
@@ -188,6 +194,7 @@ export default {
         total_amount: 0.0,
         status: null,
         notes: '',
+        walkin: '',
       }),
       mode: 'new',
       current_tab: null,
@@ -421,11 +428,18 @@ export default {
         return null
       }
     },
-    backItem(item, qty = 1) {
-      // const ind = findIndex(this.items, (r) => {
-      //   return r.id === item.item_id
-      // })
-      // this.items[ind].pivot.inventory = this.items[ind].pivot.inventory + qty
+    toggleWalkin(walkin) {
+      if (walkin) {
+        this.form.walkin = 1
+        this.form.payment_option_id = 1
+        this.form.delivery_date = this.formatDate(new Date(), 'yyyy-MM-dd')
+        this.form.customer_name = 'WALK-IN CUSTOMER'
+      } else {
+        this.form.walkin = 0
+        this.form.payment_option_id = null
+        this.form.delivery_date = null
+        this.form.notes = ''
+      }
     },
   },
   head() {

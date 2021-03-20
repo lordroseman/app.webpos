@@ -2,7 +2,7 @@
   <v-container fluid class="px-0 px-md-5">
     <v-card class="mx-auto">
       <v-card-title>
-        <v-dialog v-model="dialog" max-width="500px" persistent>
+        <v-dialog v-model="dialog" max-width="500px" persistent scrollable>
           <template v-slot:activator="{ on }">
             <v-btn
               v-if="$can('User:Add')"

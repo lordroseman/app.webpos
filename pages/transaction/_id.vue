@@ -62,11 +62,19 @@
                         <td class="subtitle-2 font-weight-bold">
                           Customer Name
                         </td>
-                        <td>{{ form.customer_name }}</td>
+                        <td>
+                          {{
+                            form.walkin === 1
+                              ? 'WALK-IN CUSTOMER'
+                              : form.customer_name
+                          }}
+                        </td>
                       </tr>
                       <tr>
                         <td class="font-weight-bold">Facebook Name</td>
-                        <td>{{ form.customer.fb_name }}</td>
+                        <td>
+                          {{ form.customer ? form.customer.fb_name : '' }}
+                        </td>
                       </tr>
                     </tbody>
                   </template>
@@ -124,10 +132,10 @@
                       <v-list-item-title>{{
                         form.customer_delivery_address
                       }}</v-list-item-title>
-                      <v-list-item-subtitle
-                        >{{ form.barangay.name }},
-                        {{ form.city.name }}</v-list-item-subtitle
-                      >
+                      <v-list-item-subtitle>
+                        {{ form.barangay ? form.barangay.name : '' }},
+                        {{ form.city ? form.city.name : '' }}
+                      </v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item>
@@ -146,7 +154,7 @@
                     </v-list-item-avatar>
                     <v-list-item-content>
                       <v-list-item-title>{{
-                        form.customer.email
+                        form.customer ? form.customer.email : 'n/a'
                       }}</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
@@ -168,7 +176,7 @@
                   :lat="form.customer_geo_location_lat"
                   :long="form.customer_geo_location_long"
                   :height="400"
-                  :width="800"
+                  :width="500"
                 />
               </v-col>
             </v-row>
@@ -370,6 +378,7 @@ export default {
         payment_option: {},
         printed: null,
         date_printed: null,
+        walkin: null,
       }),
       details: [],
       payments: [],
