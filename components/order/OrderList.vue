@@ -380,6 +380,8 @@ export default {
     },
     clear() {
       this.form.clear()
+      this.form.store_id = this.active_store.id
+      this.form.walkin = this.walkin ? 1 : 0
       this.$store.dispatch('cart/clearCart')
       // eslint-disable-next-line no-console
       console.log('clear cart')

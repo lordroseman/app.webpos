@@ -61,80 +61,85 @@
           :color="$vuetify.theme.isDark ? 'grey darken-3' : 'grey lighten-3'"
           class="pb-1"
         >
-          <template v-for="category in categories">
-            <v-card
-              :key="`cat_${category.id}`"
-              :ref="`cat_${category.id}`"
-              flat
-              tile
-              class="mb-3"
-            >
-              <v-card-title
-                :id="`cat_${category.id}`"
-                v-intersect="onIntersect"
-                :data-cat-id="category.id"
+          <template v-if="categories.length > 0">
+            <template v-for="category in categories">
+              <v-card
+                :key="`cat_${category.id}`"
+                :ref="`cat_${category.id}`"
+                flat
+                tile
+                class="mb-3"
               >
-                {{ category.title }}
-              </v-card-title>
-              <v-card-text class="px-0">
-                <v-row>
-                  <v-col
-                    v-for="item in category.items"
-                    :key="`item_${item.id}`"
-                    cols="12"
-                    xl="4"
-                    lg="6"
-                  >
-                    <v-card
-                      class="no-select"
-                      :disabled="item.pivot.inventory - getCartQty(item) < 1"
-                      :flat="item.pivot.inventory - getCartQty(item) < 1"
-                      outlined
-                      @click="addToCart(item)"
+                <v-card-title
+                  :id="`cat_${category.id}`"
+                  v-intersect="onIntersect"
+                  :data-cat-id="category.id"
+                >
+                  {{ category.title }}
+                </v-card-title>
+                <v-card-text class="px-0">
+                  <v-row>
+                    <v-col
+                      v-for="item in category.items"
+                      :key="`item_${item.id}`"
+                      cols="12"
+                      xl="4"
+                      lg="6"
                     >
-                      <v-card-text>
-                        <div class="d-flex">
-                          <div>
-                            <div class="title">{{ item.name }}</div>
-                            <div class="subtitle">{{ item.description }}</div>
-                            <div
-                              class="text-h6"
-                              :style="`color:${color.primary}`"
-                            >
-                              {{ toCurrency(item.pivot.selling_price) }}
+                      <v-card
+                        class="no-select"
+                        :disabled="item.pivot.inventory - getCartQty(item) < 1"
+                        :flat="item.pivot.inventory - getCartQty(item) < 1"
+                        outlined
+                        @click="addToCart(item)"
+                      >
+                        <v-card-text>
+                          <div class="d-flex">
+                            <div>
+                              <div class="title">{{ item.name }}</div>
+                              <div class="subtitle">{{ item.description }}</div>
+                              <div
+                                class="text-h6"
+                                :style="`color:${color.primary}`"
+                              >
+                                {{ toCurrency(item.pivot.selling_price) }}
+                              </div>
+                              <div :style="`color:${color.dark}`">
+                                Avail Qty:
+                                {{
+                                  toNumberFormat(
+                                    item.pivot.inventory - getCartQty(item)
+                                  )
+                                }}
+                              </div>
                             </div>
-                            <div :style="`color:${color.dark}`">
-                              Avail Qty:
-                              {{
-                                toNumberFormat(
-                                  item.pivot.inventory - getCartQty(item)
-                                )
-                              }}
+                            <div class="ml-auto">
+                              <v-badge
+                                :content="getCartQty(item)"
+                                :value="getCartQty(item)"
+                                color="red"
+                                overlap
+                              >
+                                <v-img
+                                  contain
+                                  :lazy-src="getImage(item)"
+                                  max-height="100"
+                                  max-width="100"
+                                  :src="getImage(item)"
+                                ></v-img>
+                              </v-badge>
                             </div>
                           </div>
-                          <div class="ml-auto">
-                            <v-badge
-                              :content="getCartQty(item)"
-                              :value="getCartQty(item)"
-                              color="red"
-                              overlap
-                            >
-                              <v-img
-                                contain
-                                :lazy-src="getImage(item)"
-                                max-height="100"
-                                max-width="100"
-                                :src="getImage(item)"
-                              ></v-img>
-                            </v-badge>
-                          </div>
-                        </div>
-                      </v-card-text>
-                    </v-card>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-            </v-card>
+                        </v-card-text>
+                      </v-card>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+              </v-card>
+            </template>
+          </template>
+          <template v-else>
+            <div class="text-h6 px-5 text-center">Store has no items.</div>
           </template>
         </v-sheet>
       </v-scrollable>
@@ -195,6 +200,7 @@ export default {
         status: null,
         notes: '',
         walkin: '',
+        store_id: null,
       }),
       mode: 'new',
       current_tab: null,
@@ -236,6 +242,9 @@ export default {
   watch: {
     active_store(store, old) {
       this.refresh()
+      if (store) {
+        this.form.store_id = store.id
+      }
     },
     currentSection(sections) {
       this.current_tab = sections[0]
@@ -249,6 +258,10 @@ export default {
     setData() {
       if (isEmpty(this.data)) {
         EventBus.$emit('update-title', '')
+        if (this.active_store) {
+          this.form.store_id = this.active_store.id
+        }
+
         return
       }
       const data = this.data

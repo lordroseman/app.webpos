@@ -23,11 +23,13 @@
         <div class="notfound-404">
           <h1>Oops!</h1>
           <h2 v-if="error.statusCode === 404">{{ pageNotFound }}</h2>
+          <h2 v-if="error.statusCode === 403">ACCESS FORBIDDEN</h2>
           <h2 v-else>
             {{ otherError }}
           </h2>
         </div>
-        <NuxtLink to="/">Go TO Home</NuxtLink>
+        <div>{{ error.message }}</div>
+        <NuxtLink to="/" class="mt-5">Go TO Home</NuxtLink>
       </div>
     </div>
   </div>
@@ -96,7 +98,7 @@ h1 {
 .notfound .notfound-404 {
   position: relative;
   height: 200px;
-  margin: 0 auto 20px;
+  margin: 0 auto;
   z-index: -1;
 }
 

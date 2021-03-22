@@ -6,7 +6,14 @@
         <v-divider class="mx-4" inset vertical />
         <v-dialog v-model="dialog" max-width="800px" persistent>
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" dark class="mb-2 ml-2" rounded @click="save">
+            <v-btn
+              v-if="$can('Item:Add') || $can('Item:Edit')"
+              color="primary"
+              dark
+              class="mb-2 ml-2"
+              rounded
+              @click="save"
+            >
               <v-icon>mdi-content-save</v-icon>Save
             </v-btn>
 
@@ -267,11 +274,7 @@ export default {
   },
   watch: {
     active_store(newVal, old) {
-      if (newVal.id && old) {
-        if (newVal.id !== old.id) {
-          this.refresh()
-        }
-      }
+      this.refresh()
     },
   },
   mounted() {

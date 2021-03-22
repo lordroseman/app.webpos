@@ -149,6 +149,7 @@ export default {
         delete: 'red',
         print: 'purple',
       },
+      backdoor: 0,
     }
   },
   validations: {
@@ -211,6 +212,7 @@ export default {
         if (this.form.id != null) {
           // update
           this.role.permission = this.permission
+          this.role.name = this.form.name
           this.role.save().then(() => {
             this.$swal.fire({
               position: 'top-end',
@@ -250,12 +252,12 @@ export default {
       if (!this.editable) {
         return
       }
-      // eslint-disable-next-line no-console
-      console.log(module, permission)
+
       this.permission[module] = reject(
         this.permission[module],
         (i) => i === permission
       )
+      this.backdoor++
     },
     removeModule(module) {
       if (!this.editable) {
@@ -271,7 +273,8 @@ export default {
           list.push(perm[1])
         }
       }
-
+      // eslint-disable-next-line no-unused-expressions
+      this.backdoor
       return list
     },
     showItemText(item) {

@@ -39,14 +39,16 @@
 
       <v-spacer />
       <template v-if="!isMobile">
-        <v-btn text exact to="/s"> Dashboard </v-btn>
+        <v-btn v-if="$can('Transaction:View')" text exact to="/s">
+          Dashboard
+        </v-btn>
         <v-menu left bottom offset-y>
           <template v-slot:activator="{ on }">
             <v-btn text :class="transClass" v-on="on"> Transactions </v-btn>
           </template>
 
           <v-list dense>
-            <v-list-item exact to="/s/order">
+            <v-list-item v-if="$can('Transaction:Add')" exact to="/s/order">
               <v-list-item-icon>
                 <v-icon color="green"> mdi-cart-plus </v-icon>
               </v-list-item-icon>
@@ -56,7 +58,11 @@
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item exact to="/s/transaction">
+            <v-list-item
+              v-if="$can('Transaction:View')"
+              exact
+              to="/s/transaction"
+            >
               <v-list-item-icon>
                 <v-icon>mdi-cart</v-icon>
               </v-list-item-icon>
@@ -74,7 +80,7 @@
           </template>
 
           <v-list dense>
-            <v-list-item to="/s/item" exact nuxt>
+            <v-list-item v-if="$can('Item:View')" to="/s/item" exact nuxt>
               <v-list-item-icon>
                 <v-icon>mdi-food</v-icon>
               </v-list-item-icon>
@@ -82,7 +88,12 @@
                 <v-list-item-title> Item </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item to="/s/customer" exact nuxt>
+            <v-list-item
+              v-if="$can('Customer:View')"
+              to="/s/customer"
+              exact
+              nuxt
+            >
               <v-list-item-icon>
                 <v-icon>mdi-account-group</v-icon>
               </v-list-item-icon>
@@ -90,7 +101,12 @@
                 <v-list-item-title> Customer </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item to="/s/inv_adj" exact nuxt>
+            <v-list-item
+              v-if="$can('Inventory Adjustment:View')"
+              to="/s/inv_adj"
+              exact
+              nuxt
+            >
               <v-list-item-icon>
                 <v-icon>mdi-ballot-recount</v-icon>
               </v-list-item-icon>
