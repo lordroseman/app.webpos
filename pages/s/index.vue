@@ -124,7 +124,7 @@ import OrderCard from '~/components/display/OrderCard'
 export default {
   layout: 'StoreLayout',
   meta: {
-    permission: 'Dashboard:View',
+    permission: 'Transaction:View',
     access_level: 2,
   },
   components: {
