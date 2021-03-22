@@ -19,7 +19,7 @@ import Appbar from '~/components/StoreAppBar.vue'
 
 export default {
   name: 'StoreLayout',
-  middleware: ['store'],
+  middleware: ['store', 'permission'],
   components: {
     Appbar,
   },

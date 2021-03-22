@@ -2,7 +2,8 @@
   <v-container fluid class="px-0 px-md-5">
     <v-card class="mx-auto">
       <v-card-title>
-        New Role
+        <template v-if="role">Edit Role</template>
+        <template v-else>New Role </template>
         <v-spacer />
         <v-btn v-if="editable" color="primary" @click="save"> Save </v-btn>
       </v-card-title>

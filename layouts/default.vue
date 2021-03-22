@@ -24,7 +24,7 @@
 // import EventBus from '~/components/core/event-bus.js'
 
 export default {
-  middleware: ['admin'],
+  middleware: ['admin', 'permission'],
   name: 'DefaultLayout',
   beforeMount() {
     // this.miniVariant = localStorage.getItem('miniVariant') === 1

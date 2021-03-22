@@ -134,7 +134,7 @@ export default {
    *  ROUTER CONFIG
    */
   router: {
-    middleware: ['auth', 'permission'],
+    middleware: ['auth'],
   },
 
   // Vuetify module configuration (https://go.nuxtjs.dev/config-vuetify)
