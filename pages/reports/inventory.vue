@@ -49,7 +49,7 @@ export default {
   components: { ReportViewer },
   meta: {
     label: 'Inventory Report',
-    permission: 'Reports:View',
+    permission: 'Report:View',
     access_level: 1,
   },
   data() {
