@@ -5,6 +5,14 @@
         <v-card-title>
           Customer
           <v-divider class="mx-4" inset vertical />
+          <v-dialog v-model="dialog" max-width="600px">
+            <customer-form
+              :data.sync="selected_customer"
+              :show="dialog"
+              @close="closeForm"
+              @updateCustomer="updateCustomer"
+            />
+          </v-dialog>
           <v-spacer />
           <v-text-field
             v-model="search"
@@ -35,8 +43,17 @@
                     </v-btn>
                   </template>
                   <template v-slot:default class="p-0">
-                    <v-btn fab dark x-small color="blue" @click="edit(item)">
+                    <v-btn
+                      fab
+                      dark
+                      x-small
+                      color="purple"
+                      @click="$router.push('/s/customer/' + item.id)"
+                    >
                       <v-icon>mdi-account-details</v-icon>
+                    </v-btn>
+                    <v-btn fab dark x-small color="blue" @click="edit(item)">
+                      <v-icon>mdi-pencil</v-icon>
                     </v-btn>
                   </template>
                 </v-speed-dial>
@@ -91,6 +108,8 @@ export default {
       customers: [],
       search: '',
       loading: false,
+      dialog: false,
+      selected_customer: {},
     }
   },
   computed: {
@@ -121,7 +140,25 @@ export default {
       }
     },
     edit(customer) {
-      this.$router.push('/s/customer/' + customer.id)
+      this.selected_customer = customer
+      this.dialog = true
+    },
+    closeForm() {
+      this.dialog = false
+      this.selected_customer = {}
+    },
+    updateCustomer(customer) {
+      if (customer) {
+        const ind = this.customers.findIndex((i) => i.id === customer.id)
+
+        if (this.customers[ind]) {
+          this.customers[ind].fname = customer.fname
+          this.customers[ind].lname = customer.lname
+          this.customers[ind].full_name = customer.fname + ' ' + customer.lname
+          this.customers[ind].fb_name = customer.fb_name
+          this.customers[ind].contact_number = customer.contact_number
+        }
+      }
     },
   },
   head: {

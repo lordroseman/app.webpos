@@ -131,8 +131,9 @@ export default {
       const access = this.$auth.user.access_level
       if (access === 1) {
         this.$router.push('/transaction/' + id)
+      } else if (access === 2) {
+        this.$router.push('/s/transaction/' + id)
       }
-      this.$router.push('/s/transaction/' + id)
     },
   },
 }

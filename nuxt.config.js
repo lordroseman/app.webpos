@@ -140,6 +140,7 @@ export default {
   // Vuetify module configuration (https://go.nuxtjs.dev/config-vuetify)
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
+    components: ['VListItem'],
     theme: {
       dark: false,
       themes: {
@@ -154,11 +155,23 @@ export default {
         },
       },
     },
-    treeShake: false,
+    // treeShake: false,
+    treeShake: {
+      components: ['VListItem', 'VTextField', 'VIcon'],
+    },
   },
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
-  build: {},
+  build: {
+    terser: {
+      extractComments: false, // default was LICENSES
+    },
+    extend(config, { isClient }) {
+      if (isClient) {
+        config.optimization.splitChunks.maxSize = 512000
+      }
+    },
+  },
 
   /*
    **  ENV Variables

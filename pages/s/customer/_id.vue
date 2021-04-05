@@ -41,6 +41,10 @@
 <script>
 export default {
   layout: 'StoreLayout',
+  meta: {
+    permission: 'Customer:View',
+    access_level: 2,
+  },
   async asyncData({ $api, params }) {
     const customer = await $api.Customer.custom('customer/search')
       .where('id', params.id)

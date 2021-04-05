@@ -41,7 +41,7 @@ export const actions = {
         commit('pushCustomer', response.data)
       })
       .catch((errors) => {
-        commit('setErrors', errors.response.data)
+        commit('setErrors', errors.response)
         commit('setCustomerSendingStatus', 3)
       })
   },
@@ -61,7 +61,7 @@ export const actions = {
         commit('updateCustomer', response.data)
       })
       .catch((errors) => {
-        commit('setErrors', errors.response.data)
+        commit('setErrors', errors.response)
         commit('setCustomerSendingStatus', 3)
       })
   },
@@ -80,7 +80,7 @@ export const actions = {
         commit('deleteCustomer', id)
       })
       .catch((errors) => {
-        commit('setErrors', errors.response.data)
+        commit('setErrors', errors.response)
         commit('setCustomerDeletingStatus', 3)
       })
   },

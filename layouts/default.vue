@@ -2,20 +2,15 @@
   <div>
     <div class="bg"></div>
     <v-app :dark="true" style="overflow-none">
-      <v-scrollable :height="'calc(100vh - 36px)'">
-        <app-bar />
-        <nav-drawer />
-
+      <app-bar />
+      <nav-drawer />
+      <v-scrollable :height="'calc(100vh )'">
         <!-- Sizes your content based upon application components -->
         <v-main>
           <!-- Provides the application the proper gutter -->
           <nuxt />
         </v-main>
       </v-scrollable>
-      <v-footer>
-        <v-spacer />
-        <div>&copy; {{ new Date().getFullYear() }} DSSC</div>
-      </v-footer>
     </v-app>
   </div>
 </template>

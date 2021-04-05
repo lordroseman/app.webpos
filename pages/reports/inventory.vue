@@ -1,10 +1,25 @@
 <template>
-  <v-container fluid class="px-0 px-md-5">
-    <v-card class="mx-auto">
-      <v-card-text>
-        <v-row>
-          <v-col cols="12" md="3">
-            <div>Filters</div>
+  <report-viewer
+    :show-report.sync="showReport"
+    :src="pdfSrc"
+    :params="rptParam"
+    :is-dialog="false"
+    :has-sidebar="hasSidebar"
+    @loaded="loading = false"
+  >
+    <template slot="filter">
+      <v-list>
+        <v-list-item>
+          <v-list-item-icon>
+            <v-icon>mdi-filter</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>Filter</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-content>
             <v-combobox
               v-model="store"
               label="Store"
@@ -14,6 +29,10 @@
               item-value="id"
             >
             </v-combobox>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-content>
             <div>
               <v-spacer />
               <v-btn
@@ -25,22 +44,12 @@
                 ><v-icon>mdi-send</v-icon> Generate</v-btn
               >
             </div>
-          </v-col>
-          <v-col cols="12" md="9">
-            <report-viewer
-              :show-report.sync="showReport"
-              :src="pdfSrc"
-              :params="rptParam"
-              :is-dialog="false"
-              @loaded="loading = false"
-            ></report-viewer
-          ></v-col>
-        </v-row>
-      </v-card-text>
-    </v-card>
-  </v-container>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </template>
+  </report-viewer>
 </template>
-
 <script>
 import { mapState } from 'vuex'
 import ReportViewer from '~/components/display/ReportViewer.vue'
@@ -59,6 +68,7 @@ export default {
       rptParam: null,
       store: null,
       loading: false,
+      hasSidebar: true,
     }
   },
   computed: {

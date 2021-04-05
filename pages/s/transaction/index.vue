@@ -126,6 +126,10 @@ import Transaction from '~/models/Transaction'
 
 export default {
   layout: 'StoreLayout',
+  meta: {
+    permission: 'Transaction:View',
+    access_level: 2,
+  },
   data() {
     return {
       search: '',

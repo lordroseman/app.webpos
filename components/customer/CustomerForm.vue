@@ -244,6 +244,7 @@ export default {
             showConfirmButton: false,
             timer: 1500,
           })
+          vue.$emit('updateCustomer', vue.form)
           vue.close()
         }
       }

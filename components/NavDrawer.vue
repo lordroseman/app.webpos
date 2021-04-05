@@ -49,6 +49,7 @@
             <template v-if="route.hasOwnProperty('children')">
               <v-list-group
                 :key="route.title"
+                v-model="route.active"
                 :prepend-icon="route.icon"
                 :value="true"
                 color="white"
@@ -140,6 +141,7 @@ export default {
           icon: 'mdi-chart-bar',
           exact: true,
           permission: 'Report:View',
+          active: false,
           children: [
             {
               title: 'Inventory Report',
@@ -148,13 +150,13 @@ export default {
               exact: true,
               permission: 'Report:View',
             },
-            // {
-            //   title: 'Item Summary Report',
-            //   icon: 'mdi-chart-tree',
-            //   to: '/reports/item_summary',
-            //   exact: true,
-            //   permission: 'Report:View',
-            // },
+            {
+              title: 'Product Movement',
+              icon: 'mdi-chart-tree',
+              to: '/reports/prod_movement',
+              exact: true,
+              permission: 'Report:View',
+            },
             // {
             //   title: 'Item Summary Detail Report',
             //   icon: 'mdi-chart-tree',
@@ -174,6 +176,7 @@ export default {
         {
           title: 'Masterfile',
           icon: 'mdi-widgets',
+          active: false,
           children: [
             {
               title: 'Store',
