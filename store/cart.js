@@ -17,7 +17,7 @@ export const mutations = {
         (state.cart[ind].line_total + state.cart[ind].item_price).toFixed(2)
       )
 
-      if (item._state === 'deleted') {
+      if (state.cart[ind]._state !== 'new') {
         state.cart[ind]._state = 'edited'
       }
     }
@@ -49,8 +49,7 @@ export const mutations = {
     if (ind > -1) {
       const total = item.line_total
       const _cart = state.cart[ind]
-      // eslint-disable-next-line no-console
-      console.log(total, state.cartTotal)
+
       state.cartTotal = Number((state.cartTotal - total).toFixed(2))
       state.cartQty -= item.quantity
       if (_cart._state === 'new') {

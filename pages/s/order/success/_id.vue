@@ -37,6 +37,14 @@
         >
           New Order
         </v-btn>
+        <v-btn
+          color="blue-grey"
+          class="white--text ml-2"
+          :to="`/s/order/${transaction.id}`"
+        >
+          EDIT ORDER
+          <v-icon right dark> mdi-circle-edit-outline </v-icon>
+        </v-btn>
       </div>
       <div class="py-5 my-5">
         <div class="display-1 text-center" :style="`color: ${color.primary}`">
