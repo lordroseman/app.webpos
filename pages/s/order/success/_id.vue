@@ -276,23 +276,26 @@ export default {
       const textarea = this.$refs.clipboard
 
       let details = ''
-      for (const detail of this.transaction.details) {
-        details += `${detail.quantity}${detail.item_unit} - ${
-          detail.item_name
-        } @ ${this.toCurrency(detail.item_price)} `
+      if (this.transaction) {
+        for (const detail of this.transaction.details) {
+          details += `${detail.quantity}${detail.item_unit} - ${
+            detail.item_name
+          } @ ${this.toCurrency(detail.item_price)} `
+        }
+      }
+
+      let address = 'n/a'
+      let fbName = 'n/a'
+      if (this.transaction.walkin === 0) {
+        address = `${this.transaction.customer_delivery_address}, ${this.transaction.barangay.name}, ${this.transaction.city.name}`
+        fbName = this.transaction.customer.fb_name
       }
 
       const text = `
 NAME: ${this.transaction.customer_name}
-FACEBOOK NAME: ${
-        this.transaction.walkin ? this.transaction.customer.fb_name : ''
-      }
+FACEBOOK NAME: ${fbName}
 ORDER#: ${this.transaction.txn_number}
-ADDRESS: ${
-        this.transaction.walkin
-          ? this.transaction.customer_delivery_address
-          : ''
-      }, ${this.transaction.walkin ? this.transaction.city.name : ''}
+ADDRESS: ${address === '' ? 'n/a' : address}
 DELIVERY DATE: ${this.transaction.delivery_date}
 CONTACT#: ${this.transaction.customer_contact_number}
 MODE OF PAYMENT : ${this.transaction.payment_option.name}

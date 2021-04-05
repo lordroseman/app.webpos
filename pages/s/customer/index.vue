@@ -52,7 +52,14 @@
                     >
                       <v-icon>mdi-account-details</v-icon>
                     </v-btn>
-                    <v-btn fab dark x-small color="blue" @click="edit(item)">
+                    <v-btn
+                      v-if="$can('Customer:Edit')"
+                      fab
+                      dark
+                      x-small
+                      color="blue"
+                      @click="edit(item)"
+                    >
                       <v-icon>mdi-pencil</v-icon>
                     </v-btn>
                   </template>
