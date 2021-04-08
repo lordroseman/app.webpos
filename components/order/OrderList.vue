@@ -49,7 +49,14 @@
             <v-btn width="325" color="orange" dark> WALK-IN CUSTOMER </v-btn>
           </template>
         </v-btn-toggle>
-        <v-dialog v-model="dialog" max-width="80%" block persistent scrollable>
+        <v-dialog
+          v-model="dialog"
+          max-width="80%"
+          :fullscreen="$vuetify.breakpoint.mobile"
+          block
+          persistent
+          scrollable
+        >
           <order-form :show="dialog" :form.sync="form" @close="closeForm" />
         </v-dialog>
       </div>

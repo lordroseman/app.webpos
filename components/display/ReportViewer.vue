@@ -119,7 +119,6 @@
               flat
               class="mt-3"
               :loading="statusTxt == 'loading'"
-              :height="800"
             >
               <template v-if="statusTxt == 'loading'">
                 <v-card-text>

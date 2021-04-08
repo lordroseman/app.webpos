@@ -103,7 +103,16 @@
       >
         <v-icon>mdi-minus</v-icon>
       </v-btn>
-      <span class="mx-2"> {{ form.quantity }} </span>
+      <v-currency-field
+        v-model="form.quantity"
+        outlined
+        dense
+        label="Qty"
+        :color="color.primary"
+        single-line
+        class="text--center"
+        hide-details
+      ></v-currency-field>
       <v-btn
         class="mx-2"
         dark
@@ -214,12 +223,15 @@ export default {
     },
   },
   watch: {
-    item(val) {
-      this.itemCloned = Object.assign({}, val)
+    item: {
+      handler(val) {
+        this.itemCloned = Object.assign({}, val)
 
-      this.form.set(this.itemCloned)
-      this.discountType = this.form.discount_type
-      this.discountValue = this.form.discount_value
+        this.form.set(this.itemCloned)
+        this.discountType = this.form.discount_type
+        this.discountValue = this.form.discount_value
+      },
+      deep: true,
     },
     discountValue(val) {
       this.form.discount_value = val
@@ -274,6 +286,7 @@ export default {
       this.close()
     },
     close() {
+      this.form.clear()
       this.$emit('close', false)
     },
     toggleDiscountType() {

@@ -157,6 +157,13 @@ export default {
               exact: true,
               permission: 'Report:View',
             },
+            {
+              title: 'Sales Report',
+              icon: 'mdi-chart-tree',
+              to: '/reports/sales_report',
+              exact: true,
+              permission: 'Report:View',
+            },
             // {
             //   title: 'Item Summary Detail Report',
             //   icon: 'mdi-chart-tree',

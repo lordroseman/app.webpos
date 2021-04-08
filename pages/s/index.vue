@@ -1,120 +1,151 @@
 <template>
-  <div class="pa-5 d-flex align-stretch" style="height: 100%">
-    <div class="board" style="width: 100%">
-      <div class="d-flex flex-row align-stretch" style="height: 100%">
-        <v-card
-          elevation="0"
-          class="flex-grow-1 mr-4"
-          outlined
-          color="green accent-1"
-          max-width="33%"
-          scrollable
-          max-height="800px"
-        >
-          <v-card-title>
-            <div class="text-center">UPCOMING</div>
-          </v-card-title>
-          <v-card-text style="height: 700px">
-            <v-scrollable height="700px">
-              <v-skeleton-loader
-                ref="skeleton"
-                :loading="loading_upcoming"
-                type="image,image,image"
-                class="my_loader"
+  <v-scrollable :height="`calc(100vh - 64px)`">
+    <div class="d-flex align-stretch" style="height: 100%">
+      <div class="board" style="width: 100%">
+        <v-row>
+          <v-col cols="12" lg="4" class="pa-0">
+            <v-card
+              elevation="0"
+              class="flex-grow-1"
+              outlined
+              color="green accent-1"
+              scrollable
+              max-height="800px"
+            >
+              <v-card-title>
+                <div class="text-center">UPCOMING</div>
+              </v-card-title>
+              <v-card-text
+                :style="$vuetify.breakpoint.lgAndUp ? `height: 700px` : ''"
               >
-                <div
-                  v-if="upcoming.length == 0"
-                  class="d-flex flex-column justify-center"
+                <v-scrollable
+                  :style="
+                    $vuetify.breakpoint.lgAndUp
+                      ? `height: 700px`
+                      : ' `height: 500px`'
+                  "
                 >
-                  <span class="text-h5 text-center">No upcoming Orders</span>
-                  <v-img
-                    :src="require('@/static/empty.png')"
-                    width="300"
-                    class="mx-auto"
-                  />
-                </div>
-                <template v-for="(item, index) in upcoming">
-                  <order-card :key="index" :transaction="item" />
-                </template>
-              </v-skeleton-loader>
-            </v-scrollable>
-          </v-card-text>
-        </v-card>
-        <v-card
-          elevation="0"
-          class="flex-grow-1 mr-4"
-          outlined
-          color="amber accent-1"
-          max-width="33%"
-          scrollable
-          max-height="800px"
-        >
-          <v-card-title>OPEN</v-card-title>
-          <v-card-text style="height: 700px">
-            <v-scrollable height="700px">
-              <v-skeleton-loader
-                ref="skeleton"
-                :loading="loading_open"
-                type="image,image,image"
-                class="my_loader"
-              >
-                <div
-                  v-if="open.length == 0"
-                  class="d-flex flex-column justify-center"
-                >
-                  <span class="text-h5 text-center">No open Orders</span>
-                  <v-img
-                    :src="require('@/static/empty.png')"
-                    width="300"
-                    class="mx-auto"
-                  />
-                </div>
-
-                <template v-for="(item, index) in open">
-                  <order-card :key="index" :transaction="item" />
-                </template>
-              </v-skeleton-loader>
-            </v-scrollable>
-          </v-card-text>
-        </v-card>
-        <v-card
-          elevation="0"
-          class="flex-grow-1 mr-4"
-          outlined
-          color="blue accent-1"
-          max-width="33%"
-          scrollable
-          max-height="800px"
-        >
-          <v-card-title>CLOSE</v-card-title>
-          <v-card-text style="height: 700px">
-            <v-scrollable height="700px">
-              <v-skeleton-loader
-                ref="skeleton"
-                :loading="loading_close"
-                type="image,image,image"
-                class="my_loader"
-              >
-                <div v-if="close.length == 0" class="d-flex flex-column">
-                  <span class="text-h5 text-center mt-auto"
-                    >No closed Orders</span
+                  <v-skeleton-loader
+                    ref="skeleton"
+                    :loading="loading_upcoming"
+                    type="image,image,image"
+                    class="my_loader"
                   >
-                  <v-img
-                    :src="require('@/static/empty.png')"
-                    width="300"
-                    class="mx-auto mb-auto"
-                  />
-                </div>
-                <template v-for="(item, index) in close">
-                  <order-card :key="index" :transaction="item" />
-                </template>
-              </v-skeleton-loader>
-            </v-scrollable>
-          </v-card-text>
-        </v-card>
+                    <div
+                      v-if="upcoming.length == 0"
+                      class="d-flex flex-column justify-center"
+                    >
+                      <span class="text-h5 text-center"
+                        >No upcoming Orders</span
+                      >
+                      <v-img
+                        :src="require('@/static/empty.png')"
+                        width="300"
+                        class="mx-auto"
+                      />
+                    </div>
+                    <template v-for="(item, index) in upcoming">
+                      <order-card :key="index" :transaction="item" />
+                    </template>
+                  </v-skeleton-loader>
+                </v-scrollable>
+              </v-card-text>
+            </v-card>
+          </v-col>
+          <v-col cols="12" lg="4" class="pa-0">
+            <v-card
+              elevation="0"
+              class="flex-grow-1"
+              outlined
+              color="amber accent-1"
+              scrollable
+              max-height="800px"
+            >
+              <v-card-title>OPEN</v-card-title>
+              <v-card-text
+                :style="$vuetify.breakpoint.lgAndUp ? `height: 700px` : ''"
+              >
+                <v-scrollable
+                  :style="
+                    $vuetify.breakpoint.lgAndUp
+                      ? `height: 700px`
+                      : ' `height: 500px`'
+                  "
+                >
+                  <v-skeleton-loader
+                    ref="skeleton"
+                    :loading="loading_open"
+                    type="image,image,image"
+                    class="my_loader"
+                  >
+                    <div
+                      v-if="open.length == 0"
+                      class="d-flex flex-column justify-center"
+                    >
+                      <span class="text-h5 text-center">No open Orders</span>
+                      <v-img
+                        :src="require('@/static/empty.png')"
+                        width="300"
+                        class="mx-auto"
+                      />
+                    </div>
+
+                    <template v-for="(item, index) in open">
+                      <order-card :key="index" :transaction="item" />
+                    </template>
+                  </v-skeleton-loader>
+                </v-scrollable>
+              </v-card-text>
+            </v-card>
+          </v-col>
+          <v-col cols="12" lg="4" class="pa-0">
+            <v-card
+              elevation="0"
+              class="flex-grow-1"
+              outlined
+              color="blue accent-1"
+              scrollable
+              max-height="800px"
+            >
+              <v-card-title>CLOSE</v-card-title>
+              <v-card-text
+                :style="$vuetify.breakpoint.lgAndUp ? `height: 700px` : ''"
+              >
+                <v-scrollable
+                  :style="
+                    $vuetify.breakpoint.lgAndUp
+                      ? `height: 700px`
+                      : ' `height: 500px`'
+                  "
+                >
+                  <v-skeleton-loader
+                    ref="skeleton"
+                    :loading="loading_close"
+                    type="image,image,image"
+                    class="my_loader"
+                  >
+                    <div v-if="close.length == 0" class="d-flex flex-column">
+                      <span class="text-h5 text-center mt-auto"
+                        >No closed Orders</span
+                      >
+                      <v-img
+                        :src="require('@/static/empty.png')"
+                        width="300"
+                        class="mx-auto mb-auto"
+                      />
+                    </div>
+                    <template v-for="(item, index) in close">
+                      <order-card :key="index" :transaction="item" />
+                    </template>
+                  </v-skeleton-loader>
+                </v-scrollable>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
       </div>
     </div>
-  </div>
+  </v-scrollable>
 </template>
 
 <script>

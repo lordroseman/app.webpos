@@ -17,7 +17,17 @@
             <v-icon right dark> mdi-circle-edit-outline </v-icon>
           </v-btn>
           <v-spacer />
-
+          <v-btn
+            v-if="form.walkin !== 1"
+            color="blue-grey lighten-1"
+            class="mr-3"
+            dark
+            rounded
+            @click="copyToClip"
+          >
+            <v-icon>mdi-clipboard</v-icon>
+            Copy
+          </v-btn>
           <v-btn v-if="form.printed !== 1" rounded @click="print">
             <v-icon>mdi-printer</v-icon>
             Print
@@ -320,6 +330,10 @@
           <template #title> TRANSACTION REPORT </template>
         </report-viewer>
       </v-dialog>
+      <textarea ref="clipboard" style="width: 1px; height: 1px"></textarea>
+      <v-snackbar v-model="clipsnackbar" top :timeout="2000">
+        Order details copied to clipboard!
+      </v-snackbar>
     </v-container>
   </v-scrollable>
 </template>
@@ -384,6 +398,7 @@ export default {
       pdfSrc: '',
       showReport: false,
       rptParam: null,
+      clipsnackbar: false,
     }
   },
 
@@ -544,6 +559,50 @@ export default {
           this.form.confirmChanges()
         })
       }
+    },
+    copyToClip() {
+      const textarea = this.$refs.clipboard
+
+      let details = ''
+      if (this.form) {
+        for (const detail of this.details) {
+          details += `${detail.quantity}${detail.item_unit} - ${
+            detail.item_name
+          } @ ${this.toCurrency(detail.item_price)} `
+        }
+      }
+
+      let address = 'n/a'
+      let fbName = 'n/a'
+      if (this.form.walkin === 0) {
+        address = `${this.form.customer_delivery_address}, ${this.form.barangay.name}, ${this.form.city.name}`
+        fbName = this.form.customer.fb_name
+      }
+
+      const text = `
+NAME: ${this.form.customer_name}
+FACEBOOK NAME: ${fbName}
+ORDER#: ${this.form.txn_number}
+ADDRESS: ${address === '' ? 'n/a' : address}
+DELIVERY DATE: ${this.form.delivery_date}
+CONTACT#: ${this.form.customer_contact_number}
+MODE OF PAYMENT : ${this.form.payment_option.name}
+--- ORDER DETAILS ---
+${details}
+---------------------
+TOTAL AMOUNT: ${this.toCurrency(this.form.total_amount)}
+NOTES: ${this.form.notes || 'N/A'}
+      `
+
+      textarea.value = text
+
+      textarea.select()
+      textarea.setSelectionRange(0, 99999)
+
+      document.execCommand('copy')
+      // eslint-disable-next-line no-console
+      console.log(textarea.value)
+      this.clipsnackbar = true
     },
   },
   head: {

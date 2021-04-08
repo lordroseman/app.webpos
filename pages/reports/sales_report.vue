@@ -50,7 +50,7 @@
               v-on="on"
             ></v-text-field>
           </template>
-          <v-date-picker v-model="dates" range>
+          <v-date-picker v-model="delivery_date">
             <v-spacer></v-spacer>
             <v-btn text color="primary" @click="menu = false"> Cancel </v-btn>
             <v-btn text color="primary" @click="savePickerMenu"> OK </v-btn>
@@ -92,7 +92,7 @@ export default {
       loading: false,
       hasSidebar: true,
       menu: false,
-      dates: [],
+      delivery_date: null,
     }
   },
   computed: {
@@ -100,30 +100,16 @@ export default {
       stores: (state) => state.store.stores,
       storesLoadStatus: (state) => state.store.storesLoadStatus,
     }),
-    dateFrom() {
-      return this.dates[0] || null
-    },
-    dateTo() {
-      return this.dates[1] || null
-    },
     selectedDate() {
-      if (this.dates) {
-        if (this.dates.length === 1) {
-          return this.formatDate(this.dateFrom)
-        } else if (this.dates.length === 2) {
-          return (
-            this.formatDate(this.dateFrom) +
-            ' - ' +
-            this.formatDate(this.dateTo)
-          )
-        }
+      if (this.delivery_date) {
+        return this.formatDate(this.delivery_date)
       }
 
       return null
     },
   },
   beforeMount() {
-    this.$store.dispatch('app/setNavHeader', 'Product Movement Report')
+    this.$store.dispatch('app/setNavHeader', 'Sales Report')
   },
   mounted() {
     if (this.storesLoadStatus !== 2) {
@@ -132,8 +118,7 @@ export default {
   },
   methods: {
     savePickerMenu() {
-      this.dates.sort()
-      this.$refs.menu.save(this.dates)
+      this.$refs.menu.save(this.delivery_date)
     },
     print() {
       if (!this.store) {
@@ -141,19 +126,14 @@ export default {
       }
 
       this.loading = true
-      let dateTo = this.dateTo
-      if (this.dates.length === 1) {
-        dateTo = this.dateFrom
-      }
 
       this.pdfSrc = '/laravel/api/report'
       this.rptParam = {
         controls: {
-          store_id: this.store.id,
-          dateFrom: this.dateFrom,
-          dateTo,
+          store: this.store.id,
+          delivery_date: this.delivery_date,
         },
-        report: 'DailyProductMovement',
+        report: 'SalesReport',
         store: this.store.id,
       }
 
@@ -161,7 +141,7 @@ export default {
     },
   },
   head: {
-    title: 'Product Movement Report',
+    title: 'Sales Report',
   },
 }
 </script>

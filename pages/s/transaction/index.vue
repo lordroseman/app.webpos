@@ -1,122 +1,128 @@
 <template>
-  <v-container fluid class="px-0 px-md-5">
-    <v-card class="mx-auto">
-      <v-card-title>
-        Transactions
-        <v-divider class="mx-4" inset vertical />
-        <v-btn rounded @click="showFilter = true">
-          <v-icon> mdi-filter </v-icon>Filter
-        </v-btn>
-        <v-btn v-if="hasFilters" class="ml-2" rounded @click="filters = {}">
-          <v-icon> mdi-filter </v-icon>Clear Filter
-        </v-btn>
-        <v-btn class="ml-2" rounded @click="refresh">
-          <v-icon> mdi-refresh </v-icon>Refresh
-        </v-btn>
-        <v-spacer />
-        <v-spacer />
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-          width="200px"
-        />
-      </v-card-title>
-      <v-skeleton-loader
-        ref="skeleton"
-        type="table-tbody"
-        class="mx-auto"
-        :loading="skelLoading"
-      >
-        <v-data-table
-          :headers="headerColumn"
-          :items="transactions"
-          :search.sync="search"
-          show-expand
-          single-expand
-          :options.sync="options"
-          :server-items-length="total"
-          :loading="loading"
+  <v-scrollable :height="`calc(100vh - 64px)`">
+    <v-container fluid class="px-0 px-md-5">
+      <v-card class="mx-auto">
+        <v-card-title>
+          Transactions
+          <v-divider class="mx-4" inset vertical />
+          <v-btn rounded @click="showFilter = true">
+            <v-icon> mdi-filter </v-icon>Filter
+          </v-btn>
+          <v-btn v-if="hasFilters" class="ml-2" rounded @click="filters = {}">
+            <v-icon> mdi-filter </v-icon>Clear Filter
+          </v-btn>
+          <v-btn class="ml-2" rounded @click="refresh">
+            <v-icon> mdi-refresh </v-icon>Refresh
+          </v-btn>
+          <v-spacer />
+          <v-spacer />
+          <v-text-field
+            v-model="search"
+            append-icon="mdi-magnify"
+            label="Search"
+            single-line
+            hide-details
+            width="200px"
+          />
+        </v-card-title>
+        <v-skeleton-loader
+          ref="skeleton"
+          type="table-tbody"
+          class="mx-auto"
+          :loading="skelLoading"
         >
-          <template #[`item.total_amount`]="{ item }">
-            {{ toCurrency(item.total_amount) }}
-          </template>
-          <template #[`item.status`]="{ item }">
-            <v-chip :color="status[item.status].color" small text-color="white">
-              {{ status[item.status].label }}
-            </v-chip>
-          </template>
-          <template #[`item.printed`]="{ item }">
-            <v-tooltip v-if="item.printed === 1" right>
-              <template v-slot:activator="{ on }">
-                <v-chip small color="teal" text-color="white" v-on="on">
-                  Printed
-                </v-chip>
-              </template>
-              <span>{{ formatDate(item.date_printed) }}</span>
-            </v-tooltip>
-            <v-chip v-else small> Unprinted </v-chip>
-          </template>
-          <template #[`item.actions`]="{ item }">
-            <v-hover v-slot:default="{ hover }">
-              <v-speed-dial
-                direction="left"
-                transition="scale-transition"
-                open-on-hover
+          <v-data-table
+            :headers="headerColumn"
+            :items="transactions"
+            :search.sync="search"
+            show-expand
+            single-expand
+            :options.sync="options"
+            :server-items-length="total"
+            :loading="loading"
+          >
+            <template #[`item.total_amount`]="{ item }">
+              {{ toCurrency(item.total_amount) }}
+            </template>
+            <template #[`item.status`]="{ item }">
+              <v-chip
+                :color="status[item.status].color"
+                small
+                text-color="white"
               >
-                <template v-slot:activator>
-                  <v-btn color="secondary" dark fab x-small>
-                    <v-icon v-if="hover"> mdi-close </v-icon>
-                    <v-icon v-else> mdi-cog </v-icon>
-                  </v-btn>
+                {{ status[item.status].label }}
+              </v-chip>
+            </template>
+            <template #[`item.printed`]="{ item }">
+              <v-tooltip v-if="item.printed === 1" right>
+                <template v-slot:activator="{ on }">
+                  <v-chip small color="teal" text-color="white" v-on="on">
+                    Printed
+                  </v-chip>
                 </template>
-                <template v-slot:default class="p-0">
-                  <v-btn fab dark x-small color="blue" @click="edit(item)">
-                    <v-icon>mdi-pencil</v-icon>
-                  </v-btn>
-                  <v-btn
-                    v-if="item.status != 2"
-                    fab
-                    dark
-                    x-small
-                    color="red"
-                    @click="remove(item)"
-                  >
-                    <v-icon>mdi-delete</v-icon>
-                  </v-btn>
-                </template>
-              </v-speed-dial>
-            </v-hover>
-          </template>
-          <template #expanded-item="{ headers, item }">
-            <td :colspan="headers.length">
-              <v-row>
-                <v-col cols="12" sm="8">
-                  <span>Customer Name : {{ item.customer_name }}</span>
-                </v-col>
-                <v-col cols="12" sm="4">
-                  <span>Date: {{ item.txn_date }}</span>
-                </v-col>
-              </v-row>
-            </td>
-          </template>
-          <template #top>
-            <div
-              v-if="hasFilters"
-              class="ml-4 text--secondary text-caption font-italic"
-            >
-              Filters: {{ filtersAsText }}
-            </div>
-          </template>
-        </v-data-table>
-      </v-skeleton-loader>
-      <div v-if="showFilter">
-        <transaction-filter :show.sync="showFilter" :filters.sync="filters" />
-      </div>
-    </v-card>
-  </v-container>
+                <span>{{ formatDate(item.date_printed) }}</span>
+              </v-tooltip>
+              <v-chip v-else small> Unprinted </v-chip>
+            </template>
+            <template #[`item.actions`]="{ item }">
+              <v-hover v-slot:default="{ hover }">
+                <v-speed-dial
+                  direction="left"
+                  transition="scale-transition"
+                  open-on-hover
+                >
+                  <template v-slot:activator>
+                    <v-btn color="secondary" dark fab x-small>
+                      <v-icon v-if="hover"> mdi-close </v-icon>
+                      <v-icon v-else> mdi-cog </v-icon>
+                    </v-btn>
+                  </template>
+                  <template v-slot:default class="p-0">
+                    <v-btn fab dark x-small color="blue" @click="edit(item)">
+                      <v-icon>mdi-pencil</v-icon>
+                    </v-btn>
+                    <v-btn
+                      v-if="item.status != 2"
+                      fab
+                      dark
+                      x-small
+                      color="red"
+                      @click="remove(item)"
+                    >
+                      <v-icon>mdi-delete</v-icon>
+                    </v-btn>
+                  </template>
+                </v-speed-dial>
+              </v-hover>
+            </template>
+            <template #expanded-item="{ headers, item }">
+              <td :colspan="headers.length">
+                <v-row>
+                  <v-col cols="12" sm="8">
+                    <span>Customer Name : {{ item.customer_name }}</span>
+                  </v-col>
+                  <v-col cols="12" sm="4">
+                    <span>Date: {{ item.txn_date }}</span>
+                  </v-col>
+                </v-row>
+              </td>
+            </template>
+            <template #top>
+              <div
+                v-if="hasFilters"
+                class="ml-4 text--secondary text-caption font-italic"
+              >
+                Filters: {{ filtersAsText }}
+              </div>
+            </template>
+          </v-data-table>
+        </v-skeleton-loader>
+        <div v-if="showFilter">
+          <transaction-filter :show.sync="showFilter" :filters.sync="filters" />
+        </div>
+      </v-card>
+    </v-container>
+  </v-scrollable>
 </template>
 
 <script>

@@ -8,11 +8,14 @@
         </v-snackbar>
         <v-btn
           v-if="transaction.walkin !== 1"
-          color="success ml-auto"
+          color="blue-grey lighten-1"
           class="mr-3"
+          dark
+          rounded
           @click="copyToClip"
         >
-          Copy to Clipboard
+          <v-icon>mdi-clipboard</v-icon>
+          Copy
         </v-btn>
         <v-btn v-if="transaction.printed !== 1" rounded @click="print">
           <v-icon>mdi-printer</v-icon>
