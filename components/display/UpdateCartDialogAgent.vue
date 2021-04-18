@@ -156,6 +156,10 @@ export default {
       type: String,
       default: '',
     },
+    updateProduct: {
+      type: Object,
+      default: () => {},
+    },
   },
   data() {
     return {
@@ -249,6 +253,17 @@ export default {
       this.form.line_total = this.toFixed(
         (this.form.item_price - this.discountAmount) * this.form.quantity
       )
+      if (val < 0) {
+        this.form.quantity = 0
+      }
+    },
+    show(val) {
+      if (!val) {
+        this.form.clear()
+      } else {
+        this.itemCloned = Object.assign({}, this.item)
+        this.form.set(this.itemCloned)
+      }
     },
   },
   mounted() {
@@ -275,6 +290,10 @@ export default {
           state = 'new'
         } else {
           state = 'edited'
+        }
+
+        if (this.form.quantity >= this.updateProduct.pivot.inventory) {
+          this.form.quantity = this.updateProduct.pivot.inventory
         }
 
         this.updateCart({

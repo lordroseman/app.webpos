@@ -66,6 +66,13 @@
               />
             </v-col>
           </v-row>
+          <v-text-field
+            v-model="form.reference_number"
+            label="Reference Number"
+            required
+            :error-messages="errors.getAll('account_name')"
+          />
+
           <v-textarea v-model="form.notes" label="Notes" auto-grow />
         </v-container>
       </v-card-text>
@@ -107,6 +114,7 @@ export default {
         payment_option_id: null,
         payment_date: null,
         amount: null,
+        reference_number: null,
         notes: '',
       }),
       dateFormatted: null,

@@ -127,7 +127,7 @@
                     dark
                     x-small
                     color="green"
-                    @click="addToCart(item)"
+                    @click.native.stop="preAddToCart(item)"
                   >
                     <v-icon>mdi-plus</v-icon>
                   </v-btn>
@@ -182,6 +182,7 @@
       <update-cart-dialog-agent
         :item="updateItem"
         :mode="mode"
+        :update-product="updateProduct"
         @close="updateCartDialog = false"
       ></update-cart-dialog-agent>
     </v-dialog>
@@ -214,6 +215,10 @@ export default {
     mode: {
       type: String,
       default: '',
+    },
+    products: {
+      type: Array,
+      default: () => [],
     },
   },
   data() {
@@ -268,6 +273,13 @@ export default {
     },
     hasPayments() {
       return this.payments.length > 0
+    },
+    updateProduct() {
+      if (this.updateItem) {
+        return this.products.find((i) => i.id === this.updateItem.item_id)
+      } else {
+        return null
+      }
     },
   },
   watch: {
@@ -342,7 +354,10 @@ export default {
       this.dialog = false
     },
     settle() {
-      if (Object.entries(this.params).length === 0) {
+      if (
+        !this.params.details ||
+        Object.entries(this.params.details).length === 0
+      ) {
         this.$swal.fire({
           icon: 'error',
           title: 'Oops...',
@@ -406,8 +421,21 @@ export default {
     },
     savePayment(payment) {
       this.payments = [payment]
+      this.form.payment_option_id = payment.payment_option_id
       this.settle()
       this.showPaymentDialog = false
+    },
+    preAddToCart(item) {
+      // get item product
+      const product = this.products.find((i) => i.id === item.item_id)
+
+      if (item.quantity + 1 > product.pivot.inventory) {
+        item.quantity = product.pivot.inventory
+
+        this.updateCart(item)
+      } else {
+        this.addToCart(item)
+      }
     },
   },
 }

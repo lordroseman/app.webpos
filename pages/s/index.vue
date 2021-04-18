@@ -11,6 +11,7 @@
               color="green accent-1"
               scrollable
               max-height="800px"
+              tile
             >
               <v-card-title>
                 <div class="text-center">UPCOMING</div>
@@ -60,6 +61,7 @@
               color="amber accent-1"
               scrollable
               max-height="800px"
+              tile
             >
               <v-card-title>OPEN</v-card-title>
               <v-card-text
@@ -106,6 +108,7 @@
               color="blue accent-1"
               scrollable
               max-height="800px"
+              tile
             >
               <v-card-title>CLOSE</v-card-title>
               <v-card-text

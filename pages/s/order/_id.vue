@@ -3,6 +3,7 @@
     <order-list
       :form.sync="form"
       :mode="mode"
+      :products="items"
       @applyChanges="applyChanges"
       @toggleWalkin="toggleWalkin"
     />
@@ -88,8 +89,8 @@
                     >
                       <v-card
                         class="no-select"
-                        :disabled="item.pivot.inventory - getCartQty(item) < 1"
-                        :flat="item.pivot.inventory - getCartQty(item) < 1"
+                        :disabled="item.pivot.inventory - getCartQty(item) <= 0"
+                        :flat="item.pivot.inventory - getCartQty(item) <= 0"
                         outlined
                         @click="addToCart(item)"
                       >
@@ -301,6 +302,10 @@ export default {
     addToCart(item, qty = 1) {
       if (!item) {
         return
+      }
+
+      if (qty > item.pivot.inventory) {
+        qty = item.pivot.inventory
       }
 
       const detail = {}

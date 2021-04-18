@@ -1,5 +1,5 @@
 export const state = () => ({
-  showSideNav: true,
+  showSideNav: 123,
   activeStore: null,
   color: {
     primary: '#C32B33',

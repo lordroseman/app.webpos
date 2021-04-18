@@ -40,6 +40,7 @@ export default {
         { text: 'Date', value: 'payment_date', width: 150 },
         { text: 'Encoded by', value: 'user.name', width: 250 },
         { text: 'Payment Method', value: 'option.name' },
+        { text: 'Reference Number', value: 'reference_number' },
         { text: 'Amount', value: 'amount' },
         { text: 'Notes', value: 'notes' },
         { text: '', value: 'action', width: 40, sortable: false },

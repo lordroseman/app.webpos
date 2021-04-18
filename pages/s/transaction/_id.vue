@@ -73,133 +73,139 @@
               @setDriver="setDriver"
             />
           </v-col>
-          <v-col cols="12" md="8" class="d-flex">
-            <div>
-              <v-row>
-                <v-col cols="12" sm="6">
-                  <v-simple-table>
-                    <template v-slot:default>
-                      <tbody>
-                        <tr>
-                          <td class="subtitle-2 font-weight-bold">
-                            Customer Name
-                          </td>
-                          <td>
+          <v-col cols="12" md="8">
+            <div class="d-flex">
+              <div class="flex-grow-1">
+                <v-row>
+                  <v-col cols="12" sm="6">
+                    <v-simple-table>
+                      <template v-slot:default>
+                        <tbody>
+                          <tr>
+                            <td class="subtitle-2 font-weight-bold">
+                              Customer Name
+                            </td>
+                            <td>
+                              {{
+                                form.walkin === 1
+                                  ? 'WALK-IN CUSTOMER'
+                                  : form.customer_name
+                              }}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="font-weight-bold">Facebook Name</td>
+                            <td>
+                              {{
+                                form.customer ? form.customer.fb_name : 'n/a'
+                              }}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </template>
+                    </v-simple-table>
+                  </v-col>
+                  <v-col cols="12" sm="6" />
+                </v-row>
+                <v-divider />
+                <v-row class="mx-auto">
+                  <v-col cols="12" md="4" class="pl-2">
+                    <h3
+                      class="text-uppercase subtitle font-weight-bold mb-1 text-left"
+                    >
+                      Delivery Details
+                    </h3>
+                    <v-list>
+                      <v-list-item>
+                        <v-list-item-avatar>
+                          <v-icon>mdi-calendar</v-icon>
+                        </v-list-item-avatar>
+                        <v-list-item-content>
+                          <v-list-item-title>
+                            Deliver by:
+                            {{ form.delivery_date }}
+                          </v-list-item-title>
+                        </v-list-item-content>
+                      </v-list-item>
+                      <v-list-item two-line>
+                        <v-list-item-avatar>
+                          <v-icon>mdi-truck-delivery</v-icon>
+                        </v-list-item-avatar>
+                        <v-list-item-content>
+                          <v-list-item-title>{{
+                            form.driver
+                              ? form.driver.fname + ' ' + form.driver.lname
+                              : 'No Driver'
+                          }}</v-list-item-title>
+                          <v-list-item-subtitle>
+                            {{ form.driver ? form.driver.vehicle_id : 'n/a' }} •
                             {{
-                              form.walkin === 1
-                                ? 'WALK-IN CUSTOMER'
-                                : form.customer_name
+                              form.driver ? form.driver.driver_license : 'n/a'
                             }}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td class="font-weight-bold">Facebook Name</td>
-                          <td>
-                            {{ form.customer ? form.customer.fb_name : 'n/a' }}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </template>
-                  </v-simple-table>
-                </v-col>
-                <v-col cols="12" sm="6" />
-              </v-row>
-              <v-divider />
-              <v-row class="mx-auto">
-                <v-col cols="12" md="4" class="pl-2">
-                  <h3
-                    class="text-uppercase subtitle font-weight-bold mb-1 text-left"
-                  >
-                    Delivery Details
-                  </h3>
-                  <v-list>
-                    <v-list-item>
-                      <v-list-item-avatar>
-                        <v-icon>mdi-calendar</v-icon>
-                      </v-list-item-avatar>
-                      <v-list-item-content>
-                        <v-list-item-title>
-                          Deliver by:
-                          {{ form.delivery_date }}
-                        </v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item two-line>
-                      <v-list-item-avatar>
-                        <v-icon>mdi-truck-delivery</v-icon>
-                      </v-list-item-avatar>
-                      <v-list-item-content>
-                        <v-list-item-title>{{
-                          form.driver
-                            ? form.driver.fname + ' ' + form.driver.lname
-                            : 'No Driver'
-                        }}</v-list-item-title>
-                        <v-list-item-subtitle>
-                          {{ form.driver ? form.driver.vehicle_id : 'n/a' }} •
-                          {{ form.driver ? form.driver.driver_license : 'n/a' }}
-                        </v-list-item-subtitle>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item two-line>
-                      <v-list-item-avatar>
-                        <v-icon>mdi-map-marker-outline</v-icon>
-                      </v-list-item-avatar>
-                      <v-list-item-content>
-                        <v-list-item-title>{{
-                          form.customer_delivery_address || 'n/a'
-                        }}</v-list-item-title>
-                        <v-list-item-subtitle
-                          >{{ form.barangay ? form.barangay.name : 'n/a' }},
-                          {{
-                            form.city ? form.city.name : 'n/a'
-                          }}</v-list-item-subtitle
-                        >
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-avatar>
-                        <v-icon>mdi-cellphone</v-icon>
-                      </v-list-item-avatar>
-                      <v-list-item-content>
-                        <v-list-item-title>{{
-                          form.customer_contact_number || 'n/a'
-                        }}</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-avatar>
-                        <v-icon>mdi-email</v-icon>
-                      </v-list-item-avatar>
-                      <v-list-item-content>
-                        <v-list-item-title>{{
-                          form.customer ? form.customer.email : 'n/a'
-                        }}</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-avatar>
-                        <v-icon>mdi-note-text</v-icon>
-                      </v-list-item-avatar>
-                      <v-list-item-content two-line>
-                        <v-list-item-title>NOTES:</v-list-item-title>
-                        <v-list-item-subtitle>{{
-                          form.notes
-                        }}</v-list-item-subtitle>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-                </v-col>
-                <v-col cols="12" md="8">
-                  <static-map
-                    :lat="form.customer_geo_location_lat"
-                    :long="form.customer_geo_location_long"
-                    :height="400"
-                    :width="800"
-                  />
-                </v-col>
-              </v-row>
+                          </v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                      <v-list-item two-line>
+                        <v-list-item-avatar>
+                          <v-icon>mdi-map-marker-outline</v-icon>
+                        </v-list-item-avatar>
+                        <v-list-item-content>
+                          <v-list-item-title>{{
+                            form.customer_delivery_address || 'n/a'
+                          }}</v-list-item-title>
+                          <v-list-item-subtitle
+                            >{{ form.barangay ? form.barangay.name : 'n/a' }},
+                            {{
+                              form.city ? form.city.name : 'n/a'
+                            }}</v-list-item-subtitle
+                          >
+                        </v-list-item-content>
+                      </v-list-item>
+                      <v-list-item>
+                        <v-list-item-avatar>
+                          <v-icon>mdi-cellphone</v-icon>
+                        </v-list-item-avatar>
+                        <v-list-item-content>
+                          <v-list-item-title>{{
+                            form.customer_contact_number || 'n/a'
+                          }}</v-list-item-title>
+                        </v-list-item-content>
+                      </v-list-item>
+                      <v-list-item>
+                        <v-list-item-avatar>
+                          <v-icon>mdi-email</v-icon>
+                        </v-list-item-avatar>
+                        <v-list-item-content>
+                          <v-list-item-title>{{
+                            form.customer ? form.customer.email : 'n/a'
+                          }}</v-list-item-title>
+                        </v-list-item-content>
+                      </v-list-item>
+                      <v-list-item>
+                        <v-list-item-avatar>
+                          <v-icon>mdi-note-text</v-icon>
+                        </v-list-item-avatar>
+                        <v-list-item-content two-line>
+                          <v-list-item-title>NOTES:</v-list-item-title>
+                          <v-list-item-subtitle>{{
+                            form.notes
+                          }}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </v-list>
+                  </v-col>
+                  <v-col cols="12" md="8">
+                    <static-map
+                      :lat="form.customer_geo_location_lat"
+                      :long="form.customer_geo_location_long"
+                      :height="400"
+                      :width="800"
+                    />
+                  </v-col>
+                </v-row>
+              </div>
+              <v-divider vertical />
             </div>
-            <v-divider vertical />
           </v-col>
         </v-row>
         <v-divider />

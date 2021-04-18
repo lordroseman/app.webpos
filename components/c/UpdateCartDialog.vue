@@ -96,6 +96,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    product: {
+      type: Object,
+      default: () => {},
+    },
   },
   data() {
     return {

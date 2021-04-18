@@ -173,6 +173,12 @@
                         {{ toCurrency(payment.amount) }}
                       </div>
                     </div>
+                    <div
+                      v-if="payment.reference_number"
+                      class="text-caption px-3"
+                    >
+                      Ref # : {{ payment.reference_number }}
+                    </div>
                     <div class="text-caption px-3">
                       {{ payment.notes }}
                     </div>

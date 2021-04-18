@@ -105,7 +105,7 @@ export const actions = {
   },
   lessCart({ commit }, item, qty) {
     if (item._state !== 'deleted') {
-      if (item.quantity === 1) {
+      if (item.quantity <= 1) {
         commit('removeCart', item, qty)
       } else {
         commit('lessCart', item)
