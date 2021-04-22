@@ -164,6 +164,13 @@ export default {
               exact: true,
               permission: 'Report:View',
             },
+            {
+              title: 'Payments Report',
+              icon: 'mdi-chart-tree',
+              to: '/reports/payments',
+              exact: true,
+              permission: 'Report:View',
+            },
             // {
             //   title: 'Item Summary Detail Report',
             //   icon: 'mdi-chart-tree',
