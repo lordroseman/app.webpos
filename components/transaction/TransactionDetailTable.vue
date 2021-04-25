@@ -30,7 +30,7 @@
             <div>
               <span class="text--disabled">Qty:</span>
               x{{ detail.quantity }} {{ detail.item_unit }} @
-              <template v-if="isEmpty(detail.discount_value)">
+              <template v-if="!hasValue(detail.discount_amount)">
                 <span class="text--disabled">Price:</span>
                 {{ toCurrency(detail.item_price) }}
               </template>
@@ -76,7 +76,11 @@
                       <div class="d-flex">
                         <span>Discount Value:</span>
                         <span class="ml-auto"
-                          >{{ toCurrency(detail.discount_value) }}
+                          >{{
+                            detail.discount_type === 'percent'
+                              ? toNumberFormat(detail.discount_value)
+                              : toCurrency(detail.discount_value)
+                          }}
                         </span>
                       </div>
                       <div class="d-flex">

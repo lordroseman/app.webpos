@@ -574,7 +574,7 @@ export default {
         for (const detail of this.details) {
           details += `${detail.quantity}${detail.item_unit} - ${
             detail.item_name
-          } @ ${this.toCurrency(detail.item_price)} `
+          } @ ${this.toCurrency(detail.item_price - detail.discount_amount)} `
         }
       }
 

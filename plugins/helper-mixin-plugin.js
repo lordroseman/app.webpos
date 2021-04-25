@@ -114,6 +114,17 @@ if (!Vue.__helper__mixin__) {
 
         return canvas.toDataURL()
       },
+      hasValue(value) {
+        if (value) {
+          return true
+        }
+
+        if (value === '' || value === 0 || value === null) {
+          return false
+        } else {
+          return true
+        }
+      },
     },
   })
 }

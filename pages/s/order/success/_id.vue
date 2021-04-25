@@ -252,7 +252,7 @@ export default {
     totalDiscount() {
       let discount = 0
       for (const detail of this.transaction.details) {
-        discount += detail.discount_value * detail.quantity
+        discount += detail.discount_amount * detail.quantity
       }
 
       return discount
@@ -297,7 +297,7 @@ export default {
         for (const detail of this.transaction.details) {
           details += `${detail.quantity}${detail.item_unit} - ${
             detail.item_name
-          } @ ${this.toCurrency(detail.item_price)} `
+          } @ ${this.toCurrency(detail.item_price - detail.discount_amount)} `
         }
       }
 
