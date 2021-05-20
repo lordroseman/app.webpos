@@ -111,7 +111,6 @@ export default {
             data: {
               username: this.form.username,
               password: this.form.password,
-              device_name: 'access_token',
             },
           })
           .then((resp) => {

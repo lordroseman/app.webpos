@@ -1,7 +1,12 @@
 <template>
   <div>
     <v-divider />
-    <v-data-table :headers="headers" :items="payments">
+    <v-data-table
+      :headers="tblHeaders"
+      :items="payments"
+      show-expand
+      single-expand
+    >
       <template #[`item.amount`]="{ item }">
         {{ toCurrency(item.amount) }}
       </template>
@@ -16,6 +21,11 @@
         >
           <v-icon>mdi-delete</v-icon>
         </v-btn>
+      </template>
+      <template v-slot:expanded-item="{ headers, item }">
+        <td :colspan="headers.length">
+          <div class="px-5">Notes : {{ item.notes }}</div>
+        </td>
       </template>
     </v-data-table>
   </div>
@@ -36,13 +46,13 @@ export default {
   },
   data() {
     return {
-      headers: [
-        { text: 'Date', value: 'payment_date', width: 150 },
-        { text: 'Encoded by', value: 'user.name', width: 250 },
+      tblHeaders: [
+        { text: '', value: 'data-table-expand' },
+        { text: 'Date', value: 'payment_date' },
+        { text: 'Encoded by', value: 'user.name' },
         { text: 'Payment Method', value: 'option.name' },
         { text: 'Reference Number', value: 'reference_number' },
         { text: 'Amount', value: 'amount' },
-        { text: 'Notes', value: 'notes' },
         { text: '', value: 'action', width: 40, sortable: false },
       ],
     }

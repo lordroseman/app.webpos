@@ -1,63 +1,85 @@
 <template>
-  <v-container class="px-0">
-    <v-combobox
-      v-model="selected_label"
-      :items="labels"
-      item-text="title"
-      label="Transaction Label"
-      chips
-      outlined
-      solo
+  <v-container class="px-0" :style="styles">
+    <v-expansion-panels
+      v-model="panel"
+      multiple
       flat
-      :search-input.sync="search"
-      :readonly="!editable"
+      :readonly="$vuetify.breakpoint.lgAndUp"
     >
-      <template #selection="{ attrs, item, selected }">
-        <v-chip
-          v-if="item === Object(item)"
-          v-bind="attrs"
-          :color="`${getLabel(item.title, 'color')}`"
-          :input-value="selected"
-          label
-          small
-          :text-color="getLabel(item.title, 'icon-color')"
+      <v-expansion-panel style="background: transparent">
+        <v-combobox
+          v-model="selected_label"
+          :items="labels"
+          item-text="title"
+          label="Transaction Label"
+          chips
+          outlined
+          solo
+          flat
+          :search-input.sync="search"
+          :readonly="!editable"
+          hide-details
         >
-          <span class="pr-2">{{ item.title }}</span>
-        </v-chip>
-      </template>
-    </v-combobox>
-    <v-timeline dense style="max-height: 430px; overflow: hidden">
-      <v-scrollable :height="'405px'">
-        <v-timeline-item
-          v-for="tlabel in transactionLabels"
-          :key="tlabel.id"
-          :icon="getLabel(tlabel.label.title, 'icon')"
-          :icon-color="getLabel(tlabel.label.title, 'icon-color')"
-          :color="getLabel(tlabel.label.title, 'color')"
-          fill-dot
-        >
-          <div class="d-xl-flex mt-2">
+          <template #selection="{ attrs, item, selected }">
             <v-chip
-              class="white--text ml-0"
-              :color="getLabel(tlabel.label.title, 'color')"
+              v-if="item === Object(item)"
+              v-bind="attrs"
+              :color="`${getLabel(item.title, 'color')}`"
+              :input-value="selected"
               label
               small
+              :text-color="getLabel(item.title, 'icon-color')"
             >
-              {{ tlabel.label.title }}
+              <span class="pr-2">{{ item.title }}</span>
             </v-chip>
-            <div class="text--secondary text-caption mt-1 ml-auto">
-              {{ tlabel.user ? tlabel.user.name : '' }}
-            </div>
-            <div class="text--secondary text-caption ml-auto">
-              {{ tlabel.date_time }}
-            </div>
-          </div>
-          <div class="text-caption text--secondary font-italic">
-            {{ tlabel.remarks }}
-          </div>
-        </v-timeline-item>
-      </v-scrollable>
-    </v-timeline>
+          </template>
+        </v-combobox>
+
+        <v-expansion-panel-header>
+          History
+          <template v-slot:actions>
+            <v-icon color="primary"> $expand </v-icon>
+          </template>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <v-timeline
+            dense
+            :style="`max-height: ${timelineHeight}px; overflow: hidden`"
+          >
+            <v-scrollable :height="`${timelineHeight}px`">
+              <v-timeline-item
+                v-for="tlabel in transactionLabels"
+                :key="tlabel.id"
+                :icon="getLabel(tlabel.label.title, 'icon')"
+                :icon-color="getLabel(tlabel.label.title, 'icon-color')"
+                :color="getLabel(tlabel.label.title, 'color')"
+                fill-dot
+              >
+                <div class="d-xl-flex mt-2 flex-wrap">
+                  <v-chip
+                    class="white--text ml-0"
+                    :color="getLabel(tlabel.label.title, 'color')"
+                    label
+                    small
+                  >
+                    {{ tlabel.label.title }}
+                  </v-chip>
+                  <div class="text--secondary text-caption mt-1 ml-auto">
+                    {{ tlabel.user ? tlabel.user.name : '' }}
+                  </div>
+                  <div class="text--secondary text-caption ml-auto">
+                    {{ tlabel.date_time }}
+                  </div>
+                </div>
+                <div class="text-caption text--secondary font-italic">
+                  {{ tlabel.remarks }}
+                </div>
+              </v-timeline-item>
+            </v-scrollable>
+          </v-timeline>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+    </v-expansion-panels>
   </v-container>
 </template>
 
@@ -82,12 +104,17 @@ export default {
       type: Boolean,
       default: false,
     },
+    styles: {
+      type: Object,
+      default: () => {},
+    },
   },
 
   data() {
     return {
       selected_label: null,
       search: null,
+      panel: [0],
     }
   },
   computed: {
@@ -105,6 +132,15 @@ export default {
       }
 
       return options
+    },
+    timelineHeight() {
+      const scrn = this.$vuetify?.breakpoint.height ?? 600
+      const offset = 64 + 56 + 36 + 10 + 67
+
+      return scrn - offset
+    },
+    largeScreen() {
+      return this.$vuetify.breakpoint.lgAndUp
     },
   },
   watch: {
@@ -134,6 +170,13 @@ export default {
     transactionLabels(labels) {
       if (labels.length > 0) {
         this.setDefaultLbl()
+      }
+    },
+    largeScreen(value) {
+      if (value) {
+        this.panel = [0]
+      } else {
+        this.panel = []
       }
     },
   },
@@ -288,7 +331,7 @@ export default {
     setDefaultLbl() {
       if (this.transactionLabels.length > 0) {
         this.selected_label = this.getLabel(
-          this.transactionLabels[0].label.title
+          this.transactionLabels?.[0].label.title
         )
       } else {
         this.selected_label = null

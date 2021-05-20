@@ -1,297 +1,253 @@
 <template>
   <v-container fluid class="px-0 px-md-5">
-    <v-card class="mx-auto">
-      <v-card-title>
-        TXN# {{ txn_number }}
-        <v-spacer />
+    <div class="d-flex px-4 px-lg-0 align-items-center justify-between">
+      <h2 class="text-h5 font-weight-medium">TXN# {{ txn_number }}</h2>
 
-        <v-btn v-if="form.printed !== 1" rounded @click="print">
-          <v-icon>mdi-printer</v-icon>
-          Print
-        </v-btn>
+      <v-chip
+        v-if="form.status == 1"
+        class="ml-2 mt-1 px-3"
+        small
+        color="green"
+        text-color="white"
+      >
+        Open
+      </v-chip>
+      <v-chip
+        v-if="form.status == 2"
+        small
+        class="ml-2 mt-1"
+        color="red"
+        text-color="white"
+      >
+        CLOSE
+      </v-chip>
+      <v-spacer />
 
-        <v-btn
-          v-else
-          rounded
-          color="teal"
-          title="Reprint Transaction?"
-          dark
-          @click="print"
-        >
-          <v-icon>mdi-printer</v-icon>
-          Printed
-        </v-btn>
+      <v-btn
+        v-if="form.printed !== 1"
+        :icon="$vuetify.breakpoint.mobile"
+        text
+        @click="print"
+      >
+        <v-icon>mdi-printer</v-icon>
+        <span class="d-none d-lg-block">Print</span>
+      </v-btn>
 
-        <v-chip
-          v-if="form.status == 1"
-          class="ma-2"
-          color="green"
-          text-color="white"
-        >
-          Open
-        </v-chip>
-        <v-chip
-          v-if="form.status == 2"
-          class="ma-2"
-          color="red"
-          text-color="white"
-        >
-          CLOSE
-        </v-chip>
-      </v-card-title>
+      <v-btn
+        v-else
+        rounded
+        color="teal"
+        title="Reprint Transaction?"
+        dark
+        @click="print"
+      >
+        <v-icon>mdi-printer</v-icon>
+        Printed
+      </v-btn>
+    </div>
 
-      <v-row>
-        <v-col cols="12" md="3" order-md="last" class="pr-10 px-0">
-          <transaction-label
-            :paid="balance <= 0"
-            :transaction="form.originalData"
-            :transaction-labels="labels"
-            :editable="allowEditLabel"
-            @closeTransaction="form.status = 2"
-            @setDriver="setDriver"
-          />
-        </v-col>
-        <v-col cols="12" md="9">
-          <div class="d-flex">
-            <div class="flex-grow-1">
-              <v-row>
-                <v-col cols="12" sm="6">
-                  <v-simple-table>
-                    <template v-slot:default>
-                      <tbody>
-                        <tr>
-                          <td class="subtitle-2 font-weight-bold">
-                            Customer Name
-                          </td>
-                          <td>
-                            {{
-                              form.walkin === 1
-                                ? 'WALK-IN CUSTOMER'
-                                : form.customer_name
-                            }}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td class="font-weight-bold">Facebook Name</td>
-                          <td>
-                            {{ form.customer ? form.customer.fb_name : '' }}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </template>
-                  </v-simple-table>
-                </v-col>
-                <v-col cols="12" sm="6">
-                  <v-img
-                    v-if="hasBeenDeleted"
-                    :src="require('@/static/deleted.png')"
-                    class="mx-auto mb-5"
-                    width="350"
-                  />
-                </v-col>
-              </v-row>
-              <v-divider />
-              <v-row class="mx-auto">
-                <v-col cols="12" md="4" class="pl-2">
-                  <h3
-                    class="text-uppercase subtitle font-weight-bold mb-1 text-left"
-                  >
-                    Delivery Details
-                  </h3>
-                  <v-list>
-                    <v-list-item>
-                      <v-list-item-avatar>
-                        <v-icon>mdi-calendar</v-icon>
-                      </v-list-item-avatar>
-                      <v-list-item-content>
-                        <v-list-item-title>
-                          Deliver by: {{ form.delivery_date }}
-                        </v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item two-line>
-                      <v-list-item-avatar>
-                        <v-icon>mdi-truck-delivery</v-icon>
-                      </v-list-item-avatar>
-                      <v-list-item-content>
-                        <v-list-item-title>{{
-                          form.driver
-                            ? form.driver.fname + ' ' + form.driver.lname
-                            : 'No Driver'
-                        }}</v-list-item-title>
-                        <v-list-item-subtitle>
-                          {{ form.driver ? form.driver.vehicle_id : 'n/a' }} •
-                          {{ form.driver ? form.driver.driver_license : 'n/a' }}
-                        </v-list-item-subtitle>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item two-line>
-                      <v-list-item-avatar>
-                        <v-icon>mdi-map-marker-outline</v-icon>
-                      </v-list-item-avatar>
-                      <v-list-item-content>
-                        <v-list-item-title>{{
-                          form.customer_delivery_address
-                        }}</v-list-item-title>
-                        <v-list-item-subtitle>
-                          {{ form.barangay ? form.barangay.name : '' }},
-                          {{ form.city ? form.city.name : '' }}
-                        </v-list-item-subtitle>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-avatar>
-                        <v-icon>mdi-cellphone</v-icon>
-                      </v-list-item-avatar>
-                      <v-list-item-content>
-                        <v-list-item-title>{{
-                          form.customer_contact_number
-                        }}</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-avatar>
-                        <v-icon>mdi-email</v-icon>
-                      </v-list-item-avatar>
-                      <v-list-item-content>
-                        <v-list-item-title>{{
-                          form.customer ? form.customer.email : 'n/a'
-                        }}</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-avatar>
-                        <v-icon>mdi-note-text</v-icon>
-                      </v-list-item-avatar>
-                      <v-list-item-content two-line>
-                        <v-list-item-title>NOTES:</v-list-item-title>
-                        <v-list-item-subtitle>{{
-                          form.notes
-                        }}</v-list-item-subtitle>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-                </v-col>
-                <v-col cols="12" md="8">
-                  <static-map
-                    :lat="form.customer_geo_location_lat"
-                    :long="form.customer_geo_location_long"
-                    :height="400"
-                    :width="800"
-                  />
-                </v-col>
-              </v-row>
-            </div>
-            <v-divider vertical />
-          </div>
-        </v-col>
-      </v-row>
-      <v-divider />
-      <v-tabs fixed-tabs>
-        <v-tab href="#details"> Transaction Details </v-tab>
-        <v-tab href="#payments"> Payment History </v-tab>
-        <v-tab href="#history"> Transaction History </v-tab>
-        <v-tab-item value="details">
-          <transaction-detail-table :details="details" />
-        </v-tab-item>
-        <v-tab-item value="payments">
-          <v-divider />
-          <div class="d-flex flex-column">
-            <v-btn
-              v-if="allowAddPayment"
-              class="ml-3 mb-3 mr-auto"
-              color="success"
-              @click="showAddPayment = true"
-            >
-              <v-icon>mdi-cash</v-icon>Add Payment
-            </v-btn>
-            <payments
-              :payments.sync="payments"
-              :editable="editable"
-              @addLabel="(label) => labels.unshift(label)"
-            />
-          </div>
-        </v-tab-item>
-        <v-tab-item value="history">
-          <transaction-history :transaction="form.originalData" />
-        </v-tab-item>
-      </v-tabs>
+    <v-snackbar :timeout="-1" :value="hasBeenDeleted" color="red" top>
+      <div class="d-flex">
+        <v-icon class="mr-4">mdi-alert</v-icon>
 
-      <div class="my-5 d-lg-flex pb-10">
-        <div class="ml-3 order-md-1 order-lg-2">
-          <div class="d-flex flex-row px-8 py-1">
-            <div class="ml-auto">Sub Total</div>
-            <div class="ml-10 text-right" style="width: 200px">
-              {{ toCurrency(form.total_amount) }}
-            </div>
-          </div>
-          <v-divider style="width: 500px" class="ml-auto" />
-          <div class="d-flex flex-row px-8 py-1">
-            <div class="ml-auto">Discount</div>
-            <div class="ml-10 text-right" style="width: 200px">
-              {{ toCurrency(null) }}
-            </div>
-          </div>
-          <v-divider style="width: 500px" class="ml-auto" />
-          <div class="d-flex flex-row px-8 py-1">
-            <div class="ml-auto">Shipping</div>
-            <div class="ml-10 text-right" style="width: 200px">
-              {{ toCurrency(0) }}
-            </div>
-          </div>
-          <v-divider style="width: 500px" class="ml-auto" />
-          <div class="d-flex flex-row px-8 py-1">
-            <div class="ml-auto title">Total</div>
-            <div class="ml-10 text-right text-h5" style="width: 200px">
-              <span class="green--text">{{
-                toCurrency(form.total_amount)
-              }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="ml-auto order-md-2 order-lg-1">
-          <div class="d-flex flex-row px-8 py-1">
-            <div class="ml-auto">Payment Option</div>
-            <div class="ml-10 text-right" style="width: 200px">
-              {{ form.payment_option.name }}
-            </div>
-          </div>
-          <v-divider style="width: 500px" class="ml-auto" />
-          <div class="d-flex flex-row px-8 py-1">
-            <div class="ml-auto">Total Payment:</div>
-            <div class="ml-10 text-right" style="width: 200px">
-              {{ toCurrency(totalPayment) }}
-            </div>
-          </div>
-          <v-divider style="width: 500px" class="ml-auto" />
-          <div class="d-flex flex-row px-8 py-1">
-            <div class="ml-auto">Balance:</div>
-            <div class="ml-10 text-right" style="width: 200px">
-              {{ toCurrency(balance) }}
-            </div>
-          </div>
-          <v-divider style="width: 500px" class="ml-auto" />
-          <div class="d-flex flex-row px-8 py-1">
-            <div class="ml-auto">Payment Status:</div>
-            <div
-              v-if="balance > 0"
-              class="ml-10 text-right pink--text"
-              style="width: 200px"
-            >
-              UNPAID
-            </div>
-            <div
-              v-else
-              class="ml-10 text-right green--text"
-              style="width: 200px"
-            >
-              PAID
-            </div>
-          </div>
+        <div>
+          This Transaction has been <strong>deleted</strong> by another user.
+          Editing has been disabled. <br />
+          Please go back to
+          <nuxt-link to="/transaction" class="white--text font-weight-medium">
+            Transaction Lists
+          </nuxt-link>
         </div>
       </div>
-    </v-card>
+    </v-snackbar>
+
+    <div class="d-flex flex-wrap">
+      <div class="order-lg-last order-md-first ml-6" style="width: 24rem">
+        <transaction-label
+          :paid="balance <= 0"
+          :transaction="form.originalData"
+          :transaction-labels="labels || []"
+          :editable="allowEditLabel"
+          :styles="{ position: 'sticky', top: '60px' }"
+          @closeTransaction="form.status = 2"
+          @setDriver="setDriver"
+        />
+      </div>
+      <div class="flex-grow-1">
+        <v-card class="mt-3">
+          <v-card-title>Customer Information</v-card-title>
+          <v-card-text class="text--primary">
+            <v-row
+              v-for="(row, n) in customer_info"
+              :key="n"
+              :class="n % 2 === 0 ? 'grey lighten-4' : ''"
+            >
+              <v-col cols="12" sm="4">
+                <span class="grey--text text--darken-1 font-weight-medium">
+                  {{ row.title }}
+                </span>
+              </v-col>
+              <v-col cols="12" sm="8" class="d-flex">
+                <span class="grey--text text--darken-4">
+                  {{ row.value || 'n/a' }}
+                </span>
+
+                <v-btn
+                  v-if="row.title === 'Address' && hasMapDetails"
+                  class="ml-auto"
+                  x-small
+                  text
+                  color="primary"
+                  @click="showMap = true"
+                >
+                  Show Map
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
+
+        <v-card class="mt-5">
+          <v-card-title>Delivery Details</v-card-title>
+          <v-card-text class="text--primary">
+            <v-row
+              v-for="(row, n) in delivery_info"
+              :key="n"
+              :class="n % 2 === 0 ? 'grey lighten-4' : ''"
+            >
+              <v-col cols="12" sm="4">
+                <span class="grey--text text--darken-1 font-weight-medium">
+                  {{ row.title }}
+                </span>
+              </v-col>
+              <v-col cols="12" sm="8" class="d-flex">
+                <span class="grey--text text--darken-4">
+                  {{ row.value || 'n/a' }}
+                </span>
+
+                <v-btn
+                  v-if="row.title === 'Address'"
+                  class="ml-auto"
+                  x-small
+                  text
+                  color="primary"
+                >
+                  Show Map
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
+
+        <v-card class="mt-5">
+          <v-tabs fixed-tabs>
+            <v-tab href="#details"> Transaction Details </v-tab>
+            <v-tab href="#payments"> Payment History </v-tab>
+            <v-tab href="#history"> Transaction History </v-tab>
+            <v-tab-item value="details">
+              <transaction-detail-table :details="details" />
+            </v-tab-item>
+            <v-tab-item value="payments">
+              <v-divider />
+              <div class="d-flex flex-column">
+                <v-btn
+                  v-if="allowAddPayment"
+                  class="mr-3 my-1 ml-auto"
+                  color="success"
+                  text
+                  @click="showAddPayment = true"
+                >
+                  <v-icon left>mdi-cash</v-icon>Add Payment
+                </v-btn>
+                <payments
+                  :payments.sync="payments"
+                  :editable="editable"
+                  @addLabel="(label) => labels.unshift(label)"
+                />
+              </div>
+            </v-tab-item>
+            <v-tab-item value="history">
+              <transaction-history :transaction="form.originalData" />
+            </v-tab-item>
+          </v-tabs>
+
+          <div class="my-5 d-lg-flex pb-10">
+            <div class="ml-3 order-md-1 order-lg-2">
+              <div class="d-flex flex-row px-8 py-1">
+                <div class="ml-auto">Sub Total</div>
+                <div class="ml-10 text-right" style="width: 100px">
+                  {{ toCurrency(form.total_amount) }}
+                </div>
+              </div>
+
+              <div class="d-flex flex-row px-8 py-1">
+                <div class="ml-auto">Discount</div>
+                <div class="ml-10 text-right" style="width: 100px">
+                  {{ toCurrency(null) }}
+                </div>
+              </div>
+
+              <div class="d-flex flex-row px-8 py-1">
+                <div class="ml-auto">Shipping</div>
+                <div class="ml-10 text-right" style="width: 100px">
+                  {{ toCurrency(0) }}
+                </div>
+              </div>
+
+              <div class="d-flex flex-row px-8 py-1">
+                <div class="ml-auto title">Total</div>
+                <div class="ml-10 text-right text-h5" style="width: 100px">
+                  <span class="green--text">{{
+                    toCurrency(form.total_amount)
+                  }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="ml-auto order-md-2 order-lg-1">
+              <div class="d-flex flex-row px-8 py-1">
+                <div class="ml-auto">Payment Option</div>
+                <div class="ml-10 text-right" style="width: 100px">
+                  {{ form.payment_option.name }}
+                </div>
+              </div>
+
+              <div class="d-flex flex-row px-8 py-1">
+                <div class="ml-auto">Total Payment:</div>
+                <div class="ml-10 text-right" style="width: 100px">
+                  {{ toCurrency(totalPayment) }}
+                </div>
+              </div>
+
+              <div class="d-flex flex-row px-8 py-1">
+                <div class="ml-auto">Balance:</div>
+                <div class="ml-10 text-right" style="width: 100px">
+                  {{ toCurrency(balance) }}
+                </div>
+              </div>
+
+              <div class="d-flex flex-row px-8 py-1">
+                <div class="ml-auto">Payment Status:</div>
+                <div
+                  v-if="balance > 0"
+                  class="ml-10 text-right pink--text"
+                  style="width: 100px"
+                >
+                  UNPAID
+                </div>
+                <div
+                  v-else
+                  class="ml-10 text-right green--text"
+                  style="width: 100px"
+                >
+                  PAID
+                </div>
+              </div>
+            </div>
+          </div>
+        </v-card>
+      </div>
+    </div>
 
     <add-payment
       :show.sync="showAddPayment"
@@ -325,6 +281,35 @@
         <template #title> TRANSACTION REPORT </template>
       </report-viewer>
     </v-dialog>
+
+    <v-dialog
+      v-model="showMap"
+      persistent
+      max-width="800"
+      :fullscreen="$vuetify.breakpoint.mobile"
+    >
+      <v-card>
+        <v-card-title class="headline"> Google Map </v-card-title>
+        <v-card-text class="px-0 pb-0">
+          <address-map
+            :lat="form.customer_geo_location_lat"
+            :lng="form.customer_geo_location_long"
+            :disable-marker="true"
+            :height="
+              $vuetify.breakpoint.mobile
+                ? $vuetify.breakpoint.height - 130
+                : 500
+            "
+          ></address-map>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="green darken-1" text @click="showMap = false">
+            Close
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -349,14 +334,12 @@ export default {
         'payments.option',
         'payments.user',
         'barangay',
-        'city'
+        'city',
+        'labels.label'
       )
       .first()
 
-    const transaction = new $api.Transaction({ id: params.id })
-    const labels = await transaction.labels().get()
-
-    return { data: resp, labels }
+    return { data: resp }
   },
   data() {
     return {
@@ -395,6 +378,7 @@ export default {
       pdfSrc: '',
       showReport: false,
       rptParam: null,
+      showMap: false,
     }
   },
   computed: {
@@ -403,6 +387,42 @@ export default {
     }),
     id() {
       return this.padStart(this.form.id, 5, 0)
+    },
+    customer_info() {
+      const info = [
+        {
+          title: 'Customer Name',
+          value:
+            this.form.walkin === 1
+              ? 'WALK-IN CUSTOMER'
+              : this.form.customer_name,
+        },
+        { title: 'Facebook Name', value: this.form.customer?.fb_name },
+        { title: 'Contact Number', value: this.form.customer_contact_number },
+        { title: 'Email', value: this.form.email },
+        {
+          title: 'Address',
+          value: `${this.form.customer_delivery_address}
+                          ${this.form.barangay?.name},
+                          ${this.form.city?.name}`,
+        },
+      ]
+
+      return info
+    },
+    delivery_info() {
+      const info = [
+        { title: 'Delivery Date', value: this.form.delivery_date },
+        { title: 'Driver', value: this.form.driver?.name },
+        { title: 'Delivery Notes', value: this.form.notes },
+      ]
+      return info
+    },
+    hasMapDetails() {
+      return (
+        this.form.customer_geo_location_lat &&
+        this.form.customer_geo_location_long
+      )
     },
     totalPayment() {
       let total = 0
@@ -484,6 +504,7 @@ export default {
       this.payments = data.payments
       this.history = data.history
       this.txn_number = data.txn_number
+      this.labels = data.labels
     },
     setDriver(driver) {
       this.form.driver = driver
@@ -553,6 +574,7 @@ export default {
 
       this.showReport = true
     },
+
     transactionPrinted() {
       if (this.form.printed !== 1) {
         const transaction = new this.$api.Transaction({

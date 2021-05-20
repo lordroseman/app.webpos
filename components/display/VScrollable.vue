@@ -1,5 +1,5 @@
 <template>
-  <div :class="scrollbarTheme" class="scrollable" :style="style">
+  <div :class="scrollbarTheme" :style="style">
     <slot />
   </div>
 </template>
@@ -22,11 +22,14 @@ export default {
   },
   computed: {
     scrollbarTheme() {
+      let theme = ''
       if (!this.theme) {
-        return this.$vuetify.theme.dark ? 'dark' : 'light'
+        theme = this.$vuetify.theme.dark ? 'dark' : 'light'
       } else {
-        return this.theme
+        theme = this.theme
       }
+
+      return this.$vuetify.breakpoint.mobile ? ' ' : theme + this.scrollClass
     },
     style() {
       return {
@@ -34,6 +37,9 @@ export default {
         'overflow-x': 'hidden',
         'overflow-y': this.persistent ? 'auto' : 'hidden',
       }
+    },
+    scrollClass() {
+      return ' scrollable '
     },
   },
 }

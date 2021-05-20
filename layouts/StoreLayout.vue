@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div class="page-gray"></div>
     <v-app>
       <appbar />
 

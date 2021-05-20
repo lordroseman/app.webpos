@@ -63,7 +63,7 @@
             <v-divider />
             <v-card-text class="text--primary">
               <v-row>
-                <v-col cols="12" sm="6">
+                <v-col cols="12" sm="12">
                   <div v-if="transaction.customer">
                     <div class="title">{{ transaction.customer_name }}</div>
                     <div>{{ transaction.customer.email }}</div>

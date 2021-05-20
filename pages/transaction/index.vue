@@ -129,7 +129,7 @@ export default {
           text: 'TXN #',
           align: 'start',
           sortable: true,
-          value: 'id',
+          value: 'txn_number',
         },
         { text: 'Customer', value: 'customer_name' },
         { text: 'Store', value: 'store.name' },

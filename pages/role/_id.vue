@@ -131,6 +131,7 @@ export default {
         'Item Unit',
         'City',
         'Driver',
+        'Discount',
         'User',
         'Role',
       ],

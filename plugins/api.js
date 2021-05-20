@@ -3,6 +3,7 @@ import InventoryAdjustment from '@/models/InventoryAdjustment'
 import Store from '@/models/Store'
 import Customer from '@/models/Customer'
 import CustomerAddress from '@/models/CustomerAddress'
+import Discount from '@/models/Discount'
 import Report from '@/models/Report'
 
 export default ({ $axios }, inject) => {
@@ -13,6 +14,7 @@ export default ({ $axios }, inject) => {
     Customer,
     CustomerAddress,
     Report,
+    Discount,
   }
 
   inject('api', api)

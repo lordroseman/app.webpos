@@ -1,16 +1,15 @@
 <template>
   <v-scrollable :height="`calc(100vh - 64px)`">
     <div class="d-flex align-stretch" style="height: 100%">
-      <div class="board" style="width: 100%">
+      <div class="board d-flex" style="width: 100%">
         <v-row>
-          <v-col cols="12" lg="4" class="pa-0">
+          <v-col cols="12" lg="4" class="pa-0 d-flex">
             <v-card
               elevation="0"
               class="flex-grow-1"
               outlined
               color="green accent-1"
               scrollable
-              max-height="800px"
               tile
             >
               <v-card-title>
@@ -53,14 +52,13 @@
               </v-card-text>
             </v-card>
           </v-col>
-          <v-col cols="12" lg="4" class="pa-0">
+          <v-col cols="12" lg="4" class="pa-0 d-flex">
             <v-card
               elevation="0"
               class="flex-grow-1"
               outlined
               color="amber accent-1"
               scrollable
-              max-height="800px"
               tile
             >
               <v-card-title>OPEN</v-card-title>
@@ -100,14 +98,13 @@
               </v-card-text>
             </v-card>
           </v-col>
-          <v-col cols="12" lg="4" class="pa-0">
+          <v-col cols="12" lg="4" class="pa-0 d-flex">
             <v-card
               elevation="0"
               class="flex-grow-1"
               outlined
               color="blue accent-1"
               scrollable
-              max-height="800px"
               tile
             >
               <v-card-title>CLOSE</v-card-title>

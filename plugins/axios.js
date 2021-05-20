@@ -21,6 +21,16 @@ export default function ({ $axios, $auth }) {
       }).then(() => {
         window.location.reload()
       })
+    } else {
+      // eslint-disable-next-line no-console
+      console.log(error)
+      Swal.fire({
+        icon: 'warning',
+        title: 'Oops...',
+        text: error.message,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+      }).then(() => {})
     }
   })
 }

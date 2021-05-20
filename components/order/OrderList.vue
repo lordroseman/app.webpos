@@ -242,9 +242,13 @@ export default {
       }
 
       if (this.cart.length > 0) {
-        params.details = this.cart.filter((i) => {
+        const details = this.cart.filter((i) => {
           return i._state && i._state !== ''
         })
+
+        if (details.length > 0) {
+          params.details = details
+        }
       }
 
       if (this.payments.length > 0) {
@@ -354,17 +358,19 @@ export default {
       this.dialog = false
     },
     settle() {
-      if (
-        !this.params.details ||
-        Object.entries(this.params.details).length === 0
-      ) {
-        this.$swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Please select items',
-          footer: '<a href>Why do I have this issue?</a>',
-        })
-        return
+      if (this.mode !== 'edit') {
+        if (
+          !this.params.details ||
+          Object.entries(this.params.details).length === 0
+        ) {
+          this.$swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Please select items',
+            footer: '<a href>Why do I have this issue?</a>',
+          })
+          return
+        }
       }
 
       if (this.transactionSendingStatus === 1) {

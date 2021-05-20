@@ -144,7 +144,7 @@ export default {
           text: 'TXN #',
           align: 'start',
           sortable: true,
-          value: 'id',
+          value: 'txn_number',
         },
         { text: 'Customer', value: 'customer_name' },
         { text: 'TXN Date', value: 'txn_date' },

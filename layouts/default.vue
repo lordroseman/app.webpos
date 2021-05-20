@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="bg"></div>
+    <div class="page-gray"></div>
     <v-app :dark="true" style="overflow-none">
       <app-bar />
       <nav-drawer />

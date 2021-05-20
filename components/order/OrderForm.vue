@@ -404,6 +404,10 @@ export default {
         this.$v.$reset()
         this.errors.clear()
         document.getElementsByClassName('v-dialog--active')[0].scrollTop = 0
+
+        if (this.form.delivery_date) {
+          this.dateFormatted = this.formatDate(this.form.delivery_date)
+        }
       }
     },
     'form.delivery_date'(val) {
@@ -483,6 +487,10 @@ export default {
       this.form.customer.text =
         this.form.customer.email + ' ' + this.form.customer.full_name
       // this.search = this.form.customer.full_name
+    }
+
+    if (this.form.delivery_date) {
+      this.dateFormatted = this.formatDate(this.form.delivery_date)
     }
   },
   methods: {

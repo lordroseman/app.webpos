@@ -235,6 +235,13 @@ export default {
               permission: 'Driver:View',
             },
             {
+              title: 'Discount',
+              icon: 'mdi-ticket-percent',
+              to: '/discount',
+              exact: true,
+              permission: 'Discount:View',
+            },
+            {
               title: 'System User',
               icon: 'mdi-account',
               to: '/user',
