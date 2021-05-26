@@ -278,7 +278,7 @@ export default {
         .get()
         .then((resp) => {
           vm.transactions = resp.data
-          vm.total = resp.total
+          vm.total = resp.meta.total
         })
         .finally(() => {
           vm.loading = false
