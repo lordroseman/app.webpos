@@ -250,7 +250,7 @@ export default {
           .include('details', 'labels')
           .get()
 
-        this.transactions = transactions
+        this.transactions = transactions.data
         this.backdoor++
       }
     },
