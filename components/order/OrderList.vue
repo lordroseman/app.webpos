@@ -195,6 +195,7 @@
         :payments="payments"
         :total-amount="form.total_amount"
         :show-payment-dialog.sync="showPaymentDialog"
+        :transaction-notes.sync="form.notes"
         @savePayment="savePayment"
       ></walkin-payment>
     </v-dialog>

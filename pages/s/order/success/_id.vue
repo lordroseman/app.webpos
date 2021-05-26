@@ -216,18 +216,24 @@
 import { mapState } from 'vuex'
 export default {
   async asyncData(ctx) {
-    const { $api, params, error } = ctx
-    return await $api.Transaction.find(params.id)
-      .then((resp) => {
-        return { transaction: resp }
-      })
-      .catch((e) => {
-        // eslint-disable-next-line no-console
-        console.log(
-          error({ statusCode: 404, message: 'Transaction not found' })
-        )
-        // redirect(404, '/error')
-      })
+    const { $api, params } = ctx
+
+    const resp = await $api.Transaction.custom('transaction/search')
+      .where('id', params.id)
+      .include(
+        'details.item',
+        'payment_option',
+        'user',
+        'customer',
+        'payments.option',
+        'payments.user',
+        'barangay',
+        'city',
+        'labels.label'
+      )
+      .first()
+
+    return { transaction: resp }
   },
   layout: 'StoreLayout',
   meta: {
@@ -237,7 +243,6 @@ export default {
   },
   data() {
     return {
-      transaction: {},
       snackbar: false,
       pdfSrc: '',
       showReport: false,
@@ -251,8 +256,10 @@ export default {
     }),
     totalDiscount() {
       let discount = 0
-      for (const detail of this.transaction.details) {
-        discount += detail.discount_amount * detail.quantity
+      if (this.transaction) {
+        for (const detail of this.transaction?.details) {
+          discount += detail.discount_amount * detail.quantity
+        }
       }
 
       return discount
@@ -264,7 +271,7 @@ export default {
       )
     },
     address() {
-      if (this.transaction.walkin === 1) {
+      if (this.transaction?.walkin === 1) {
         return ''
       }
 
@@ -284,7 +291,7 @@ export default {
   },
   methods: {
     showText(field) {
-      if (this.transaction.walkin === 1) {
+      if (this.transaction?.walkin === 1) {
         return ''
       } else {
       }
@@ -303,7 +310,7 @@ export default {
 
       let address = 'n/a'
       let fbName = 'n/a'
-      if (this.transaction.walkin === 0) {
+      if (this.transaction?.walkin === 0) {
         address = `${this.transaction.customer_delivery_address}, ${this.transaction.barangay.name}, ${this.transaction.city.name}`
         fbName = this.transaction.customer.fb_name
       }

@@ -69,7 +69,7 @@
           <div class="my-auto text-subtitle-2">Total Amount</div>
           <div class="ml-auto">{{ toCurrency(totalAmount) }}</div>
         </div>
-        <div class="d-flex">
+        <div class="d-flex py-2">
           <div class="my-auto text-subtitle-2">Transaction/Reference No.</div>
           <div class="ml-auto">
             <v-text-field
@@ -82,11 +82,27 @@
               :color="color.primary"
               hide-details
               reverse
-              @keydown.enter="save"
             ></v-text-field>
           </div>
         </div>
       </template>
+      <v-divider />
+      <div class="d-flex flex-column mt-3">
+        <div class="my-auto text-subtitle-2">Notes</div>
+        <div class="">
+          <v-textarea
+            v-model="transaction_notes"
+            outlined
+            solo
+            flat
+            dense
+            :color="color.primary"
+            hide-details
+            auto-grow
+            rows="3"
+          ></v-textarea>
+        </div>
+      </div>
     </v-card-text>
     <v-divider />
     <v-card-actions class="mt-auto">
@@ -115,6 +131,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    transactionNotes: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -127,6 +147,7 @@ export default {
       ],
       reference_no: null,
       notes_txt: null,
+      transaction_notes: null,
     }
   },
   computed: {
@@ -206,6 +227,7 @@ export default {
         reference_number: this.reference_no,
         notes: this.notes,
       }
+      this.$emit('update:transactionNotes', this.transaction_notes)
       this.$emit('savePayment', payment)
     },
     clear() {
