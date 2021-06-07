@@ -134,6 +134,7 @@ export default {
         'Discount',
         'User',
         'Role',
+        'Sub-Category',
       ],
       activeModules: [],
       permission: {},
