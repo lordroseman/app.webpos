@@ -48,7 +48,9 @@
           <template #[`item.category`]="{ item }">
             {{ item.category.title }}
           </template>
-
+          <template #[`item.subcategory`]="{ item }">
+            {{ item.subcategory ? item.subcategory.title : '' }}
+          </template>
           <template #[`item.selling_price`]="{ item }">
             {{ toCurrency(item.selling_price) }}
           </template>
@@ -157,6 +159,7 @@ export default {
         },
         { text: 'Name', value: 'name' },
         { text: 'Category', value: 'category' },
+        { text: 'Sub-Category', value: 'subcategory' },
         {
           text: 'Actions',
           value: 'actions',

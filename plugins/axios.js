@@ -6,8 +6,18 @@ export default function ({ $axios, $auth }) {
 
     if (error.response.status === 500) {
       // eslint-disable-next-line no-console
-      console.log(error)
+      console.log("Oops!, there's something wrong in the server.")
       // redirect('/sorry')
+    } else if (error.response.status === 499) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Oops...',
+        text: 'Your antivirus is blocking the loading resources.',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+      }).then(() => {
+        window.location.reload()
+      })
     } else if (error.response.status === 401) {
       // alert('You have been logout, Page will reload')
       // window.location.reload()

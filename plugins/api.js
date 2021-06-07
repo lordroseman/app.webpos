@@ -5,6 +5,7 @@ import Customer from '@/models/Customer'
 import CustomerAddress from '@/models/CustomerAddress'
 import Discount from '@/models/Discount'
 import Report from '@/models/Report'
+import SubCategory from '@/models/SubCategory'
 
 export default ({ $axios }, inject) => {
   const api = {
@@ -15,6 +16,7 @@ export default ({ $axios }, inject) => {
     CustomerAddress,
     Report,
     Discount,
+    SubCategory,
   }
 
   inject('api', api)

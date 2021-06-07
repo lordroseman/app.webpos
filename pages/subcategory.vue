@@ -5,18 +5,18 @@
         <v-dialog v-model="dialog" max-width="500px" persistent>
           <template v-slot:activator="{ on }">
             <v-btn
-              v-if="$can('Discount:Add')"
+              v-if="$can('Sub-Category:Add')"
               color="success"
               dark
               class="mb-2"
               rounded
               v-on="on"
             >
-              <v-icon>mdi-plus</v-icon>New Discount
+              <v-icon>mdi-plus</v-icon>New
             </v-btn>
           </template>
 
-          <discount-form :data="selected_discount" @close="closeForm" />
+          <sub-category-form :data="selected_subcategory" @close="closeForm" />
         </v-dialog>
         <v-spacer />
         <v-spacer />
@@ -34,21 +34,11 @@
         class="mx-auto"
         :loading="loading"
       >
-        <v-data-table :headers="headers" :items="discounts" :search="search">
-          <template #[`item.active`]="{ item }">
-            <v-chip
-              v-if="item.active == 1"
-              color="green"
-              class="ma-2"
-              text-color="white"
-              x-small
-            >
-              Active
-            </v-chip>
-            <v-chip v-else color="grey" class="ma-2" text-color="white" x-small>
-              Inactive
-            </v-chip>
-          </template>
+        <v-data-table
+          :headers="headers"
+          :items="subcategories"
+          :search="search"
+        >
           <template #[`item.actions`]="{ item }">
             <v-hover v-slot:default="{ hover }">
               <v-speed-dial
@@ -67,7 +57,7 @@
                     <v-icon>mdi-pencil</v-icon>
                   </v-btn>
                   <v-btn
-                    v-if="$can('Discount:Delete')"
+                    v-if="$can('Sub-Category:Delete')"
                     fab
                     dark
                     x-small
@@ -87,50 +77,21 @@
 </template>
 
 <script>
+import EventBus from '@/components/core/event-bus'
 export default {
   meta: {
-    label: 'Discount Registry',
-    permission: 'Discount:View',
+    label: 'Sub-Category',
+    permission: 'Sub-Category:View',
     access_level: 1,
   },
   data() {
     return {
       headers: [
         {
-          text: 'Code',
-          align: 'start',
-          sortable: true,
-          value: 'code',
-        },
-        {
           text: 'Title',
           align: 'start',
           sortable: true,
-          value: 'short_desc',
-        },
-        {
-          text: 'Description',
-          align: 'start',
-          sortable: true,
-          value: 'long_desc',
-        },
-        {
-          text: 'Discount Type',
-          align: 'start',
-          sortable: true,
-          value: 'type',
-        },
-        {
-          text: 'Max Amount',
-          align: 'end',
-          sortable: true,
-          value: 'max_amount',
-        },
-        {
-          text: 'Active',
-          align: 'middle',
-          sortable: true,
-          value: 'active',
+          value: 'title',
         },
         {
           text: 'Actions',
@@ -140,26 +101,45 @@ export default {
           width: '40',
         },
       ],
-      loading: false,
-      selected_discount: null,
-      search: '',
+      options: {},
       dialog: false,
-      discounts: [],
+      search: '',
+      selected_subcategory: {},
+      loading: true,
+      subcategories: [],
     }
   },
   beforeMount() {
-    this.$store.dispatch('app/setNavHeader', 'Discount Registry')
+    this.$store.dispatch('app/setNavHeader', 'Subcategory')
   },
-  mounted() {},
+  mounted() {
+    EventBus.$on('newSubCategory', this.addSubCategory)
+    EventBus.$on('editSubCategory', this.updateSubCategory)
+    this.loadCateogries()
+  },
   methods: {
+    async loadCateogries() {
+      this.subcategories = await this.$api.SubCategory.get()
+      this.loading = false
+    },
+    addSubCategory(category) {
+      this.subcategories.push(category)
+    },
+    updateSubCategory(category) {
+      const ind = this.subcategories.findIndex((i) => i.id === category.id)
+
+      if (ind > -1) {
+        this.subcategories[ind].title = category.title
+      }
+    },
     close() {
       this.dialog = false
     },
-    edit(discount) {
-      this.selected_discount = discount
+    edit(subcategory) {
+      this.selected_subcategory = subcategory
       this.dialog = true
     },
-    remove(discount) {
+    remove(subcategory) {
       this.$swal
         .fire({
           title: 'Are you sure?',
@@ -172,21 +152,7 @@ export default {
           showLoaderOnConfirm: true,
           preConfirm: (e) => {
             return new Promise((resolve, reject) => {
-              this.$store.dispatch('discount/deleteDiscount', discount.id)
-              const vue = discount
-              this.$store.watch(
-                this.$store.getters['discount/getDiscountDeletingStatus'],
-                function () {
-                  if (vue.discountDeletingStatus === 2) {
-                    resolve(true)
-                  } else if (vue.discountDeletingStatus === 3) {
-                    reject(this.errors)
-                    this.$swal.showValidationMessage(
-                      `Request failed: ${this.errors.message}`
-                    )
-                  }
-                }
-              )
+              resolve(subcategory.delete())
             })
           },
         })
@@ -194,21 +160,32 @@ export default {
           if (result.value) {
             this.$swal.fire(
               'Deleted!',
-              'Discount  has been deleted.',
+              'Subcategory  has been deleted.',
               'success'
             )
+            this.removeSubcategory(subcategory)
           }
         })
     },
     closeForm() {
       this.dialog = false
-      this.selected_discount = {}
+      this.selected_subcategory = {}
+    },
+    removeSubcategory(subcategory) {
+      const ind = this.subcategories.findIndex((i) => i.id === subcategory.id)
+      if (ind > -1) {
+        this.subcategories.splice(ind, 1)
+      }
     },
   },
   head: {
-    title: 'Discount Registry',
+    title: 'Sub-Category',
   },
 }
 </script>
 
-<style></style>
+<style>
+.v-speed-dial__list {
+  padding: 0 0 !important;
+}
+</style>

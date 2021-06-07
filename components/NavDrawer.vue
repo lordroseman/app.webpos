@@ -208,10 +208,17 @@ export default {
             },
             {
               title: 'Category',
-              icon: 'mdi-sitemap',
+              icon: 'mdi-shape',
               to: '/category',
               exact: true,
               permission: 'Category:View',
+            },
+            {
+              title: 'Sub-Category',
+              icon: 'mdi-shape-plus',
+              to: '/subcategory',
+              exact: true,
+              permission: 'Sub-Category:View',
             },
             {
               title: 'Item Unit',

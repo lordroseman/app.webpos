@@ -54,7 +54,7 @@
 
 <script>
 import { required } from 'vuelidate/lib/validators'
-import { mapGetters } from 'vuex'
+
 import { isEmpty } from 'lodash'
 import Form from '~/components/core/Form.js'
 import FormValidationMixins from '~/plugins/FormValidationMixins.vue'

@@ -19,7 +19,7 @@ export const actions = {
     await this.$axios
       .get('/laravel/api/city')
       .then(function (response) {
-        commit('setCities', response.data)
+        commit('setCities', response.data.data)
         commit('setCitiesLoadStatus', 2)
       })
       .catch(function () {

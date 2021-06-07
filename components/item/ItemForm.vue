@@ -48,7 +48,7 @@
                   :readonly="!editable"
                 />
               </v-col>
-              <v-col cols="12" sm="6">
+              <v-col cols="12">
                 <v-select
                   v-model="form.item_unit_id"
                   :items="item_units"
@@ -59,7 +59,7 @@
                   :readonly="!editable"
                 />
               </v-col>
-              <v-col cols="12" sm="6">
+              <v-col cols="12">
                 <v-select
                   v-model="form.category_id"
                   :items="categories"
@@ -67,6 +67,17 @@
                   item-value="id"
                   label="Category"
                   :error-messages="errors.getAll('category_id')"
+                  :readonly="!editable"
+                />
+              </v-col>
+              <v-col cols="12">
+                <v-select
+                  v-model="form.subcategory_id"
+                  :items="subcategories"
+                  item-text="title"
+                  item-value="id"
+                  label="Sub-Category"
+                  :error-messages="errors.getAll('subcategory_id')"
                   :readonly="!editable"
                 />
               </v-col>
@@ -128,6 +139,7 @@ export default {
         selling_price: null,
         cost: null,
         img: '',
+        subcategory_id: null,
       }),
       errors: new Errors(),
       attributes: {
@@ -139,6 +151,7 @@ export default {
       custom_message: {
         required_sku: 'SKU is required',
       },
+      subcategories: [],
     }
   },
   validations: {
@@ -235,6 +248,7 @@ export default {
     if (this.itemUnitsLoadStatus() !== 2) {
       this.$store.dispatch('unit/loadItemUnits')
     }
+    this.loadSubCategories()
   },
   methods: {
     setForm() {
@@ -274,6 +288,9 @@ export default {
     close() {
       this.clear()
       this.$emit('close')
+    },
+    async loadSubCategories() {
+      this.subcategories = await this.$api.SubCategory.get()
     },
   },
 }

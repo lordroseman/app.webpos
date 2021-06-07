@@ -44,9 +44,13 @@
             <v-text-field
               v-model="selectedDate"
               label="Select Delivery Date"
-              prepend-icon="mdi-calendar"
+              append-inner-icon="mdi-calendar"
               readonly
+              dense
               v-bind="attrs"
+              outlined
+              class="mt-4"
+              hide-details
               v-on="on"
             ></v-text-field>
           </template>
@@ -56,11 +60,37 @@
             <v-btn text color="primary" @click="savePickerMenu"> OK </v-btn>
           </v-date-picker>
         </v-menu>
+        <v-combobox
+          v-model="category"
+          label="Category"
+          outlined
+          :items="categories"
+          item-text="title"
+          item-value="id"
+          dense
+          :hide-details="true"
+          class="mt-4"
+          clearable
+        >
+        </v-combobox>
+        <v-combobox
+          v-model="subcategory"
+          label="Sub-Category"
+          outlined
+          :items="subcategories"
+          item-text="title"
+          item-value="id"
+          dense
+          :hide-details="true"
+          class="mt-4"
+          clearable
+        >
+        </v-combobox>
         <div>
           <v-spacer />
           <v-btn
             text
-            class="float-right"
+            class="float-right mt-4"
             color="blue"
             :loading="loading"
             @click="print"
@@ -93,12 +123,17 @@ export default {
       hasSidebar: true,
       menu: false,
       dates: [],
+      subcategories: [],
+      category: null,
+      subcategory: null,
     }
   },
   computed: {
     ...mapState({
       stores: (state) => state.store.stores,
       storesLoadStatus: (state) => state.store.storesLoadStatus,
+      categories: (state) => state.category.categories,
+      categoriesLoadStatus: (state) => state.category.categoriesLoadStatus,
     }),
     dateFrom() {
       return this.dates[0] || null
@@ -121,6 +156,28 @@ export default {
 
       return null
     },
+    controls() {
+      let dateTo = this.dateTo
+      if (this.dates.length === 1) {
+        dateTo = this.dateFrom
+      }
+
+      const controls = {
+        store_id: this.store.id,
+        dateFrom: this.dateFrom,
+        dateTo,
+      }
+
+      if (this.category) {
+        controls.category = this.category
+      }
+
+      if (this.subcategory) {
+        controls.subcategory = this.subcategory
+      }
+
+      return controls
+    },
   },
   beforeMount() {
     this.$store.dispatch('app/setNavHeader', 'Product Movement Report')
@@ -129,8 +186,15 @@ export default {
     if (this.storesLoadStatus !== 2) {
       this.$store.dispatch('store/loadStores')
     }
+    if (this.storesLoadStatus !== 2) {
+      this.$store.dispatch('category/loadCategories')
+    }
+    this.loadSubCategories()
   },
   methods: {
+    async loadSubCategories() {
+      this.subcategories = await this.$api.SubCategory.get()
+    },
     savePickerMenu() {
       this.dates.sort()
       this.$refs.menu.save(this.dates)
@@ -141,18 +205,10 @@ export default {
       }
 
       this.loading = true
-      let dateTo = this.dateTo
-      if (this.dates.length === 1) {
-        dateTo = this.dateFrom
-      }
 
       this.pdfSrc = '/laravel/api/report'
       this.rptParam = {
-        controls: {
-          store_id: this.store.id,
-          dateFrom: this.dateFrom,
-          dateTo,
-        },
+        controls: this.controls,
         report: 'DailyProductMovement',
         store: this.store.id,
       }

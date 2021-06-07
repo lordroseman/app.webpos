@@ -105,11 +105,11 @@ export default {
   },
   computed: {
     ...mapGetters({
-      cities: 'city/getCities',
       citiesLoadStatus: 'city/getCitiesLoadStatus',
       cityDeletingStatus: 'city/getCityDeletingStatus',
     }),
     ...mapState({
+      cities: (state) => state.city.cities,
       errors: (state) => state.city.errors,
     }),
     loading() {

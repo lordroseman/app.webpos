@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="page-gray"></div>
-    <v-app :dark="true" style="overflow-none">
+    <v-app :dark="true" class="overflow-none">
       <app-bar />
       <nav-drawer />
       <v-scrollable :height="'calc(100vh )'">
