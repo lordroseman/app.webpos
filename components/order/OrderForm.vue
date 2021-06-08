@@ -527,7 +527,8 @@ export default {
       customers
         .include('address')
         .get()
-        .then((res) => {
+        .then((response) => {
+          const res = response.data
           vm.customers = res.map((obj) => ({
             ...obj,
             name: `${obj.fname} ${obj.lname}`,
