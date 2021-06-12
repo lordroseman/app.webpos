@@ -25,8 +25,8 @@ class Form {
    */
   set(data) {
     for (const field in this.defaultValues) {
-      this[field] = data[field]
-      this.originalData[field] = data[field]
+      this[field] = data[field] ? data[field] : this.defaultValues[field]
+      this.originalData[field] = this[field]
     }
 
     this.errors = new Errors()

@@ -53,6 +53,9 @@
         <div class="display-1 text-center" :style="`color: ${color.primary}`">
           <div>Your Order has been saved!</div>
         </div>
+        <div class="text-h4 text-center text--secondary">
+          <div>Order # {{ transaction.txn_number }}</div>
+        </div>
       </div>
       <v-row>
         <v-col cols="12" sm="5">
@@ -288,6 +291,9 @@ export default {
 
       return address
     },
+  },
+  mounted() {
+    this.$store.dispatch('cart/clearCart')
   },
   methods: {
     showText(field) {

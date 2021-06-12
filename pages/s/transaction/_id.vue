@@ -391,6 +391,7 @@ export default {
         printed: null,
         date_printed: null,
         walkin: null,
+        txn_number: null,
       }),
       details: [],
       payments: [],
@@ -454,8 +455,8 @@ export default {
         {
           title: 'Address',
           value: `${this.form.customer_delivery_address}
-                          ${this.form.barangay?.name},
-                          ${this.form.city?.name}`,
+                          ${this.form.barangay?.name || 'n/a'},
+                          ${this.form.city?.name || 'n/a'}`,
         },
       ]
 
