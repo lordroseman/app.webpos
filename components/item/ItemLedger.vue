@@ -60,13 +60,11 @@
           <template v-slot:expanded-item="{ headers, item }">
             <td :colspan="headers.length" class="py-1">
               <v-skeleton-loader :loading="expandLoading" type="article" flat>
-                <template v-if="expandedItem">
-                  <template v-if="item.reference_doc === 'Transaction'">
-                    <transaction-quick-view :transaction="expandedItem" />
-                  </template>
-                  <template v-else>
-                    <adjustment-quick-view :adjustment="expandedItem" />
-                  </template>
+                <template v-if="item.reference_doc === 'Transaction'">
+                  <transaction-quick-view :transaction="expandedItem" />
+                </template>
+                <template v-else>
+                  <adjustment-quick-view :adjustment="expandedItem" />
                 </template>
               </v-skeleton-loader>
             </td>
@@ -240,6 +238,7 @@ export default {
               .include('payment_option', 'city', 'barangay', 'store')
               .where('id', refId)
               .$first()
+
             this.expandedItem = transaction
             this.expandLoading = false
             break

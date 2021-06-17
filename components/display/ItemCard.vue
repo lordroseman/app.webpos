@@ -1,7 +1,14 @@
 <template>
   <v-row>
     <v-col cols="12" sm="3">
-      <v-img :src="image" height="125" contain class="grey darken-4" />
+      <v-img
+        v-if="item.img"
+        :src="item.img.thumb"
+        :lazy-src="item.img.tiny"
+        height="125"
+        contain
+        class="grey lighten-2"
+      />
     </v-col>
 
     <v-col cols="12" sm="9">

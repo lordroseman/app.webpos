@@ -329,7 +329,7 @@ export default {
             vue.$router.push('/s/order/success/' + vue.response.transaction.id)
           } else {
             vue.clear()
-            vue.$router.push('/s/order/success/' + vue.response.id)
+            vue.$router.push('/s/order/success/' + vue.form.id)
           }
           vue.saving = false
         } else if (val === 1) {

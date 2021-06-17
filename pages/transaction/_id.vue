@@ -175,28 +175,28 @@
             <div class="ml-3 order-md-1 order-lg-2">
               <div class="d-flex flex-row px-8 py-1">
                 <div class="ml-auto">Sub Total</div>
-                <div class="ml-10 text-right" style="width: 100px">
+                <div class="ml-10 text-right" style="width: 150px">
                   {{ toCurrency(form.total_amount) }}
                 </div>
               </div>
 
               <div class="d-flex flex-row px-8 py-1">
                 <div class="ml-auto">Discount</div>
-                <div class="ml-10 text-right" style="width: 100px">
+                <div class="ml-10 text-right" style="width: 150px">
                   {{ toCurrency(null) }}
                 </div>
               </div>
 
               <div class="d-flex flex-row px-8 py-1">
                 <div class="ml-auto">Shipping</div>
-                <div class="ml-10 text-right" style="width: 100px">
+                <div class="ml-10 text-right" style="width: 150px">
                   {{ toCurrency(0) }}
                 </div>
               </div>
 
               <div class="d-flex flex-row px-8 py-1">
                 <div class="ml-auto title">Total</div>
-                <div class="ml-10 text-right text-h5" style="width: 100px">
+                <div class="ml-10 text-right text-h5" style="width: 150px">
                   <span class="green--text">{{
                     toCurrency(form.total_amount)
                   }}</span>
@@ -207,21 +207,21 @@
             <div class="ml-auto order-md-2 order-lg-1">
               <div class="d-flex flex-row px-8 py-1">
                 <div class="ml-auto">Payment Option</div>
-                <div class="ml-10 text-right" style="width: 100px">
+                <div class="ml-10 text-right" style="width: 150px">
                   {{ form.payment_option.name }}
                 </div>
               </div>
 
               <div class="d-flex flex-row px-8 py-1">
                 <div class="ml-auto">Total Payment:</div>
-                <div class="ml-10 text-right" style="width: 100px">
+                <div class="ml-10 text-right" style="width: 150px">
                   {{ toCurrency(totalPayment) }}
                 </div>
               </div>
 
               <div class="d-flex flex-row px-8 py-1">
                 <div class="ml-auto">Balance:</div>
-                <div class="ml-10 text-right" style="width: 100px">
+                <div class="ml-10 text-right" style="width: 150px">
                   {{ toCurrency(balance) }}
                 </div>
               </div>
@@ -231,14 +231,14 @@
                 <div
                   v-if="balance > 0"
                   class="ml-10 text-right pink--text"
-                  style="width: 100px"
+                  style="width: 150px"
                 >
                   UNPAID
                 </div>
                 <div
                   v-else
                   class="ml-10 text-right green--text"
-                  style="width: 100px"
+                  style="width: 150px"
                 >
                   PAID
                 </div>
@@ -403,8 +403,8 @@ export default {
         {
           title: 'Address',
           value: `${this.form.customer_delivery_address}
-                          ${this.form.barangay?.name},
-                          ${this.form.city?.name}`,
+                          ${this.form.barangay?.name || 'n/a'},
+                          ${this.form.city?.name || 'n/a'}`,
         },
       ]
 

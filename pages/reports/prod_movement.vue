@@ -44,7 +44,7 @@
             <v-text-field
               v-model="selectedDate"
               label="Select Delivery Date"
-              append-inner-icon="mdi-calendar"
+              append-icon="mdi-calendar"
               readonly
               dense
               v-bind="attrs"

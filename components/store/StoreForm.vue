@@ -1,121 +1,124 @@
 <template>
   <v-card>
-    <v-img
-      height="250"
-      :src="imgUrl"
-      :aspect-ratio="16 / 9"
-      gradient="to top right, rgba(100,115,201,.33), rgba(25,32,72,.7)"
-    >
-      <div class="d-flex flex-column" style="height: 250px">
-        <div>
-          <v-app-bar flat color="transparent">
-            <v-toolbar-title class="title white--text pl-0"> </v-toolbar-title>
+    <v-responsive :aspect-ratio="16 / 9">
+      <v-img height="250" :src="imgUrl" :aspect-ratio="16 / 9">
+        <div class="d-flex flex-column" style="height: 250px">
+          <div>
+            <v-app-bar flat color="transparent">
+              <v-toolbar-title class="title white--text pl-0">
+              </v-toolbar-title>
 
-            <v-spacer></v-spacer>
+              <v-spacer></v-spacer>
 
-            <v-btn class="text-none" rounded depressed @click="onClickUpload">
-              <v-icon left> mdi-camera </v-icon>
-              Upload Photo
-            </v-btn>
-            <v-btn
-              class="text-none ml-2"
-              rounded
-              color="primary"
-              depressed
-              @click="save"
-            >
-              <v-icon left> mdi-content-save </v-icon>
-              Save
-            </v-btn>
-            <input
-              ref="uploader"
-              class="d-none"
-              type="file"
-              accept="image/*"
-              @change="onFileChanged"
-            />
-          </v-app-bar>
-        </div>
-        <div class="mt-auto">
-          <v-tabs v-model="tab" fixed-tabs background-color="transparent" dark>
-            <v-tab href="#info"> Store Information </v-tab>
-            <v-tab href="#items"> Store Items </v-tab>
-          </v-tabs>
-        </div>
-      </div>
-    </v-img>
-
-    <v-card-text>
-      <v-tabs-items v-model="tab">
-        <v-tab-item value="info">
-          <v-row>
-            <v-col cols="12" sm="6">
-              <v-text-field
-                v-model="form.name"
-                label="Name"
-                :error-messages="
-                  errors.getAll('name') || errors.getAll('store.name')
-                "
-                required
-                autocomplete="off"
-                :readonly="!editable" />
-              <v-textarea
-                v-model="form.address"
-                label="Address"
-                :error-messages="
-                  errors.getAll('address') || errors.getAll('store.address')
-                "
-                auto-grow
-                rows="1"
-              ></v-textarea
-            ></v-col>
-            <v-col cols="12" sm="6">
-              <address-map
-                id="store_address"
-                :lat="form.geo_location_lat"
-                :lng="form.geo_location_long"
-                :height="350"
-                @click="setLatLng"
-              ></address-map>
-            </v-col>
-          </v-row>
-        </v-tab-item>
-        <v-tab-item value="items">
-          <v-row v-if="editable" class="my-0">
-            <v-col cols="12" sm="6" class="py-0">
-              <v-spacer />
-              <v-combobox
-                v-model="selected_item"
-                :items="item_options"
-                label="Select Item"
-                required
-                autocomplete="off"
-                item-text="name"
-                append-outer-icon="mdi-plus"
-                width="50%"
-                :search-input.sync="search_item"
-                @click:append-outer="addItem"
+              <v-btn class="text-none" rounded depressed @click="onClickUpload">
+                <v-icon left> mdi-camera </v-icon>
+                Upload Photo
+              </v-btn>
+              <v-btn
+                class="text-none ml-2"
+                rounded
+                color="primary"
+                depressed
+                @click="save"
+              >
+                <v-icon left> mdi-content-save </v-icon>
+                Save
+              </v-btn>
+              <input
+                ref="uploader"
+                class="d-none"
+                type="file"
+                accept="image/*"
+                @change="onFileChanged"
               />
-            </v-col>
-          </v-row>
-          <store-item
-            :store="form.id"
-            :store-items.sync="items"
-            :editable="editable"
-            :loading="itemsLoading"
-            @undoChanges="undoChanges"
-          />
-        </v-tab-item>
-      </v-tabs-items>
-    </v-card-text>
-    <v-dialog v-model="sending" hide-overlay persistent width="300">
-      <v-card color="primary" dark>
-        <v-card-text>
-          Saving...
-          <v-progress-linear indeterminate color="white" class="mb-0" />
-        </v-card-text>
-      </v-card>
-    </v-dialog>
+            </v-app-bar>
+          </div>
+        </div>
+      </v-img>
+
+      <v-card-text>
+        <v-tabs
+          v-model="tab"
+          fixed-tabs
+          background-color="transparent"
+          color="primary"
+          :show-arrows="true"
+        >
+          <v-tab href="#info"> Store Information </v-tab>
+          <v-tab href="#items"> Store Items </v-tab>
+        </v-tabs>
+
+        <v-tabs-items v-model="tab">
+          <v-tab-item value="info">
+            <v-row>
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  v-model="form.name"
+                  label="Name"
+                  :error-messages="
+                    errors.getAll('name') || errors.getAll('store.name')
+                  "
+                  required
+                  autocomplete="off"
+                  :readonly="!editable" />
+                <v-textarea
+                  v-model="form.address"
+                  label="Address"
+                  :error-messages="
+                    errors.getAll('address') || errors.getAll('store.address')
+                  "
+                  auto-grow
+                  rows="1"
+                ></v-textarea
+              ></v-col>
+              <v-col cols="12" sm="6">
+                <address-map
+                  id="store_address"
+                  :lat="form.geo_location_lat"
+                  :lng="form.geo_location_long"
+                  :height="350"
+                  @click="setLatLng"
+                ></address-map>
+              </v-col>
+            </v-row>
+          </v-tab-item>
+          <v-tab-item value="items">
+            <v-row v-if="editable" class="my-0">
+              <v-col cols="12" sm="6" class="py-0">
+                <v-spacer />
+                <v-combobox
+                  v-model="selected_item"
+                  :items="item_options"
+                  label="Select Item"
+                  required
+                  autocomplete="off"
+                  item-text="name"
+                  append-outer-icon="mdi-plus"
+                  width="50%"
+                  :search-input.sync="search_item"
+                  @click:append-outer="addItem"
+                />
+              </v-col>
+            </v-row>
+            <store-item
+              :store="form.id"
+              :store-items.sync="items"
+              :editable="editable"
+              :loading="itemsLoading"
+              @undoChanges="undoChanges"
+            />
+          </v-tab-item>
+        </v-tabs-items>
+      </v-card-text>
+      <v-dialog v-model="sending" hide-overlay persistent width="300">
+        <v-card color="primary" dark>
+          <v-card-text>
+            Saving...
+            <v-progress-linear indeterminate color="white" class="mb-0" />
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+    </v-responsive>
   </v-card>
 </template>
 
@@ -333,7 +336,9 @@ export default {
       }
 
       if (isEmpty(this.params)) {
-        return
+        if (!this.imgChanged) {
+          return
+        }
       }
 
       this.$v.$touch()
@@ -388,6 +393,7 @@ export default {
       for (const key in this.params) {
         formdata.append(key, JSON.stringify(this.params[key]))
       }
+      formdata.append('_method', 'PUT')
 
       this.$axios
         .post('/laravel/api/store/' + this.form.id, formdata, {

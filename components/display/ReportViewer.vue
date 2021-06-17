@@ -206,6 +206,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    landscape: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -217,7 +221,6 @@ export default {
       rotate: 0,
       objectUrl: null,
       fullscreen: false,
-      width: 50,
       statusTxt: 'empty',
       scalePercent: 100,
       instance: null,
@@ -232,6 +235,13 @@ export default {
     ...mapState({
       color: (state) => state.app.color,
     }),
+    width() {
+      if (this.landscape) {
+        return 80
+      } else {
+        return 50
+      }
+    },
   },
   watch: {
     showReport(value) {

@@ -122,11 +122,12 @@
                                 overlap
                               >
                                 <v-img
+                                  v-if="item.img"
                                   contain
-                                  :lazy-src="getImage(item)"
+                                  :lazy-src="item.img.tiny"
                                   max-height="100"
                                   max-width="100"
-                                  :src="getImage(item)"
+                                  :src="item.img.thumb"
                                 ></v-img>
                               </v-badge>
                             </div>
@@ -168,13 +169,16 @@ export default {
     OrderList,
   },
   async asyncData({ $api, params }) {
-    if ('id' in params && params.id) {
+    if (params.id) {
       // eslint-disable-next-line no-undef
       const resp = await $api.Transaction.find(params.id)
       return {
         data: resp,
       }
     } else {
+      return {
+        data: null,
+      }
     }
   },
   data() {
@@ -276,6 +280,7 @@ export default {
       }))
 
       setTimeout(() => {
+        console.log('setdata from async')
         this.$store.dispatch('cart/setCart', details)
       }, 300)
 

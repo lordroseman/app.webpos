@@ -19,6 +19,7 @@
             :data.sync="selected_item"
             :show="dialog"
             @close="closeForm"
+            @updateItem="updateItem"
           />
         </v-dialog>
         <v-spacer />
@@ -35,13 +36,15 @@
         ref="skeleton"
         type="table-tbody"
         class="mx-auto"
-        :loading="loading"
+        :loading="skelLoading"
       >
         <v-data-table
           :headers="colHeaders"
           :items="items"
           :search="search"
-          multi-sort
+          :options.sync="options"
+          :server-items-length="total"
+          :loading="loading"
           show-expand
           single-expand
         >
@@ -50,14 +53,6 @@
           </template>
           <template #[`item.subcategory`]="{ item }">
             {{ item.subcategory ? item.subcategory.title : '' }}
-          </template>
-          <template #[`item.selling_price`]="{ item }">
-            {{ toCurrency(item.selling_price) }}
-          </template>
-          <template #[`item.inventory`]="{ item }">
-            <span :class="item.inventory < 1 ? 'red--text' : ''">{{
-              item.inventory
-            }}</span>
           </template>
 
           <template #[`item.actions`]="{ item }">
@@ -97,17 +92,14 @@
           <template #expanded-item="{ headers, item }">
             <td :colspan="headers.length">
               <div class="d-flex py-3">
-                <v-card outlined width="100">
+                <v-card v-if="item.img" outlined width="125">
                   <v-img
-                    width="100"
-                    height="100"
-                    lazy-src="/preload.png"
-                    :src="getImg(item) || '/preload.png'"
+                    width="125"
+                    height="125"
+                    :src="item.img.thumb"
+                    :lazy-src="item.img.tiny"
                     eager
                   >
-                    <template v-slot:placeholder>
-                      <v-skeleton-loader type="image" />
-                    </template>
                   </v-img>
                 </v-card>
                 <div class="ml-2">
@@ -141,6 +133,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { debounce, isEmpty, isArray } from 'lodash'
 
 export default {
   meta: {
@@ -176,28 +169,92 @@ export default {
       item_ledger: null,
       showFilter: false,
       filters: {},
+      items: [],
+      loading: false,
+      transactions: [],
+      total: 0,
+      skelLoading: true,
     }
   },
   computed: {
     ...mapGetters({
-      items: 'item/getItems',
-      itemsLoadStatus: 'item/getItemsLoadStatus',
       itemDeletingStatus: 'item/getItemDeletingStatus',
     }),
-    loading() {
-      return this.itemsLoadStatus() !== 2
+  },
+  watch: {
+    options: {
+      handler(newVal, oldVal) {
+        if (!isEmpty(oldVal)) {
+          this.loadItems(this)
+        }
+      },
+      deep: true,
     },
   },
   beforeMount() {
     this.$store.dispatch('app/setNavHeader', 'Item')
   },
   mounted() {
-    this.loadItems()
+    this.refresh()
   },
   methods: {
-    loadItems() {
-      this.$store.dispatch('item/loadItems')
+    refresh() {
+      this.loadItems(this)
     },
+    loadItems: debounce((vm) => {
+      if (vm.loading) {
+        return
+      }
+      vm.loading = true
+
+      let items = null
+      items = vm.$api.Item.custom('/item/search').include(
+        'category',
+        'subcategory',
+        'media'
+      )
+
+      if (!isEmpty(vm.options)) {
+        items.paginate({
+          size: vm.options.itemsPerPage,
+          number: vm.options.page,
+        })
+
+        if (vm.options.sortBy.length > 0) {
+          items.orderBy(
+            (vm.options.sortDesc[0] ? '-' : '') + vm.options.sortBy[0]
+          )
+        }
+      } else {
+        items.paginate({ size: 10, number: 1 })
+      }
+
+      if (vm.search !== '') {
+        items.where('q', vm.search)
+      }
+
+      if (!isEmpty(vm.filters)) {
+        for (const index in vm.filters) {
+          const value = vm.filters[index]
+          if (isArray(value)) {
+            items.whereIn(index, value)
+          } else {
+            items.where(index, vm.filters[index])
+          }
+        }
+      }
+
+      items
+        .get()
+        .then((resp) => {
+          vm.items = resp.data
+          vm.total = resp.meta.total
+        })
+        .finally(() => {
+          vm.loading = false
+          vm.skelLoading = false
+        })
+    }, 500).bind(this),
     edit(item) {
       this.selected_item = item
       this.dialog = true
@@ -239,6 +296,16 @@ export default {
           }
         })
     },
+    updateItem(item) {
+      // find ind
+      const ind = this.items.findIndex((i) => i.id === item.id)
+
+      if (ind > -1) {
+        for (const prop in item) {
+          this.items[ind][prop] = item[prop]
+        }
+      }
+    },
     closeForm() {
       this.dialog = false
       this.selected_item = {}
@@ -248,12 +315,10 @@ export default {
       this.item_ledger = item
     },
     getImg(item) {
-      if (!item.img) {
+      if (!item.responsive_img) {
         return null
       }
-
-      const img = `data:${item.image_mime};base64,${item.image_base64}`
-      return img
+      return item.responsive_img
     },
   },
   head: {

@@ -5,6 +5,7 @@
     :params="rptParam"
     :is-dialog="false"
     :has-sidebar="hasSidebar"
+    :landscape="true"
     @loaded="loading = false"
   >
     <template slot="filter">
@@ -44,9 +45,13 @@
             <v-text-field
               v-model="selectedDate"
               label="Select Delivery Date"
-              prepend-icon="mdi-calendar"
+              append-icon="mdi-calendar"
               readonly
+              dense
               v-bind="attrs"
+              outlined
+              class="mt-4"
+              hide-details
               v-on="on"
             ></v-text-field>
           </template>
@@ -56,11 +61,25 @@
             <v-btn text color="primary" @click="savePickerMenu"> OK </v-btn>
           </v-date-picker>
         </v-menu>
+
+        <v-combobox
+          v-model="payment_option"
+          label="Payment Option"
+          outlined
+          :items="payment_options"
+          item-text="name"
+          item-value="id"
+          dense
+          :hide-details="true"
+          class="mt-4"
+          clearable
+        >
+        </v-combobox>
         <div>
           <v-spacer />
           <v-btn
             text
-            class="float-right"
+            class="float-right mt-4"
             color="blue"
             :loading="loading"
             @click="print"
@@ -79,7 +98,7 @@ import ReportViewer from '~/components/display/ReportViewer.vue'
 export default {
   components: { ReportViewer },
   meta: {
-    label: 'Inventory Report',
+    label: 'Payments Report',
     permission: 'Report:View',
     access_level: 1,
   },
@@ -93,12 +112,16 @@ export default {
       hasSidebar: true,
       menu: false,
       delivery_date: null,
+      payment_option: null,
     }
   },
   computed: {
     ...mapState({
       stores: (state) => state.store.stores,
       storesLoadStatus: (state) => state.store.storesLoadStatus,
+      payment_options: (state) => state.payment_option.payment_options,
+      paymentOptionsLoadStatus: (state) =>
+        state.payment_option.paymentOptionsLoadStatus,
     }),
     selectedDate() {
       if (this.delivery_date) {
@@ -107,13 +130,29 @@ export default {
 
       return null
     },
+    controls() {
+      const controls = {
+        store: this.store.id,
+        delivery_date: this.delivery_date,
+      }
+
+      if (this.payment_option) {
+        controls.payment_option = this.payment_option
+      }
+
+      return controls
+    },
   },
   beforeMount() {
-    this.$store.dispatch('app/setNavHeader', 'Sales Report')
+    this.$store.dispatch('app/setNavHeader', 'Payments Report')
   },
   mounted() {
     if (this.storesLoadStatus !== 2) {
       this.$store.dispatch('store/loadStores')
+    }
+
+    if (this.paymentOptionsLoadStatus !== 2) {
+      this.$store.dispatch('payment_option/loadPaymentOptions')
     }
   },
   methods: {
@@ -128,11 +167,9 @@ export default {
       this.loading = true
 
       this.pdfSrc = '/laravel/api/report'
+
       this.rptParam = {
-        controls: {
-          store: this.store.id,
-          delivery_date: this.delivery_date,
-        },
+        controls: this.controls,
         report: 'Payments',
         store: this.store.id,
       }

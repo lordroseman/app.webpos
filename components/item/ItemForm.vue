@@ -6,18 +6,41 @@
     <v-card-text>
       <v-container>
         <v-row>
-          <v-col cols="12" sm="6">
-            <v-image-input
-              :key="form.id || 'new_img'"
-              v-model="form.img"
-              :image-quality="0.85"
-              clearable
-              image-format="jpeg"
-              :image-width="200"
-              :image-height="200"
-              :readonly="!editable"
+          <v-col cols="12" sm="6" class="d-flex flex-column">
+            <v-card flat outlined>
+              <v-img
+                height="250"
+                :src="imgUrl"
+                :lazy-src="tinyImg"
+                contain
+                :aspect-ratio="16 / 9"
+                class="grey lighten-2"
+              >
+                <div class="d-flex flex-column" style="height: 250px">
+                  <div v-if="!hasImg" class="ma-auto" style="z-index: 1">
+                    Click '<v-icon @click="onClickUpload">mdi-camera</v-icon>'
+                    to upload photo
+                  </div>
+                </div>
+              </v-img>
+            </v-card>
+
+            <v-btn
+              class="text-none mx-auto mt-4"
+              rounded
+              depressed
+              @click="onClickUpload"
+            >
+              <v-icon left> mdi-camera </v-icon>
+              Upload Photo
+            </v-btn>
+            <input
+              ref="uploader"
+              class="d-none"
+              type="file"
+              accept="image/*"
+              @change="onFileChanged"
             />
-            <v-btn v-if="showUndoImg" text @click="undoImg"> Undo </v-btn>
           </v-col>
           <v-col cols="12" sm="6">
             <v-row>
@@ -40,12 +63,14 @@
                 />
               </v-col>
               <v-col cols="12">
-                <v-text-field
+                <v-textarea
                   v-model="form.description"
                   label="Description"
                   required
                   :error-messages="errors.getAll('description')"
                   :readonly="!editable"
+                  auto-grow
+                  rows="1"
                 />
               </v-col>
               <v-col cols="12">
@@ -108,16 +133,12 @@
 <script>
 import { required } from 'vuelidate/lib/validators'
 import { mapGetters } from 'vuex'
-import VImageInput from 'vuetify-image-input'
 import { isEmpty } from 'lodash'
 import Form from '~/components/core/Form.js'
 import FormValidationMixins from '~/plugins/FormValidationMixins.vue'
 import Errors from '~/components/core/Errors.js'
 
 export default {
-  components: {
-    VImageInput,
-  },
   mixins: [FormValidationMixins],
   props: {
     data: {
@@ -138,7 +159,6 @@ export default {
         category_id: null,
         selling_price: null,
         cost: null,
-        img: '',
         subcategory_id: null,
       }),
       errors: new Errors(),
@@ -152,6 +172,10 @@ export default {
         required_sku: 'SKU is required',
       },
       subcategories: [],
+      selectedFile: null,
+      imgUrl: null,
+      imgChanged: false,
+      tinyImg: null,
     }
   },
   validations: {
@@ -198,15 +222,15 @@ export default {
     editable() {
       return this.$can('Item:' + this.mode)
     },
+    hasImg() {
+      return !!this.imgUrl
+    },
   },
   watch: {
     data(val) {
-      this.setForm()
-      // this.$v.$reset();
-      // this.errors.clear();
-    },
-    show(val) {
-      if (val) {
+      if (!isEmpty(val)) {
+        this.setForm()
+      } else {
         this.clear()
       }
     },
@@ -254,14 +278,14 @@ export default {
     setForm() {
       if (!isEmpty(this.data)) {
         const data = Object.assign({}, this.data)
-        if ('image_base64' in data) {
-          data.img = `data:${data.image_mime};base64,${data.image_base64}`
-        }
+
         this.form.set(data)
+
+        if (this.data.img) {
+          this.imgUrl = this.data.img.original
+          this.tinyImg = this.data.img.tiny
+        }
       }
-    },
-    undoImg() {
-      this.form.img = this.form.originalData.img
     },
     save() {
       if (this.itemSendingStatus() === 1) {
@@ -271,26 +295,96 @@ export default {
       this.$v.$touch()
       if (!this.$v.$invalid) {
         if (this.form.id != null) {
-          this.$store.dispatch('item/editItem', {
-            id: this.form.id,
-            data: this.form.changedData(),
-          })
+          this.editItem()
         } else {
-          this.$store.dispatch('item/addItem', this.form.changedData())
+          this.addItem()
+          // this.$store.dispatch('item/addItem', this.form.changedData())
         }
       }
+    },
+    addItem() {
+      const item = new this.$api.Item()
+      const form = this.form.changedData()
+
+      for (const field in form) {
+        item[field] = form[field]
+      }
+
+      if (this.imgChanged) {
+        item.img = this.selectedFile
+      }
+
+      item.save().then((resp) => {
+        this.$swal.fire({
+          position: 'top-end',
+          icon: 'success',
+          title: 'Item has been succesfuly saved.',
+          showConfirmButton: false,
+          timer: 1500,
+        })
+
+        this.close()
+      })
+    },
+    editItem() {
+      const item = new this.$api.Item({ id: this.form.id })
+      item.config({ method: 'POST', data: { _method: 'PUT' } })
+      const form = this.form.changedData()
+
+      for (const field in form) {
+        item[field] = form[field]
+      }
+
+      if (this.imgChanged) {
+        item.img = this.selectedFile
+      }
+
+      item.save().then((resp) => {
+        this.$swal.fire({
+          position: 'top-end',
+          icon: 'success',
+          title: 'Item has been succesfuly saved.',
+          showConfirmButton: false,
+          timer: 1500,
+        })
+
+        const updatedItem = { id: this.form.id, ...this.form.changedData() }
+
+        if (this.imgChanged) {
+          updatedItem.img = {
+            original: this.imgUrl,
+            thumb: this.imgUrl,
+          }
+        }
+
+        this.$emit('updateItem', updatedItem)
+        this.close()
+      })
     },
     clear() {
       this.$v.$reset()
       this.errors.clear()
       this.form.clear()
+      this.imgUrl = null
+      this.tinyImg = null
+      this.selectedFile = null
+      this.imgChanged = false
     },
     close() {
-      this.clear()
       this.$emit('close')
+      this.clear()
     },
     async loadSubCategories() {
       this.subcategories = await this.$api.SubCategory.get()
+    },
+    onClickUpload() {
+      this.$refs.uploader.click()
+    },
+    onFileChanged(e) {
+      this.selectedFile = e.target.files[0]
+      this.imgUrl = URL.createObjectURL(this.selectedFile)
+      this.imgChanged = true
+      // do something
     },
   },
 }

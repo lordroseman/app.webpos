@@ -16,8 +16,8 @@
               :height="100"
               :width="100"
               contain
-              lazy-src="/preload.png"
-              :src="getImg(detail.item) || '/preload.png'"
+              :lazy-src="detail.item.img.tiny"
+              :src="detail.item.img.thumb"
             />
           </div>
           <div class="mr-auto ml-3">

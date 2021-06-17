@@ -216,9 +216,10 @@ export default {
       }
       vm.loading = true
 
-      const trans = vm.$api.Transaction.custom('transaction/search').include(
-        'store'
-      )
+      let trans = null
+
+      trans = vm.$api.Transaction.custom('transaction/search').include('store')
+
       if (!isEmpty(vm.options)) {
         trans.paginate({
           size: vm.options.itemsPerPage,
@@ -253,7 +254,7 @@ export default {
         .get()
         .then((resp) => {
           vm.transactions = resp.data
-          vm.total = resp.total
+          vm.total = resp.meta.total
         })
         .finally(() => {
           vm.loading = false
