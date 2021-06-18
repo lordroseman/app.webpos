@@ -59,7 +59,7 @@ export default {
         return null
       }
 
-      const label = labels[labels.length - 1]
+      const label = labels[0]
 
       const lbl = this.labels.filter((i) => i.id === label.label_id)[0]
 
