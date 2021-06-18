@@ -13,6 +13,7 @@
             class="mr-1 ml-3 br-1 d-none d-md-block"
           >
             <v-img
+              v-if="detail.item.img"
               :height="100"
               :width="100"
               contain
