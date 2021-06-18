@@ -89,8 +89,8 @@
         </div>
       </v-snackbar>
 
-      <div class="d-flex flex-wrap">
-        <div class="order-lg-last order-md-first ml-6" style="width: 24rem">
+      <div class="d-flex">
+        <div class="order-lg-last order-md-first ml-6" style="min-width: 24rem">
           <transaction-label
             :paid="balance <= 0"
             :transaction="form.originalData"
