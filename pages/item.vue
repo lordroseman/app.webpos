@@ -191,6 +191,11 @@ export default {
       },
       deep: true,
     },
+    search(val) {
+      if (val !== '') {
+        this.loadItems(this)
+      }
+    },
   },
   beforeMount() {
     this.$store.dispatch('app/setNavHeader', 'Item')
