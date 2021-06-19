@@ -125,8 +125,8 @@
                                   v-if="item.img"
                                   contain
                                   :lazy-src="item.img.tiny"
-                                  max-height="100"
-                                  max-width="100"
+                                  height="100"
+                                  width="100"
                                   :src="item.img.thumb"
                                 ></v-img>
                               </v-badge>

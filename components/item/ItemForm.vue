@@ -303,28 +303,61 @@ export default {
       }
     },
     addItem() {
-      const item = new this.$api.Item()
+      // const item = new this.$api.Item()
       const form = this.form.changedData()
+      // // const formdata = new FormData()
 
+      // console.log(1)
+      // for (const field in form) {
+      //   item[field] = form[field]
+      // }
+      // console.log(2)
+      // if (this.imgChanged) {
+      //   item.img = this.selectedFile
+      // }
+      // console.log(3, item)
+      // item.save().then((resp) => {
+      //   console.log(4)
+      //   this.$swal.fire({
+      //     position: 'top-end',
+      //     icon: 'success',
+      //     title: 'Item has been succesfuly saved.',
+      //     showConfirmButton: false,
+      //     timer: 1500,
+      //   })
+      //   console.log(5)
+
+      const formdata = new FormData()
       for (const field in form) {
-        item[field] = form[field]
+        formdata.append(field, form[field])
       }
 
       if (this.imgChanged) {
-        item.img = this.selectedFile
+        formdata.append('img', this.selectedFile)
       }
 
-      item.save().then((resp) => {
-        this.$swal.fire({
-          position: 'top-end',
-          icon: 'success',
-          title: 'Item has been succesfuly saved.',
-          showConfirmButton: false,
-          timer: 1500,
+      this.$axios
+        .post('/laravel/api/item', formdata, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         })
-
-        this.close()
-      })
+        .then((response) => {
+          this.$swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: 'Item has been succesfuly saved.',
+            showConfirmButton: false,
+            timer: 1500,
+          })
+          this.$emit('addItem', response.data)
+          this.close()
+        })
+        .catch((error) => {
+          this.showErrorMessage(error.response.data)
+          this.errors.record(error.response.data)
+          return error
+        })
     },
     editItem() {
       const item = new this.$api.Item({ id: this.form.id })
@@ -385,6 +418,19 @@ export default {
       this.imgUrl = URL.createObjectURL(this.selectedFile)
       this.imgChanged = true
       // do something
+    },
+    showErrorMessage(error) {
+      let message = 'Unknown error occured!'
+      if ('message' in error) {
+        message = error.message
+      }
+
+      this.$swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: message,
+        footer: '<a href>Why do I have this issue?</a>',
+      })
     },
   },
 }

@@ -2,7 +2,7 @@
   <v-container fluid class="px-0 px-md-5">
     <v-card class="mx-auto">
       <v-card-title>
-        <v-dialog v-model="dialog" max-width="800px" persistent>
+        <v-dialog v-model="dialog" max-width="800px" persistent scrollable>
           <template v-slot:activator="{ on }">
             <v-btn
               v-if="$can('Item:Add')"
@@ -20,6 +20,7 @@
             :show="dialog"
             @close="closeForm"
             @updateItem="updateItem"
+            @addItem="addItem"
           />
         </v-dialog>
         <v-spacer />
@@ -272,27 +273,25 @@ export default {
           showLoaderOnConfirm: true,
           preConfirm: (e) => {
             return new Promise((resolve, reject) => {
-              this.$store.dispatch('item/deleteItem', item.id)
-              const vue = this
-              this.$store.watch(
-                this.$store.getters['item/getItemDeletingStatus'],
-                function () {
-                  if (vue.itemDeletingStatus() === 2) {
-                    resolve(true)
-                  } else {
-                    reject(this.errors)
-                    this.$swal.showValidationMessage(
-                      `Request failed: ${this.errors.message}`
-                    )
-                  }
-                }
-              )
+              const deleteItem = new this.$api.Item({ id: item.id })
+              deleteItem
+                .delete()
+                .then((response) => {
+                  resolve(true)
+                })
+                .catch((errors) => {
+                  reject(this.errors)
+                  this.$swal.showValidationMessage(
+                    `Request failed: ${this.errors.message}`
+                  )
+                })
             })
           },
         })
         .then((result) => {
           if (result.value) {
             this.$swal.fire('Deleted!', 'Item  has been deleted.', 'success')
+            this.removeItem(item)
           }
         })
     },
@@ -306,6 +305,9 @@ export default {
         }
       }
     },
+    addItem(item) {
+      this.items.push(item)
+    },
     closeForm() {
       this.dialog = false
       this.selected_item = {}
@@ -314,11 +316,12 @@ export default {
       this.showLedger = true
       this.item_ledger = item
     },
-    getImg(item) {
-      if (!item.responsive_img) {
-        return null
+    removeItem(item) {
+      const ind = this.items.findIndex((i) => i.id === item.id)
+
+      if (ind > -1) {
+        this.items.splice(ind, 1)
       }
-      return item.responsive_img
     },
   },
   head: {
