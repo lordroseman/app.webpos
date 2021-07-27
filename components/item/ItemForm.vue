@@ -381,7 +381,21 @@ export default {
           timer: 1500,
         })
 
-        const updatedItem = { id: this.form.id, ...this.form.changedData() }
+        const formChangedData = this.form.changedData()
+
+        const updatedItem = { id: this.form.id, ...formChangedData }
+
+        if ('category_id' in formChangedData) {
+          updatedItem.category = this.categories.find(
+            (i) => i.id === formChangedData.category_id
+          )
+        }
+
+        if ('subcategory_id' in formChangedData) {
+          updatedItem.subcategory = this.subcategories.find(
+            (i) => i.id === formChangedData.subcategory_id
+          )
+        }
 
         if (this.imgChanged) {
           updatedItem.img = {

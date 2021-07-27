@@ -18,35 +18,32 @@
             <v-list-item-title>Filter</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item>
-          <v-list-item-content>
-            <v-combobox
-              v-model="store"
-              label="Store"
-              outlined
-              :items="stores"
-              item-text="name"
-              item-value="id"
-            >
-            </v-combobox>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item>
-          <v-list-item-content>
-            <div>
-              <v-spacer />
-              <v-btn
-                text
-                class="float-right"
-                color="blue"
-                :loading="loading"
-                @click="print"
-                ><v-icon>mdi-send</v-icon> Generate</v-btn
-              >
-            </div>
-          </v-list-item-content>
-        </v-list-item>
       </v-list>
+      <div class="px-2">
+        <v-combobox
+          v-model="store"
+          label="Store"
+          outlined
+          :items="stores"
+          item-text="name"
+          item-value="id"
+          dense
+        >
+        </v-combobox>
+
+        <div>
+          <v-spacer />
+          <v-btn
+            text
+            class="float-right"
+            color="blue"
+            :loading="loading"
+            @click="print"
+          >
+            <v-icon left>mdi-send</v-icon> Generate
+          </v-btn>
+        </div>
+      </div>
     </template>
   </report-viewer>
 </template>

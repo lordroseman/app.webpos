@@ -7,6 +7,11 @@ if (!Vue.__helper__mixin__) {
 
   Vue.mixin({
     methods: {
+      arrayColumn(array, columnName) {
+        return array.map((value, index) => {
+          return value[columnName]
+        })
+      },
       toCurrency(value) {
         if (isNaN(value)) {
           return '--'

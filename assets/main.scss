@@ -90,3 +90,19 @@ ul {
   /* The rule below is implemented in most browsers by now */
   user-select: none;
 }
+
+.overflow {
+  &-none {
+    overflow: hidden;
+  }
+  &-x-none {
+    overflow-x: hidden;
+  }
+  &-y-none {
+    overflow-y: hidden;
+  }
+}
+
+.no-wrap {
+  white-space: nowrap;
+}

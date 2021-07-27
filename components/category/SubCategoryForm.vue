@@ -117,8 +117,9 @@ export default {
           })
         } else {
           // new
-          const subcategory = new this.$api.SubCategory()
-          subcategory.title = this.form.title
+          const subcategory = new this.$api.SubCategory({
+            title: this.form.title,
+          })
 
           const _sub = await subcategory.save()
           EventBus.$emit('newSubCategory', _sub)

@@ -95,7 +95,7 @@
             :loading="loading"
             @click="print"
           >
-            <v-icon>mdi-send</v-icon> Generate
+            <v-icon left>mdi-send</v-icon> Generate
           </v-btn>
         </div>
       </div>
@@ -186,7 +186,7 @@ export default {
     if (this.storesLoadStatus !== 2) {
       this.$store.dispatch('store/loadStores')
     }
-    if (this.storesLoadStatus !== 2) {
+    if (this.categoriesLoadStatus !== 2) {
       this.$store.dispatch('category/loadCategories')
     }
     this.loadSubCategories()

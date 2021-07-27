@@ -59,8 +59,8 @@
         <v-sheet
           v-else
           v-scroll:#scrolling="onScroll"
-          :color="$vuetify.theme.isDark ? 'grey darken-3' : 'grey lighten-3'"
           class="pb-1"
+          color="transparent"
         >
           <template v-if="categories.length > 0">
             <template v-for="category in categories">
@@ -70,6 +70,7 @@
                 flat
                 tile
                 class="mb-3"
+                color="transparent"
               >
                 <v-card-title
                   :id="`cat_${category.id}`"
@@ -92,13 +93,23 @@
                         :disabled="item.pivot.inventory - getCartQty(item) <= 0"
                         :flat="item.pivot.inventory - getCartQty(item) <= 0"
                         outlined
+                        min-height="150"
                         @click="addToCart(item)"
                       >
                         <v-card-text>
                           <div class="d-flex">
                             <div>
                               <div class="title">{{ item.name }}</div>
-                              <div class="subtitle">{{ item.description }}</div>
+                              <div
+                                class="subtitle"
+                                style="
+                                  height: 65px;
+                                  text-overflow: ellipsis;
+                                  overflow: hidden;
+                                "
+                              >
+                                {{ item.description }}
+                              </div>
                               <div
                                 class="text-h6"
                                 :style="`color:${color.primary}`"
@@ -114,7 +125,7 @@
                                 }}
                               </div>
                             </div>
-                            <div class="ml-auto">
+                            <div class="ml-auto flex-shrink-0 flex-grow-0">
                               <v-badge
                                 :content="getCartQty(item)"
                                 :value="getCartQty(item)"
@@ -128,6 +139,8 @@
                                   height="100"
                                   width="100"
                                   :src="item.img.thumb"
+                                  :aspect-ratio="16 / 9"
+                                  class="grey lighten-2"
                                 ></v-img>
                               </v-badge>
                             </div>
@@ -168,10 +181,19 @@ export default {
   components: {
     OrderList,
   },
-  async asyncData({ $api, params }) {
+  async asyncData({ $api, params, store, redirect }) {
     if (params.id) {
-      // eslint-disable-next-line no-undef
       const resp = await $api.Transaction.find(params.id)
+      const activeStore =
+        store.state.app.store ||
+        JSON.parse(localStorage.getItem('active_store'))
+
+      if (activeStore) {
+        if (activeStore.id !== resp.store.id) {
+          redirect('/s/order')
+        }
+      }
+
       return {
         data: resp,
       }
@@ -215,6 +237,7 @@ export default {
       scrollDirection: -1,
       items: [],
       loading: true,
+      itemsLoaded: false,
     }
   },
   computed: {
@@ -246,6 +269,10 @@ export default {
   },
   watch: {
     active_store(store, old) {
+      if (old) {
+        this.$router.push('/s/order')
+      }
+
       this.refresh()
       if (store) {
         this.form.store_id = store.id
@@ -253,6 +280,11 @@ export default {
     },
     currentSection(sections) {
       this.current_tab = sections[0]
+    },
+    itemsLoaded(loaded) {
+      if (loaded) {
+        this.reupdateItems()
+      }
     },
   },
   mounted() {
@@ -280,7 +312,6 @@ export default {
       }))
 
       setTimeout(() => {
-        console.log('setdata from async')
         this.$store.dispatch('cart/setCart', details)
       }, 300)
 
@@ -301,6 +332,7 @@ export default {
         })
 
         this.items = await items
+        this.itemsLoaded = true
         this.loading = false
       }
     },
@@ -444,9 +476,11 @@ export default {
       const ind = this.cart.findIndex((i) => i.item_id === item.id)
 
       if (ind > -1) {
-        return this.cart[ind]._state !== 'deleted'
-          ? this.cart[ind].quantity
-          : null
+        if (this.cart[ind]._state === 'deleted') {
+          return 0
+        } else {
+          return this.cart[ind].quantity
+        }
       } else {
         return null
       }
@@ -462,6 +496,17 @@ export default {
         this.form.payment_option_id = null
         this.form.delivery_date = null
         this.form.notes = ''
+      }
+    },
+    reupdateItems() {
+      if (this.mode === 'edit') {
+        for (const item of this.cart) {
+          const ind = this.items.findIndex((i) => i.id === item.item_id)
+
+          if (ind > -1) {
+            this.items[ind].pivot.inventory += item.quantity
+          }
+        }
       }
     },
   },

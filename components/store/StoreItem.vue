@@ -5,15 +5,27 @@
     class="mx-auto"
     :loading="loading"
   >
-    <v-data-table
-      :headers="headers"
-      :items="storeItems"
-      :search="search"
-      multi-sort
-      height="320px"
-    >
-      <template v-slot:body="{ items }">
+    <v-data-table :headers="colHeaders" :items="storeItems" :search="search">
+      <template v-slot:body="{ items, headers }">
         <tbody>
+          <tr v-if="items.length < 1">
+            <td :colspan="headers.length">
+              <div class="d-flex flex-column align-center pa-5">
+                <v-avatar color="indigo darken-2" size="128">
+                  <v-icon class="text-h1" color="indigo lighten-5"
+                    >mdi-food</v-icon
+                  >
+                </v-avatar>
+                <div class="text--secondary my-4">
+                  Add items for this store, and start selling.
+                </div>
+                <v-btn color="primary" @click="addItems">
+                  <v-icon left> mdi-plus </v-icon> ADD ITEMS
+                </v-btn>
+              </div>
+            </td>
+          </tr>
+
           <tr v-for="(item, key) in items" :key="key" :class="rowClass(item)">
             <td>{{ item.name }}</td>
             <td class="text-right">
@@ -64,7 +76,14 @@
                 transition="scale-transition"
               >
                 <template v-slot:activator>
-                  <v-btn v-model="item.fab" color="secondary" dark fab x-small>
+                  <v-btn
+                    v-model="item.fab"
+                    color="secondary"
+                    tabindex="-1"
+                    dark
+                    fab
+                    x-small
+                  >
                     <v-icon v-if="item.fab"> mdi-close </v-icon>
                     <v-icon v-else> mdi-cog </v-icon>
                   </v-btn>
@@ -121,10 +140,14 @@ export default {
       type: Boolean,
       default: true,
     },
+    search: {
+      type: String,
+      default: null,
+    },
   },
   data() {
     return {
-      headers: [
+      colHeaders: [
         {
           text: 'Item',
           align: 'start',
@@ -147,7 +170,6 @@ export default {
           width: '40',
         },
       ],
-      search: null,
       temp_id: null,
       rules: {
         required: (value) => !!value,
@@ -203,6 +225,9 @@ export default {
       if (['', undefined].includes(item._state)) {
         item._state = 'edited'
       }
+    },
+    addItems() {
+      this.$emit('addItem')
     },
   },
 }

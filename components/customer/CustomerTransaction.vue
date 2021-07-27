@@ -96,8 +96,8 @@ export default {
         return
       }
       this.loading = true
-
-      const trans = this.customer.transactions()
+      const customer = new this.$api.Customer({ id: this.customer.id })
+      const trans = customer.transactions()
 
       trans.include('details.item').where('customer_id', this.customer.id)
 

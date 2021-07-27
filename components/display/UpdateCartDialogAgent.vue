@@ -168,7 +168,7 @@ export default {
         action: '',
         instructions: '',
         quantity: 0,
-        discount_type: 'percent',
+        discount_type: null,
         discount_value: null,
         discount_amount: 0,
         line_total: 0,
@@ -232,8 +232,10 @@ export default {
         this.itemCloned = Object.assign({}, val)
 
         this.form.set(this.itemCloned)
-        this.discountType = this.form.discount_type
         this.discountValue = this.form.discount_value
+        if (this.form.discount_type !== null) {
+          this.discountType = this.form.discount_type
+        }
       },
       deep: true,
     },
@@ -263,14 +265,15 @@ export default {
       } else {
         this.itemCloned = Object.assign({}, this.item)
         this.form.set(this.itemCloned)
+        this.form.discount_type = this.discount_type
       }
     },
   },
   mounted() {
-    this.itemCloned = Object.assign({}, this.item)
-    this.form.set(this.itemCloned)
-    this.discountType = this.form.discount_type
-    this.discountValue = this.form.discount_value
+    // this.itemCloned = Object.assign({}, this.item)
+    // this.form.set(this.itemCloned)
+    // this.discountType = this.form.discount_type
+    // this.discountValue = this.form.discount_value
   },
   methods: {
     ...mapActions({

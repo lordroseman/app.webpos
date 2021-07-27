@@ -35,7 +35,7 @@
           ref="menu"
           v-model="menu"
           :close-on-content-click="false"
-          :return-value.sync="dates"
+          :return-value.sync="delivery_date"
           transition="scale-transition"
           offset-y
           min-width="auto"
@@ -50,7 +50,7 @@
               v-on="on"
             ></v-text-field>
           </template>
-          <v-date-picker v-model="delivery_date">
+          <v-date-picker v-model="dates" range>
             <v-spacer></v-spacer>
             <v-btn text color="primary" @click="menu = false"> Cancel </v-btn>
             <v-btn text color="primary" @click="savePickerMenu"> OK </v-btn>
@@ -93,6 +93,7 @@ export default {
       hasSidebar: true,
       menu: false,
       delivery_date: null,
+      dates: [],
     }
   },
   computed: {
@@ -100,12 +101,40 @@ export default {
       stores: (state) => state.store.stores,
       storesLoadStatus: (state) => state.store.storesLoadStatus,
     }),
+    dateFrom() {
+      return this.dates[0] || null
+    },
+    dateTo() {
+      return this.dates[1] || null
+    },
     selectedDate() {
-      if (this.delivery_date) {
-        return this.formatDate(this.delivery_date)
+      if (this.dates) {
+        if (this.dates.length === 1) {
+          return this.formatDate(this.dateFrom)
+        } else if (this.dates.length === 2) {
+          return (
+            this.formatDate(this.dateFrom) +
+            ' - ' +
+            this.formatDate(this.dateTo)
+          )
+        }
       }
 
       return null
+    },
+    controls() {
+      let dateTo = this.dateTo
+      if (this.dates.length === 1) {
+        dateTo = this.dateFrom
+      }
+
+      const controls = {
+        store_id: this.store.id,
+        dateFrom: this.dateFrom,
+        dateTo,
+      }
+
+      return controls
     },
   },
   beforeMount() {
@@ -118,7 +147,8 @@ export default {
   },
   methods: {
     savePickerMenu() {
-      this.$refs.menu.save(this.delivery_date)
+      this.dates.sort()
+      this.$refs.menu.save(this.dates)
     },
     print() {
       if (!this.store) {
@@ -129,10 +159,7 @@ export default {
 
       this.pdfSrc = '/laravel/api/report'
       this.rptParam = {
-        controls: {
-          store: this.store.id,
-          delivery_date: this.delivery_date,
-        },
+        controls: this.controls,
         report: 'SalesReport',
         store: this.store.id,
       }

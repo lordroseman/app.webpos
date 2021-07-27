@@ -229,19 +229,13 @@ export default {
         y: 160,
       },
       sidebar: false,
+      width: 50,
     }
   },
   computed: {
     ...mapState({
       color: (state) => state.app.color,
     }),
-    width() {
-      if (this.landscape) {
-        return 80
-      } else {
-        return 50
-      }
-    },
   },
   watch: {
     showReport(value) {
@@ -277,6 +271,10 @@ export default {
 
     if (this.hasSidebar) {
       this.sidebar = true
+    }
+
+    if (this.landscape) {
+      this.width = 80
     }
   },
   methods: {
@@ -396,13 +394,14 @@ export default {
       this.$emit('print')
     },
     toggleFullScreen() {
-      if (!this.fullscreen) {
-        this.width = 100
-      } else {
-        this.width = 30
-      }
-
       this.fullscreen = !this.fullscreen
+      if (this.fullscreen) {
+        this.width = 100
+      } else if (this.landscape) {
+        this.width = 80
+      } else {
+        this.width = 50
+      }
     },
     zoom(delta) {
       if (this.instance) {

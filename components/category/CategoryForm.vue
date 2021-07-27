@@ -130,6 +130,8 @@ export default {
     setForm() {
       if (!isEmpty(this.data)) {
         this.form.set(this.data)
+      } else {
+        this.form.clear()
       }
     },
     save() {

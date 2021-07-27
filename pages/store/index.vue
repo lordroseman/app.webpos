@@ -6,11 +6,14 @@
           v-if="$can('Store:Add')"
           color="success"
           dark
-          class="mb-2"
           rounded
           @click="$router.push('/store/new')"
         >
-          <v-icon>mdi-plus</v-icon>New Store
+          <v-icon left>mdi-plus</v-icon>New
+        </v-btn>
+        <v-divider class="mx-4" inset vertical />
+        <v-btn color="indigo" dark rounded @click.stop="showTagsDialog = true">
+          <v-icon left>mdi-tag</v-icon>Tags
         </v-btn>
 
         <v-spacer />
@@ -69,6 +72,9 @@
         </v-data-table>
       </v-skeleton-loader>
     </v-card>
+    <v-dialog v-model="showTagsDialog" width="500" scrollable>
+      <store-tags />
+    </v-dialog>
   </v-container>
 </template>
 
@@ -102,6 +108,7 @@ export default {
       dialog: false,
       search: '',
       selected_store: {},
+      showTagsDialog: false,
     }
   },
   computed: {

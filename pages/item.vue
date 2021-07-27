@@ -12,7 +12,7 @@
               rounded
               v-on="on"
             >
-              <v-icon>mdi-plus</v-icon>New Item
+              <v-icon left>mdi-plus</v-icon>New Item
             </v-btn>
           </template>
           <item-form
@@ -23,6 +23,15 @@
             @addItem="addItem"
           />
         </v-dialog>
+        <v-btn
+          color="secondary"
+          dark
+          class="mb-2 ml-3"
+          rounded
+          @click="exportItem"
+        >
+          <v-icon left>mdi-microsoft-excel</v-icon> Export to Excel
+        </v-btn>
         <v-spacer />
         <v-spacer />
         <v-text-field
@@ -327,6 +336,9 @@ export default {
       if (ind > -1) {
         this.items.splice(ind, 1)
       }
+    },
+    exportItem() {
+      window.open('/laravel/api/item/export', '_blank')
     },
   },
   head: {

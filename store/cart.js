@@ -41,6 +41,10 @@ export const mutations = {
       )
       state.cartQty -= qty
       state.cartTotal = Number((state.cartTotal - item.item_price).toFixed(2))
+
+      if (state.cart[ind]._state !== 'new') {
+        state.cart[ind]._state = 'edited'
+      }
     }
   },
   removeCart(state, item) {

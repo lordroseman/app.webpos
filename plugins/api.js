@@ -7,6 +7,7 @@ import Discount from '@/models/Discount'
 import Report from '@/models/Report'
 import SubCategory from '@/models/SubCategory'
 import Item from '@/models/Item'
+import Tag from '@/models/Tag'
 
 export default ({ $axios }, inject) => {
   const api = {
@@ -19,6 +20,7 @@ export default ({ $axios }, inject) => {
     Discount,
     SubCategory,
     Item,
+    Tag,
   }
 
   inject('api', api)

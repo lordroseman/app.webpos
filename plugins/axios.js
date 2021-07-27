@@ -3,7 +3,7 @@ import Swal from 'sweetalert2'
 export default function ({ $axios, $auth }) {
   $axios.onError((error) => {
     // eslint-disable-next-line no-console
-
+    console.log(error)
     if (error.response.status === 500) {
       // eslint-disable-next-line no-console
       console.log("Oops!, there's something wrong in the server.")
