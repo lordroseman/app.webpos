@@ -98,7 +98,7 @@ export default {
         const tag = JSON.parse(JSON.stringify(i))
         if (i._state !== 'deleted') {
           i.priority = ind + 1
-          if (tag.priority !== i.priority) {
+          if (tag.priority !== i.priority && tag._state !== 'new') {
             i._state = 'edited'
           }
         }
@@ -141,8 +141,11 @@ export default {
       this.tags = newTags
     },
     remove(index) {
-      this.tags[index]._state = 'deleted'
-      this.deletedTags.push(this.tags[index])
+      if ('id' in this.tags[index]) {
+        this.tags[index]._state = 'deleted'
+        this.deletedTags.push(this.tags[index])
+      }
+
       const newTags = [
         ...this.tags.slice(0, index),
         ...this.tags.slice(index + 1),

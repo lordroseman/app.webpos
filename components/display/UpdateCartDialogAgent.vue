@@ -229,12 +229,8 @@ export default {
   watch: {
     item: {
       handler(val) {
-        this.itemCloned = Object.assign({}, val)
-
-        this.form.set(this.itemCloned)
-        this.discountValue = this.form.discount_value
-        if (this.form.discount_type !== null) {
-          this.discountType = this.form.discount_type
+        if (val) {
+          this.setForm()
         }
       },
       deep: true,
@@ -263,23 +259,28 @@ export default {
       if (!val) {
         this.form.clear()
       } else {
-        this.itemCloned = Object.assign({}, this.item)
-        this.form.set(this.itemCloned)
-        this.form.discount_type = this.discount_type
+        this.setForm()
       }
     },
   },
   mounted() {
-    // this.itemCloned = Object.assign({}, this.item)
-    // this.form.set(this.itemCloned)
-    // this.discountType = this.form.discount_type
-    // this.discountValue = this.form.discount_value
+    this.setForm()
   },
   methods: {
     ...mapActions({
       removeCart: 'cart/removeCart',
       updateCart: 'cart/updateCart',
     }),
+    setForm() {
+      if (this.item) {
+        this.itemCloned = JSON.parse(JSON.stringify(this.item))
+        this.form.set(this.itemCloned)
+        this.discountValue = this.form.discount_value
+        if (this.form.discount_type !== null) {
+          this.discountType = this.form.discount_type
+        }
+      }
+    },
     save() {
       if (this.removeFromCart) {
         if (this.item._state !== 'deleted') {
