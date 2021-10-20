@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid class="px-0 px-md-5">
     <v-card>
       <v-card-title>
         <div>{{ formTitle }}</div>
@@ -17,7 +17,7 @@
       </v-card-title>
       <v-card-text>
         <v-row>
-          <v-col cols="12" lg="6">
+          <v-col cols="12" lg="7" xl="6">
             <v-tabs
               v-model="tab"
               fixed-tabs
@@ -50,7 +50,7 @@
                   auto-grow
                   rows="4"
                 ></v-textarea>
-                <v-combobox
+                <v-autocomplete
                   v-model="storeTags"
                   :items="tags"
                   item-value="id"
@@ -59,12 +59,12 @@
                   multiple
                   :readonly="!editable"
                   small-chips
-                ></v-combobox>
+                ></v-autocomplete>
               </v-tab-item>
               <v-tab-item value="items">
                 <v-row v-if="editable" class="my-0">
-                  <v-col cols="12" sm="6" class="mt-autoe">
-                    <v-btn text @click="showAddItem = true">
+                  <v-col cols="12" sm="6" class="d-flex">
+                    <v-btn class="mt-auto" text @click="showAddItem = true">
                       <v-icon left>mdi-plus</v-icon> Add Items
                     </v-btn>
                   </v-col>
@@ -90,39 +90,15 @@
               </v-tab-item>
             </v-tabs-items>
           </v-col>
-          <v-col cols="12" lg="6">
+          <v-col cols="12" lg="5" xl="6">
             <v-responsive :aspect-ratio="16 / 9">
               <div class="font-weight-medium">Select Cover Photo</div>
-              <v-img height="250" :src="imgUrl" :aspect-ratio="16 / 9">
-                <div class="d-flex flex-column" style="height: 250px">
-                  <div>
-                    <v-app-bar flat color="transparent">
-                      <v-toolbar-title class="title white--text pl-0">
-                      </v-toolbar-title>
+              <store-cover-photo
+                :img="imgUrl"
+                :store="store"
+                @coverPhotoChanged="coverPhotoChanged"
+              />
 
-                      <v-spacer></v-spacer>
-
-                      <v-btn
-                        class="text-none"
-                        rounded
-                        depressed
-                        @click="onClickUpload"
-                      >
-                        <v-icon left> mdi-camera </v-icon>
-                        Upload Photo
-                      </v-btn>
-
-                      <input
-                        ref="uploader"
-                        class="d-none"
-                        type="file"
-                        accept="image/*"
-                        @change="onFileChanged"
-                      />
-                    </v-app-bar>
-                  </div>
-                </div>
-              </v-img>
               <div class="mt-10">
                 <div class="font-weight-medium">Pin address on Map</div>
                 <address-map
@@ -165,7 +141,7 @@ import Form from '~/components/core/Form'
 export default {
   mixins: [FormValidationMixins],
   async asyncData({ $api, params }) {
-    const id = params.id
+    const id = params.slug
     let data = {
       store: null,
     }
@@ -191,6 +167,7 @@ export default {
       form: new Form({
         id: null,
         name: '',
+        slug: null,
         address: '',
         geo_location_lat: null,
         geo_location_long: null,
@@ -242,7 +219,9 @@ export default {
         param.items = this.pivotData
       }
 
-      param.tags = this.storeTags
+      if (this.storeTags) {
+        param.tags = this.storeTags
+      }
 
       return param
     },
@@ -329,13 +308,14 @@ export default {
         this.form.set({
           id: resp.id,
           name: resp.name,
+          slug: resp.slug,
           address: resp.address,
           geo_location_lat: resp.geo_location_lat,
           geo_location_long: resp.geo_location_long,
           img: null,
         })
 
-        this.imgUrl = resp.image || this.defaultImg
+        this.imgUrl = resp.img ? resp.img.original : this.defaultImg
         this.storeTags = resp.tags
         this.items = []
         for (const item of resp.items) {
@@ -421,7 +401,7 @@ export default {
       formdata.append('_method', 'PUT')
 
       this.$axios
-        .post('/laravel/api/store/' + this.form.id, formdata, {
+        .post('/laravel/api/store/' + this.form.slug, formdata, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -451,7 +431,7 @@ export default {
         icon: 'error',
         title: 'Oops...',
         text: message,
-        footer: '<a href>Why do I have this issue?</a>',
+        footer: '<a href>Why do I have this issuess?</a>',
       })
     },
     applychanges(response) {
@@ -460,6 +440,7 @@ export default {
 
       if (this.form.hasChanges()) {
         this.form.id = response.store.id
+        this.form.slug = response.store.slug
         this.form.confirmChanges()
       }
 
@@ -496,7 +477,7 @@ export default {
         _state: 'new',
       }
 
-      this.items.push(_item)
+      this.items.unshift(_item)
     },
     undoChanges(item) {
       const ind = findIndex(this.items, (i) => i.id === item.id)
@@ -513,6 +494,11 @@ export default {
       this.imgUrl = URL.createObjectURL(this.selectedFile)
       this.imgChanged = true
       // do something
+    },
+    coverPhotoChanged(data) {
+      this.imgChanged = data.imgChanged
+      this.imgUrl = data.imgUrl
+      this.selectedFile = data.selectedFile
     },
   },
 }

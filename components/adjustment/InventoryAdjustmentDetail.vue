@@ -59,8 +59,8 @@
       </v-chip>
       <v-chip v-else class="ma-2"> Unsaved </v-chip>
     </v-card-title>
-    <v-card-text class="pb-0 overflow-y-hidden" style="height: 800px">
-      <v-scrollable height="800px">
+    <v-card-text class="pb-0" style="height: 800px">
+      <v-scrollable height="720px" class="mx-n4 px-4">
         <v-container>
           <v-row>
             <v-col cols="12" sm="6" class="py-0">
@@ -177,9 +177,10 @@
                     :class="rowClass(item)"
                   >
                     <td>{{ item.item.name }}</td>
-                    <td class="text-end">
+                    <td class="text-right">
                       {{ toNumberFormat(item.qty) }}
                     </td>
+                    <td>{{ item.item.item_unit.abbrev }}</td>
                     <td>
                       <v-speed-dial
                         v-model="item.fab"
@@ -324,6 +325,7 @@ export default {
       headers: [
         { text: 'Item', value: 'item.name' },
         { text: 'Quantity', value: 'qty', align: 'end' },
+        { text: 'UoM', value: 'uom' },
         {
           text: 'Actions',
           value: 'actions',
@@ -445,7 +447,7 @@ export default {
       }
     },
     isStoreComboDisabled() {
-      if (this.activeStore) {
+      if (this.$auth.user.access_level !== 1) {
         return true
       }
       return !this.editable
@@ -465,24 +467,28 @@ export default {
     'form.approved_by'(user) {
       if (user) {
         this.approved_by = user.name
+      } else {
+        this.approved_by = ''
       }
     },
     show(val) {
-      this.clear()
+      if (val) {
+        this.clear()
+      }
     },
     data(val) {
       this.setForm()
     },
-  },
-  beforeMount() {
-    this.$store.dispatch('store/loadStores')
   },
   created() {
     this.setForm()
   },
   mounted() {
     this.clear()
-    this.listen()
+    // this.listen()
+    if (this.$auth.user.access_level === 1) {
+      this.$store.dispatch('store/loadStores')
+    }
   },
   beforeDestroy() {
     if (this.channel) {
@@ -490,20 +496,25 @@ export default {
     }
   },
   methods: {
-    loadItems(store) {
+    loadItems(storeId) {
       this.itemLoading = true
-      this.$api.Store.include('item')
-        .find(store)
-        .then((resp) => {
-          this.item_options = []
-          for (const item of resp.items) {
-            item._state = ''
-            this.item_options.push(item)
-          }
-        })
-        .finally(() => {
-          this.itemLoading = false
-        })
+
+      const store = this.stores.filter((i) => i.id === storeId)
+
+      if (store.length > 0) {
+        this.$api.Store.include('item')
+          .find(store[0].slug)
+          .then((resp) => {
+            this.item_options = []
+            for (const item of resp.items) {
+              item._state = ''
+              this.item_options.push(item)
+            }
+          })
+          .finally(() => {
+            this.itemLoading = false
+          })
+      }
     },
     *GenerateID() {
       let i = 1
@@ -527,6 +538,7 @@ export default {
         item_id: item.id,
         item: {
           name: item.name,
+          item_unit: item.item_unit,
         },
         qty: this.selected_item_qty,
         _state: 'new',
@@ -547,6 +559,7 @@ export default {
     },
     close() {
       this.$echo.leave(this.channel)
+      this.clear()
       this.$emit('close')
     },
     save() {
@@ -652,16 +665,16 @@ export default {
         this.$axios
           .get('/laravel/api/inventory_adjustment/' + this.data.id)
           .then((resp) => {
-            this.form.set({
-              id: resp.data.id,
-              store_id: resp.data.store_id,
-              type: resp.data.type,
-              status: resp.data.status,
-              date: resp.data.date,
-              remarks: resp.data.remarks,
-              prepared_by: resp.data.preparedBy,
-              approved_by: resp.data.approvedBy,
-            })
+            // this.form.set({
+            //   id: resp.data.id,
+            //   store_id: resp.data.store_id,
+            //   type: resp.data.type,
+            //   status: resp.data.status,
+            //   date: resp.data.date,
+            //   remarks: resp.data.remarks,
+            //   prepared_by: resp.data.preparedBy,
+            //   approved_by: resp.data.approvedBy,
+            // })
             this.details = []
             for (const detail of resp.data.details) {
               detail._state = ''

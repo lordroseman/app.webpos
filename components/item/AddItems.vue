@@ -33,6 +33,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   props: {
     data: {
@@ -61,6 +63,9 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      activeStore: (state) => state.app.store,
+    }),
     count() {
       return this.selected.length
     },
@@ -70,9 +75,11 @@ export default {
   },
   methods: {
     loadItems() {
-      this.$axios.get('/laravel/api/store/items/unselected').then((resp) => {
-        this.item_list = resp.data
-      })
+      this.$axios
+        .get('/laravel/api/store/' + this.activeStore.id + '/items/unselected')
+        .then((resp) => {
+          this.item_list = resp.data
+        })
     },
 
     save() {

@@ -35,6 +35,7 @@
               <v-currency-field
                 v-else
                 v-model="item.pivot.selling_price"
+                class="text-right"
                 label="Selling"
                 solo
                 flat
@@ -53,6 +54,7 @@
               <v-currency-field
                 v-else
                 v-model="item.pivot.cost"
+                class="text-right"
                 label="Cost"
                 solo
                 flat
@@ -154,13 +156,13 @@ export default {
           sortable: true,
           value: 'name',
         },
-        { text: 'Selling Price', value: 'selling_price', width: '150' },
-        { text: 'Cost', value: 'cost', width: '150' },
+        { text: 'Selling Price', value: 'selling_price', width: '120' },
+        { text: 'Cost', value: 'cost', width: '120' },
         {
           text: 'Inventory',
           value: 'inventory',
           align: 'end',
-          width: '150',
+          width: '120',
         },
         {
           text: 'Actions',

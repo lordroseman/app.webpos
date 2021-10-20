@@ -1,5 +1,12 @@
 <template>
   <div>
+    <div v-if="addresses.length === 0" class="w-full text-center py-16">
+      <v-avatar color="red" size="128">
+        <v-icon color="white" class="text-h2">mdi-map-marker-off</v-icon>
+      </v-avatar>
+      <div class="text-subtitle-1 mt-4">No address saved.</div>
+    </div>
+
     <v-card v-for="(address, i) in addresses" :key="i" flat>
       <v-card-title>
         <span>{{ address.title }}</span>

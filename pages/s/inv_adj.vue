@@ -246,6 +246,8 @@ export default {
       this.loadAdjustments(this)
       this.listen()
     }
+
+    this.$store.dispatch('store/loadStores')
   },
   methods: {
     refresh() {

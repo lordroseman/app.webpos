@@ -138,7 +138,7 @@ export default {
       this.$store.dispatch('store/loadStores')
     },
     edit(store) {
-      this.$router.push('/store/' + store.id)
+      this.$router.push('/store/' + store.slug)
     },
     remove(store) {
       this.$swal
@@ -153,9 +153,13 @@ export default {
           showLoaderOnConfirm: true,
           preConfirm: (e) => {
             return new Promise((resolve, reject) => {
-              const deleteStore = new this.$api.Store({ id: store.id })
+              const deleteStore = new this.$api.Store({
+                id: store.id,
+                slug: store.slug,
+              })
+              console.log(deleteStore)
               deleteStore
-                .delete(store.id)
+                .delete()
                 .then((response) => {
                   resolve(true)
                 })

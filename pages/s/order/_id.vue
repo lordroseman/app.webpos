@@ -22,11 +22,7 @@
         v-for="category in categories"
         :key="category.id"
         :href="`#${category.id}`"
-        @click="
-          $vuetify.goTo(`#cat_${category.id}`, {
-            container: '#scrolling',
-          })
-        "
+        @click="goTo(category)"
       >
         {{ category.title }}
       </v-tab>
@@ -34,7 +30,11 @@
     <v-divider />
 
     <v-container fluid>
-      <v-scrollable id="scrolling" :height="`calc(100vh - 128px)`">
+      <v-scrollable
+        id="scrolling"
+        :height="`calc(100vh - 128px)`"
+        class="pr-2 mr-n2"
+      >
         <v-card v-if="loading" flat tile>
           <v-card-text>
             <v-skeleton-loader type="heading"></v-skeleton-loader>
@@ -63,9 +63,8 @@
           color="transparent"
         >
           <template v-if="categories.length > 0">
-            <template v-for="category in categories">
+            <div v-for="category in categories" :key="`cat_${category.id}`">
               <v-card
-                :key="`cat_${category.id}`"
                 :ref="`cat_${category.id}`"
                 flat
                 tile
@@ -76,6 +75,7 @@
                   :id="`cat_${category.id}`"
                   v-intersect="onIntersect"
                   :data-cat-id="category.id"
+                  class="font-weight-thin text-h4"
                 >
                   {{ category.title }}
                 </v-card-title>
@@ -99,7 +99,9 @@
                         <v-card-text>
                           <div class="d-flex">
                             <div>
-                              <div class="title">{{ item.name }}</div>
+                              <div class="title text--primary">
+                                {{ item.name }}
+                              </div>
                               <div
                                 class="subtitle"
                                 style="
@@ -151,7 +153,7 @@
                   </v-row>
                 </v-card-text>
               </v-card>
-            </template>
+            </div>
           </template>
           <template v-else>
             <div class="text-h6 px-5 text-center">Store has no items.</div>
@@ -238,6 +240,8 @@ export default {
       items: [],
       loading: true,
       itemsLoaded: false,
+      scrolling: false,
+      lastSection: null,
     }
   },
   computed: {
@@ -245,6 +249,7 @@ export default {
       active_store: (state) => state.app.store,
       color: (state) => state.app.color,
       cart: (state) => state.cart.cart,
+      showUnavailable: (state) => state.app.showUnavailable,
     }),
     categories() {
       const categories = []
@@ -279,7 +284,9 @@ export default {
       }
     },
     currentSection(sections) {
-      this.current_tab = sections[0]
+      if (sections.length > 0) {
+        this.current_tab = sections[0]
+      }
     },
     itemsLoaded(loaded) {
       if (loaded) {
@@ -322,7 +329,10 @@ export default {
     },
     async loadItems() {
       if (this.active_store) {
-        const _store = new this.$api.Store({ id: this.active_store.id })
+        const _store = new this.$api.Store({
+          id: this.active_store.id,
+          slug: this.active_store.slug,
+        })
 
         const _items = _store.items()
         let items = []
@@ -452,8 +462,24 @@ export default {
         row._original = copy
       }
     },
+    goTo(category) {
+      this.scrolling = true
+      this.$vuetify.goTo(`#cat_${category.id}`, {
+        container: '#scrolling',
+        duration: 300,
+      })
+
+      setTimeout(() => {
+        this.scrolling = false
+      }, 500)
+    },
     async onIntersect(entries, observer) {
+      if (this.scrolling) {
+        return
+      }
+
       const id = entries[0].target.dataset.catId
+
       if (entries[0].isIntersecting) {
         if (this.scrollDirection === -1) {
           await this.currentSection.push(id)

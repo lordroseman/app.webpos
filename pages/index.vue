@@ -67,7 +67,7 @@
                   class="caption no-wrap"
                 >
                   <v-icon color="green">mdi-trending-up</v-icon>
-                  {{ transaction.sales_change }}% Dmore than last month
+                  {{ transaction.sales_change }}% more than last month
                 </div>
                 <div v-else class="caption no-wrap">
                   <v-icon color="red">mdi-trending-down</v-icon>
@@ -163,12 +163,12 @@
           </v-card-title>
           <v-card-title v-else> Daily Sales </v-card-title>
           <v-card-text>
-            <store-sales-chart v-show="activeStore === -1" />
-            <daily-sales-chart
-              v-show="activeStore !== -1"
-              :store="activeStore"
-              :month="month"
+            <store-sales-chart
+              v-show="activeStore === -1"
+              :show="activeStore === -1"
+              :month="formatDate(date, 'M')"
             />
+            <daily-sales-chart v-show="activeStore !== -1" />
           </v-card-text>
         </v-card>
       </v-col>

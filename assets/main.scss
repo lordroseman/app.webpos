@@ -106,3 +106,14 @@ ul {
 .no-wrap {
   white-space: nowrap;
 }
+
+@mixin z-index-list {
+  @for $i from 1 through 10 {
+    .z-#{$i} {
+      z-index: #{$i};
+    }
+    .z-#{$i}0 {
+      z-index: #{$i}0;
+    }
+  }
+}

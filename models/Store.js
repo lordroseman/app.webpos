@@ -9,4 +9,8 @@ export default class Store extends Model {
   items() {
     return this.hasMany(Item)
   }
+
+  primaryKey() {
+    return 'slug'
+  }
 }

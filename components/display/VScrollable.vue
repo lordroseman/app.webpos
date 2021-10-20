@@ -35,7 +35,7 @@ export default {
       return {
         height: this.height,
         'overflow-x': 'hidden',
-        'overflow-y': this.persistent ? 'auto' : 'hidden',
+        'overflow-y': this.persistent ? 'overlay' : 'hidden',
       }
     },
     scrollClass() {
@@ -49,10 +49,11 @@ export default {
 .scrollable {
   overflow-x: hidden;
   overflow-y: hidden;
+  z-index: 4;
 }
 
 .scrollable:hover {
-  overflow-y: auto !important;
+  overflow-y: overlay !important;
 }
 
 .light::-webkit-scrollbar {
@@ -60,7 +61,7 @@ export default {
 }
 
 .light::-webkit-scrollbar-track {
-  background: #e6e6e645;
+  background: transparent;
 }
 
 .light::-webkit-scrollbar-thumb {

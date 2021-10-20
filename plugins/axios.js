@@ -24,7 +24,7 @@ export default function ({ $axios, $auth }) {
 
       Swal.fire({
         icon: 'warning',
-        title: 'Oops...',
+        title: 'Unauthenticated',
         text: 'You have been logout! Page will reload',
         allowOutsideClick: false,
         allowEscapeKey: false,

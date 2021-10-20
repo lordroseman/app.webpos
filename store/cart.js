@@ -101,6 +101,9 @@ export const mutations = {
     state.cartTotal = total
     state.cartQty = qty
   },
+  setTotal(state, total) {
+    state.cartTotal = total
+  },
 }
 
 export const actions = {
@@ -132,6 +135,9 @@ export const actions = {
   setCart({ commit }, details) {
     commit('setCart', details)
   },
+  setTotal({ commit }, total) {
+    commit('setTotal', total)
+  },
 }
 
 export const getters = {
@@ -139,7 +145,9 @@ export const getters = {
     let totalQty = 0
 
     for (const item of state.cart) {
-      totalQty += item.quantity
+      if (item._state !== 'deleted') {
+        totalQty += item.quantity
+      }
     }
 
     return totalQty
@@ -148,7 +156,9 @@ export const getters = {
     let lineTotal = 0
 
     for (const item of state.cart) {
-      lineTotal += item.line_total
+      if (item._state !== 'deleted') {
+        lineTotal += item.line_total
+      }
     }
 
     return lineTotal

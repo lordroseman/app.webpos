@@ -85,7 +85,7 @@ export default {
     const activeStore = store.state.app.store
     if (activeStore) {
       const cust = await $axios.$get(
-        `/laravel/api/store/${activeStore.id}/customers`
+        `/laravel/api/store/${activeStore.slug}/customers`
       )
       return {
         customers: cust,
@@ -139,7 +139,7 @@ export default {
       if (this.store) {
         this.loading = true
         const customers = await this.$axios.$get(
-          '/laravel/api/store/' + this.store.id + '/customers'
+          '/laravel/api/store/' + this.store.slug + '/customers'
         )
 
         this.customers = customers

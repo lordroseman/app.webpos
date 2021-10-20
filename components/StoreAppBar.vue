@@ -127,7 +127,7 @@
         </v-badge>
       </v-btn>
       <!--   Logout Menu -->
-      <v-menu left bottom offset-y>
+      <v-menu left bottom offset-y :close-on-content-click="false">
         <template v-slot:activator="{ on }">
           <v-btn icon v-on="on">
             <v-icon>mdi-dots-vertical</v-icon>
@@ -135,16 +135,20 @@
         </template>
 
         <v-list dense>
-          <v-list-item @click="isDark = !isDark">
-            <v-list-item-icon>
-              <v-icon>{{
-                isDark ? 'mdi-brightness-4' : 'mdi-brightness-7'
-              }}</v-icon>
-            </v-list-item-icon>
+          <!-- <v-list-item>
+            <v-list-item-action>
+              <v-switch
+                v-model="showUnavailable"
+                inset
+                dense
+                :label="` Show Unavailable Items`"
+              >
+              </v-switch>
+            </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>Dark Mode</v-list-item-title>
+              <v-list-item-title></v-list-item-title>
             </v-list-item-content>
-          </v-list-item>
+          </v-list-item> -->
           <v-divider />
           <v-list-item @click="logout">
             <v-list-item-icon>
@@ -319,6 +323,7 @@ export default {
           ],
         },
       ],
+      showUnavailable: true,
     }
   },
   computed: {
@@ -357,6 +362,10 @@ export default {
       this.$store.dispatch('cart/clearCart')
       this.$store.dispatch('app/setActiveStore', store)
       localStorage.setItem('active_store', JSON.stringify(store))
+    },
+    showUnavailable(value) {
+      localStorage.setItem('showUnavailable', value)
+      this.$store.dispatch('app/setShowUnavailable', value)
     },
   },
   beforeMount() {

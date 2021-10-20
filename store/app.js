@@ -2,6 +2,7 @@ export const state = () => ({
   store: null,
   drawer: true,
   miniVariant: false,
+  showUnavailable: true,
   navHeader: '',
   color: {
     primary: '#C32B33',
@@ -93,11 +94,14 @@ export const mutations = {
   setMiniVariant(state, mini) {
     state.miniVariant = mini
   },
+  setShowUnavailable(state, value) {
+    state.showUnavailable = value
+  },
 }
 
 export const actions = {
   async setActiveStore({ commit }, store) {
-    await this.$axios.$post('/laravel/api/store/session/' + store.id)
+    await this.$axios.$post('/laravel/api/store/session/' + store.slug)
     commit('setStore', store)
   },
   logoutUser({ commit }) {
@@ -111,5 +115,8 @@ export const actions = {
   },
   setMiniVariant({ commit }, mini) {
     commit('setMiniVariant', mini)
+  },
+  setShowUnavailable({ commit }, value) {
+    commit('setShowUnvailable', value)
   },
 }

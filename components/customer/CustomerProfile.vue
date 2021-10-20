@@ -33,7 +33,7 @@
         <v-row>
           <v-col cols="12">
             <v-text-field
-              v-model="customer.full_name"
+              v-model="fullname"
               label="Full Name"
               required
               prepend-icon="mdi-account"
@@ -92,6 +92,9 @@ export default {
     coverPhoto() {
       const cover = this.getRandomInt(1, 5)
       return require(`@/static/cover${cover}.jpg`)
+    },
+    fullname() {
+      return this.customer.fname + ' ' + this.customer.lname
     },
   },
   methods: {

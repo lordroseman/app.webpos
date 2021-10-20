@@ -12,6 +12,16 @@
 
 <script>
 export default {
+  props: {
+    show: {
+      type: Boolean,
+      default: true,
+    },
+    month: {
+      type: String,
+      default: null,
+    },
+  },
   data() {
     return {
       labels: [],
@@ -38,12 +48,24 @@ export default {
       },
     }
   },
+  watch: {
+    month() {
+      this.getData()
+    },
+  },
   mounted() {
     this.getData()
   },
   methods: {
     async getData() {
-      const sales = await this.$axios.$get('/laravel/api/dashboard/store/sales')
+      let filter = ''
+      if (this.show) {
+        filter = `?month=${this.month}`
+      }
+
+      const sales = await this.$axios.$get(
+        '/laravel/api/dashboard/store/sales' + filter
+      )
       this.data = this.arrayColumn(sales, 'sales')
       this.labels = this.arrayColumn(sales, 'store')
       this.loading = true

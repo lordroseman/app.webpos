@@ -252,7 +252,7 @@ export default {
         items.push(_row)
       }
 
-      return [...items, ...this.new_items]
+      return [...this.new_items, ...items]
     },
     changedData() {
       return this.item_list.filter((i) => i._state && i._state !== '')
@@ -274,13 +274,13 @@ export default {
   },
   watch: {
     active_store(newVal, old) {
-      this.refresh()
+      if (!this.loading) {
+        this.refresh()
+      }
     },
   },
   mounted() {
-    setTimeout(() => {
-      this.loadItems()
-    }, 500)
+    this.loadItems()
   },
   methods: {
     refresh() {
@@ -288,7 +288,7 @@ export default {
     },
     loadItems() {
       if (this.active_store) {
-        this.$store.dispatch('item/loadStoreItems', this.active_store.id)
+        this.$store.dispatch('item/loadStoreItems', this.active_store.slug)
       }
     },
     edit(item) {
@@ -327,7 +327,7 @@ export default {
             inventory: 0,
           }
 
-          this.new_items.push(item)
+          this.new_items.unshift(item)
         }
       }
     },
@@ -354,7 +354,9 @@ export default {
 
       this.sending = true
       this.$axios
-        .post('/laravel/api/store/items', { items: this.pivotData })
+        .post('/laravel/api/store/' + this.active_store.slug + '/items', {
+          items: this.pivotData,
+        })
         .then((resp) => {
           if (resp.data) {
             this.$swal.fire({

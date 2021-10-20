@@ -32,7 +32,7 @@
         </template>
         <template v-slot:expanded-item="{ headers, item }">
           <td :colspan="headers.length" class="py-2">
-            <v-simple-table dark>
+            <v-simple-table>
               <template v-slot:default>
                 <thead>
                   <tr>

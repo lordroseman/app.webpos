@@ -1,13 +1,21 @@
 <template>
   <v-scrollable :height="`calc(100vh - 64px)`">
+    <v-breadcrumbs>
+      <v-breadcrumbs-item href="/s/customer">Customers</v-breadcrumbs-item>
+      <v-breadcrumbs-divider>/</v-breadcrumbs-divider>
+      <v-breadcrumbs-item
+        >{{ customer.fname }} {{ customer.lname }}
+      </v-breadcrumbs-item>
+    </v-breadcrumbs>
     <v-container fluid class="px-0 px-md-5">
-      <v-card class="mx-auto" min-height="83vh">
-        <v-row>
-          <v-col cols="12" md="4" class="pt-0 pr-md-0">
+      <v-row>
+        <v-col cols="12" md="4">
+          <v-card elevation="2">
             <customer-profile :customer="customer"></customer-profile>
-          </v-col>
-          <v-col cols="12" md="8" class="d-flex pl-md-0">
-            <v-divider vertical />
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="8" class="w-full h-full">
+          <v-card elevation="2">
             <v-tabs>
               <v-tab href="#addresses" class="justify-start">
                 <v-icon left> mdi-google-maps </v-icon>
@@ -32,9 +40,9 @@
                 ></customer-transaction>
               </v-tab-item>
             </v-tabs>
-          </v-col>
-        </v-row>
-      </v-card>
+          </v-card>
+        </v-col>
+      </v-row>
     </v-container>
   </v-scrollable>
 </template>

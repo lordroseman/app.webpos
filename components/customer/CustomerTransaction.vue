@@ -68,7 +68,7 @@ export default {
   props: {
     customer: {
       type: Object,
-      default: () => {},
+      required: true,
     },
   },
   data() {

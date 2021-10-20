@@ -63,97 +63,103 @@
 
       <v-divider />
 
-      <v-list class="mb-auto" two-line>
-        <v-list-item
-          v-for="item in cart"
-          :key="`${item.item_id}_${item._state}`"
-          link
-          :class="rowClass(item || '')"
-          @click="updateCart(item)"
-        >
-          <v-list-item-content>
-            <v-list-item-title>
-              {{ item.item_name }}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              <span v-if="item.discount_amount === 0">
-                {{ toCurrency(item.item_price) }}
-              </span>
-              <template v-else>
-                <span class="text-decoration-line-through mr-2">
+      <v-scrollable :height="'calc(100vh - 260px)'">
+        <v-list class="mb-auto" two-line>
+          <v-list-item
+            v-for="item in cart"
+            :key="`${item.item_id}_${item._state}`"
+            link
+            :class="rowClass(item || '')"
+            @click="updateCart(item)"
+          >
+            <v-list-item-action class="cart-action">
+              <v-menu
+                :close-on-content-click="false"
+                style="box-shadow: none !important"
+                left
+                class="menu-cart"
+                flat
+              >
+                <template #activator="{ on, attrs }">
+                  <div class="py-1">
+                    <v-btn
+                      :color="color.primary"
+                      fab
+                      outlined
+                      x-small
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      {{ item.quantity }}
+                    </v-btn>
+                  </div>
+                </template>
+                <v-card width="150" flat style="box-shadow: none !important">
+                  <div class="pl-2 py-1">
+                    <v-btn
+                      fab
+                      dark
+                      x-small
+                      :color="color.pink"
+                      @click="lessCart(item)"
+                    >
+                      <v-icon>mdi-minus</v-icon>
+                    </v-btn>
+                    <v-btn
+                      fab
+                      dark
+                      x-small
+                      color="green"
+                      @click.native.stop="preAddToCart(item)"
+                    >
+                      <v-icon>mdi-plus</v-icon>
+                    </v-btn>
+                    <v-btn
+                      fab
+                      dark
+                      x-small
+                      color="red"
+                      @click.once="removeCart(item)"
+                    >
+                      <v-icon>mdi-delete</v-icon>
+                    </v-btn>
+                    <v-btn :color="color.primary" fab outlined x-small>
+                      {{ item.quantity }}
+                    </v-btn>
+                  </div>
+                </v-card>
+              </v-menu>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>
+                {{ item.item_name }}
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                Price:
+                <span v-if="item.discount_amount === 0">
                   {{ toCurrency(item.item_price) }}
                 </span>
-                <span
-                  >{{ toCurrency(item.item_price - item.discount_amount) }}
-                </span>
-              </template>
-            </v-list-item-subtitle>
-          </v-list-item-content>
-          <v-list-item-action class="cart-action">
-            <v-menu
-              :close-on-content-click="false"
-              style="box-shadow: none !important"
-              left
-              class="menu-cart"
-              flat
-            >
-              <template #activator="{ on, attrs }">
-                <div class="py-1">
-                  <v-btn
-                    :color="color.primary"
-                    fab
-                    outlined
-                    x-small
-                    v-bind="attrs"
-                    v-on="on"
-                  >
-                    {{ item.quantity }}
-                  </v-btn>
-                </div>
-              </template>
-              <v-card width="150" flat style="box-shadow: none !important">
-                <div class="pl-2 py-1">
-                  <v-btn
-                    fab
-                    dark
-                    x-small
-                    :color="color.pink"
-                    @click="lessCart(item)"
-                  >
-                    <v-icon>mdi-minus</v-icon>
-                  </v-btn>
-                  <v-btn
-                    fab
-                    dark
-                    x-small
-                    color="green"
-                    @click.native.stop="preAddToCart(item)"
-                  >
-                    <v-icon>mdi-plus</v-icon>
-                  </v-btn>
-                  <v-btn
-                    fab
-                    dark
-                    x-small
-                    color="red"
-                    @click.once="removeCart(item)"
-                  >
-                    <v-icon>mdi-delete</v-icon>
-                  </v-btn>
-                  <v-btn :color="color.primary" fab outlined x-small>
-                    {{ item.quantity }}
-                  </v-btn>
-                </div>
-              </v-card>
-            </v-menu>
-          </v-list-item-action>
-        </v-list-item>
-      </v-list>
+                <template v-else>
+                  <span class="text-decoration-line-through mr-2">
+                    {{ toCurrency(item.item_price) }}
+                  </span>
+                  <span
+                    >{{ toCurrency(item.item_price - item.discount_amount) }}
+                  </span>
+                </template>
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action>
+              <span>{{ toCurrency(item.line_total) }}</span>
+            </v-list-item-action>
+          </v-list-item>
+        </v-list>
+      </v-scrollable>
     </div>
     <template #append>
       <v-divider />
       <div class="pa-2">
-        <h2 class="text-center">TOTAL: {{ toCurrency(total) }}</h2>
+        <h2 class="text-center">TOTAL: {{ toCurrency(cartTotal) }}</h2>
         <div class="px-3 py-3">
           <v-btn color="green" dark block large @click="settle">
             {{ mode === 'new' ? 'PLACE ORDER' : 'UPDATE ORDER' }}
@@ -205,9 +211,11 @@
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
 import { isEmpty } from 'lodash'
+import VScrollable from '../display/VScrollable.vue'
 import EventBus from '~/components/core/event-bus.js'
 
 export default {
+  components: { VScrollable },
   props: {
     form: {
       type: Object,
@@ -260,6 +268,7 @@ export default {
     },
     ...mapGetters({
       transactionSendingStatus: 'transaction/getTransactionSendingStatus',
+      cartTotal: 'cart/getCartTotal',
     }),
     ...mapState({
       response: (state) => state.transaction.response,
@@ -288,9 +297,9 @@ export default {
     },
   },
   watch: {
-    total(val) {
-      this.form.total_amount = val
-    },
+    // cartTotal(val) {
+    //   this.form.total_amount = val
+    // },
     hasCustomer(val) {
       if (!val) {
         this.form.customer_name = ''
@@ -358,7 +367,38 @@ export default {
     closeForm() {
       this.dialog = false
     },
+    recalculateTotal() {
+      this.$store.dispatch('cart/setTotal', this.cartTotal)
+    },
     settle() {
+      this.form.total_amount = this.cartTotal
+      // if (this.cartTotal !== this.total) {
+      //   let timerInterval
+      //   this.$swal
+      //     .fire({
+      //       title: "Cart Total doesn't match with your orders.",
+      //       html: 'Recalculating Total... <b></b>',
+      //       timer: 2000,
+      //       timerProgressBar: true,
+      //       allowOutsideClick: false,
+      //       didOpen: () => {
+      //         this.$swal.showLoading()
+      //         const b = this.$swal.getHtmlContainer().querySelector('b')
+      //         this.recalculateTotal()
+      //         timerInterval = setInterval(() => {
+      //           b.textContent = this.$swal.getTimerLeft()
+      //         }, 100)
+      //       },
+      //       willClose: () => {
+      //         clearInterval(timerInterval)
+      //       },
+      //     })
+      //     .then((result) => {
+      //       console.log(result)
+      //     })
+      //   return
+      // }
+
       if (this.mode !== 'edit') {
         if (
           !this.params.details ||
@@ -421,8 +461,13 @@ export default {
       this.updateCartDialog = true
       this.updateItem = item
     },
-    toggleWalkin() {
-      this.walkin = !this.walkin
+    toggleWalkin(walkin) {
+      if (typeof walkin === 'boolean') {
+        this.walkin = walkin
+      } else {
+        this.walkin = !this.walkin
+      }
+
       localStorage.setItem('walkin', this.walkin ? 1 : 0)
       this.$emit('toggleWalkin', this.walkin)
     },
